@@ -4,6 +4,7 @@ stages:
   - install
   - build
   - test
+  - lint
 
 cache:
  key: modules
@@ -51,3 +52,15 @@ unit-test:
     reports:
       junit:
         - junit.xml
+
+lint:
+  image: node:latest
+  stage: lint
+    cache:
+    key: modules
+    paths:
+      - node_modules/
+    policy: pull
+  script:
+    - npm runt lint
+    - echo "All style good!"
