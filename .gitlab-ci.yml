@@ -1,5 +1,14 @@
 stages:
+  - lint
+  - build
   - test
+
+build:
+  image: node:latest
+  stage: build
+  script:
+    - npm run build
+    - echo "Build Successfully!"
 
 unit-test:
   image: node:latest
