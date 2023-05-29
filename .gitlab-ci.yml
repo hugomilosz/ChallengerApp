@@ -56,11 +56,11 @@ unit-test:
 lint:
   image: node:latest
   stage: lint
-    cache:
+  cache:
     key: modules
     paths:
       - node_modules/
     policy: pull
   script:
-    - npm runt lint
+    - npm run lint
     - echo "All style good!"
