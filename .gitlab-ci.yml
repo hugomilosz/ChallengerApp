@@ -19,7 +19,7 @@ install:
   after_script:
     - node -v && npm -v
   script:
-    - npm i
+    - npm install create-react-app
 
 build:
   image: node:latest
