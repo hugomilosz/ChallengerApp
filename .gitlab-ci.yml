@@ -17,9 +17,9 @@ install:modules:
   paths:
     - node_modules/
   after_script:
-   - node -v && npm -v
+    - node -v && npm -v
   script:
-  - npm i
+    - npm i
 
 build:
   image: node:latest
