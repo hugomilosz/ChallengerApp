@@ -10,16 +10,16 @@ cache:
  paths:
   - node_modules/
 
-install:modules:
- stage: install
- cache:
-  key: modules
-  paths:
-    - node_modules/
-  after_script:
-    - node -v && npm -v
-  script:
-    - npm i
+install:
+  stage: install
+  cache:
+    key: modules
+    paths:
+      - node_modules/
+    after_script:
+      - node -v && npm -v
+    script:
+      - npm i
 
 build:
   image: node:latest
