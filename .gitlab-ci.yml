@@ -21,8 +21,9 @@ install:
   after_script:
     - node -v && npm -v
   script:
+    - npm cache clean --force
+    - npm rebuild
     - npm install
-    - npm install react-scripts
 
 build:
   image: node:latest
