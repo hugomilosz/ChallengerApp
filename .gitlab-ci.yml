@@ -22,7 +22,7 @@ install:
     - node -v && npm -v
   script:
     - npm install
-    - npm instal react-scripts
+    - npm install react-scripts
 
 build:
   image: node:latest
