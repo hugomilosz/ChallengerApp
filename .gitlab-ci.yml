@@ -89,7 +89,7 @@ docker-build:
     DOCKER_TLS_CERTDIR: ""
   script:
     - docker build -f Dockerfile --iidfile imageid.txt -t registry.heroku.com/challenger/my-app .
-    - docker login -u _ -p $HEROKU_TOKEN registry.heroku.com
+    - docker login -u $HEROKU_EMAIL -p $HEROKU_TOKEN registry.heroku.com
     - docker push registry.heroku.com/challenger/my-app
     - apk add --no-cache curl
     - echo "Docker Image ID is $(cat imageid.txt)"
