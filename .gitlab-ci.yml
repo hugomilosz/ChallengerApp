@@ -79,7 +79,8 @@ lint:
         - public
 
 deploy:
-  only: master
+  only:
+    - master
   stage: deploy
   script:
     - apt-get update -qy
