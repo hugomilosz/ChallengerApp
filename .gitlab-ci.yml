@@ -5,7 +5,7 @@ stages:
   - build
   - test
   - lint
-  - docker-build
+  - deploy
 
 cache:
  key: modules
@@ -78,20 +78,10 @@ lint:
       paths:
         - public
 
-docker-build:
-  stage: docker-build
-  image: docker:latest
-  services:
-    - name: docker:dind
-  variables:
-    DOCKER_HOST: tcp://docker:2375/
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
+deploy:
+  only: master
   script:
-    - docker build -f Dockerfile --iidfile imageid.txt -t registry.heroku.com/challenger/my-app .
-    - docker login -u $HEROKU_EMAIL -p $HEROKU_TOKEN registry.heroku.com
-    - docker push registry.heroku.com/challenger/my-app
-    - apk add --no-cache curl
-    - echo "Docker Image ID is $(cat imageid.txt)"
-    - |-
-      curl -X PATCH https://api.heroku.com/apps/challenger/formation --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3.docker-releases" --header "Authorization: Bearer ${HEROKU_TOKEN}" --data '{ "updates": [ { "type": "web", "docker_image": "'$(cat imageid.txt)'" } ] }'
+    - apt-get update -qy
+    - apt-get install -y ruby-dev
+    - gem install dpl
+    - dpl --provider=heroku --app=challenger --api-key=$HEROKU_TOKEN
