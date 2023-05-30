@@ -5,6 +5,7 @@ stages:
   - build
   - test
   - lint
+  - docker-build
 
 cache:
  key: modules
@@ -64,3 +65,15 @@ lint:
   script:
     - npm run lint
     - echo "All style good!"
+
+  docker-build:
+    stage: docker-build
+    image: docker:latest
+    services:
+      - name: 24-dind
+    before_script:
+      - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    script:
+      - docker build --pull -t "$CI_REGISTRY_IMAGE" .
+      - docker push "$CI_REGISTRY_IMAGE"
+      - echo "Registry image:" $CI_REGISTRY_IMAGE
