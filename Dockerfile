@@ -9,9 +9,5 @@ RUN npm install react-scripts@5.0.1
 
 COPY . .
 
-RUN npm run build
-RUN npm install -g serve
-
 # Start the server
-EXPOSE 8000
-CMD ["serve", "-s", "build"]
+EXPOSE 80
