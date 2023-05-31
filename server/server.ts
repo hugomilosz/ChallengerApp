@@ -5,6 +5,11 @@ const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
 // Create a GET route
-app.get('/express_backend', (req, res) => {
+app.get('/server/express_backend', (req, res) => {
   res.send("BACKEND CONNECTED")
 });
+
+app.get('*', (req, res) => {
+  console.log(req.originalUrl)
+  res.send("A heckin error")
+})
