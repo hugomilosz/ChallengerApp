@@ -1,14 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
 function App() {
+  const [text, setText] = useState("");
+
+  const callBackend = async () => {
+    const response = await fetch('/express_backend');
+    return response.text()
+  };
+
+  useEffect(() => {
+    callBackend().then((msg) => setText(msg));
+  })
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          BINGUS BINGO BONGO.
+          {text}
         </p>
         <a
           className="App-link"
