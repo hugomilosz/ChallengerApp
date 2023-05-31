@@ -36,6 +36,7 @@
       "react-app/jest"
     ]
   },
+  "homepage": "https://challenger.herokuapp.com/",
   "browserslist": {
     "production": [
       ">0.2%",
