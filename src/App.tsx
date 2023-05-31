@@ -6,6 +6,8 @@ function App() {
   const [text, setText] = useState("");
 
   const callBackend = async () => {
+    console.log("Fetchin!");
+
     const response = await fetch('/server/express_backend');
     return response.text()
   };

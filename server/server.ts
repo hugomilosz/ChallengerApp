@@ -9,7 +9,14 @@ app.get('/server/express_backend', (req, res) => {
   res.send("BACKEND CONNECTED")
 });
 
-app.get('*', (req, res) => {
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, "client/build")));
+  app.get("/*", (_, res) => {
+    res.sendFile(path.join(__dirname, "client/build", "index.html"));
+  });
+}
+
+app.get('/*', (req, res) => {
   console.log(req.originalUrl)
   res.send("A heckin error")
 })
