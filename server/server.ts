@@ -16,3 +16,9 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(__dirname, "build", "index.html"));
   });
 }
+
+app.use(express.static("public"));
+
+app.get('*', (req, res) => {
+  res.send(404);
+});
