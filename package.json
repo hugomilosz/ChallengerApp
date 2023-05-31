@@ -21,12 +21,11 @@
     "serve": "^14.2.0"
   },
   "scripts": {
-    "heroku-prebuild": "npm install -g serve",
-    "dev": "react-scripts start",
+    "heroku-prebuild": "npm run build",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start": "serve -s build",
     "lint": "eslint src",
     "test:ci": "npm run test -- --testResultsProcessor=\"jest-junit\" --watchAll=false --ci --coverage"
   },
