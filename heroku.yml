@@ -1,9 +1,0 @@
-build:
-  docker:
-    web: Dockerfile
-run:
-  web: npm run build
-  worker:
-    command:
-      - node server/server.ts
-    image: web
