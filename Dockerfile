@@ -13,4 +13,4 @@ RUN npm run build
 
 # Start the server
 EXPOSE 8000
-CMD ["npm", "start"]
+CMD ["./mystart_script.sh"]
