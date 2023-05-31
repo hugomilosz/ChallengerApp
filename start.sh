@@ -1,4 +1,4 @@
 #!/bin/bash
 
-node server/server.ts $
+nohup node ./server/server.ts $
 npm start
