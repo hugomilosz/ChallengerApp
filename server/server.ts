@@ -11,14 +11,11 @@ app.get('/server/express_backend', (req, res) => {
   res.send("BACKEND CONNECTED")
 });
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, "build")));
-  app.get("/*", (_, res) => {
-    res.sendFile(path.join(__dirname, "/../build", "index.html"));
-  });
-}
-
-app.use(express.static("../build"));
+const root = require('path').join(__dirname, '../build')
+app.use(express.static(root));
+app.get("*", (req, res) => {
+  res.sendFile('index.html', { root });
+});
 
 app.get('*', (req, res) => {
   res.send(404);
