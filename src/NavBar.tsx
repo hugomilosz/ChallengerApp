@@ -19,6 +19,9 @@ function NavBar() {
             <li>
                 <Link to="/viewSubmissions">View Submissions</Link>
             </li>
+            <li>
+                <Link to="/uploadSubmission">Upload Submission</Link>
+            </li>
         </ul>
     );
 }

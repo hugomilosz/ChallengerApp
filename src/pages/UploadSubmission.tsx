@@ -1,12 +1,12 @@
 // import React from "react";
 
-const UploadSubmissions = () => {
+const UploadSubmission = () => {
     return (
-        <div className="uploadSubmissions">
-            <h1>Upload Submissions</h1>
-            <body>View all the submissions to the challenges here</body>
+        <div className="uploadSubmission">
+            <h1>Upload Submission</h1>
+            <body>Needs form to upload image/text</body>
         </div>
     )
 }
 
-export default UploadSubmissions
+export default UploadSubmission

@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import NavBar from './NavBar'
 import ViewChallenge from './pages/ViewChallenge';
 import ViewSubmissions from './pages/ViewSubmissions';
+import UploadSubmission from './pages/UploadSubmission';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/viewChallenge" element={<ViewChallenge />} />
         <Route path="/viewSubmissions" element={<ViewSubmissions />} />
+        <Route path="/uploadSubmission" element={<UploadSubmission />} />
       </Routes>
     </div>
   );

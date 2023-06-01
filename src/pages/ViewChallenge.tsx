@@ -1,6 +1,12 @@
 // import React from "react";
+import { useNavigate } from 'react-router-dom';
 
 const ViewChallenge = () => {
+    let navigate = useNavigate();
+    const routeChange = () => {
+        let path = '../uploadSubmission';
+        navigate(path);
+    }
     return (
         <div className="viewChallenge">
             <h1>View a Challenge</h1>
@@ -15,7 +21,7 @@ const ViewChallenge = () => {
                 <body> Get request here to get the initial inspiration </body>
 
                 {/* add actual submission (image/text) */}
-                <button> Upload Submission </button>
+                <button onClick={routeChange}> Upload Submission </button>
             </form>
         </div>
     )
