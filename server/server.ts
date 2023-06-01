@@ -54,7 +54,7 @@ app.get('/uploads/*', async (req, res) => {
     s3.send(new GetObjectCommand(params)).then(async (data) => {
       res.attachment(params.Key);
       res.type(data.ContentType);
-      const bytes = await data.Body.transformToString(data.ContentEncoding);
+      const bytes = data.ContentType !== "text/plain" ? await data.Body.transformToString("binary") : await data.Body.transformToString();
 
       res.send(bytes);
     },
