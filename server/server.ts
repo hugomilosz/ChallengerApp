@@ -8,7 +8,7 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 // Create a GET route
 app.get('/server/express_backend', (req, res) => {
   console.log("Intercepted right!")
-  res.send("BACKEND CONNECTED")
+  res.send("BINGUS CONNECTED")
 });
 
 const root = require('path').join(__dirname, '../build')
