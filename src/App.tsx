@@ -1,37 +1,32 @@
 import React, { useEffect, useState } from 'react';
+import { Route, Routes, Link } from 'react-router-dom';
 import logo from './logo.svg';
 import './App.css';
+import Login from './pages/Login';
+import MakeChallenge from './pages/MakeChallenge';
+import Home from './pages/Home';
+import NavBar from './NavBar'
+
+// const router = createBrowserRouter([
+//   {
+//     path: "/",
+//     element: <div>Home</div>
+//   },
+//   {
+//     path: "/login",
+//     element: <Login/>,
+//   },
+// ])
 
 function App() {
-  const [text, setText] = useState("");
-
-  const callBackend = async () => {
-    console.log("Fetchin!");
-
-    const response = await fetch('/server/express_backend');
-    return response.text()
-  };
-
-  useEffect(() => {
-    callBackend().then((msg) => setText(msg));
-  })
-
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          {text}
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <NavBar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/makeChallenge" element={<MakeChallenge />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
     </div>
   );
 }

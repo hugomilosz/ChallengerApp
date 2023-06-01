@@ -12,7 +12,14 @@ app.get('/server/express_backend', (req, res) => {
 });
 
 const root = require('path').join(__dirname, '../build')
+// const pages = require('path').join(__dirname, '../build/../src/pages')
+// const ap = require('path').join(__dirname, '../src')
+
 app.use(express.static(root));
+
+// app.get('/login', (req, res) => {
+//   res.sendFile(__dirname + '../src/index.html');
+// });
 app.get("*", (req, res) => {
   res.sendFile('index.html', { root });
 });
