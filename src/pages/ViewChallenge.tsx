@@ -3,12 +3,19 @@
 const ViewChallenge = () => {
     return (
         <div className="viewChallenge">
-            <h1>Make a Challenge</h1>
+            <h1>View a Challenge</h1>
             <form>
-                <input type="text" placeholder='Challenge Name' />
-                <body> Description goes here... </body>
+                <h2>Name</h2>
+                <body> Get request here to get name </body>
+
+                <h2>Description</h2>
+                <body> Get request here to get challenge description </body>
+
+                <h2>Initial Inspiration</h2>
+                <body> Get request here to get the initial inspiration </body>
+
                 {/* add actual submission (image/text) */}
-                <button>Upload Submission</button>
+                <button> Upload Submission </button>
             </form>
         </div>
     )

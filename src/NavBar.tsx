@@ -13,6 +13,12 @@ function NavBar() {
             <li>
                 <Link to="/makeChallenge">Make Challenge</Link>
             </li>
+            <li>
+                <Link to="/viewChallenge">View Challenge</Link>
+            </li>
+            <li>
+                <Link to="/viewSubmissions">View Submissions</Link>
+            </li>
         </ul>
     );
 }

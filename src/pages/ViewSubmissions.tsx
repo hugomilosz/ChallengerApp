@@ -1,10 +1,10 @@
-import React from "react";
+// import React from "react";
 
 const ViewSubmissions = () => {
     return (
         <div className="viewSubmissions">
             <h1>View Submissions</h1>
-                {/* view submissions here somehow */}
+            <body>View all the submissions to the challenges here</body>
         </div>
     )
 }
