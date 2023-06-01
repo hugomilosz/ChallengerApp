@@ -55,7 +55,6 @@ app.get('/uploads/*', async (req, res) => {
     s3.send(new GetObjectCommand(params)).then((data) => {
       res.attachment(params.Key);
       res.type(data.ContentType);
-      console.log(`Accessed a ${data.ContentType} with body ${data.Body.transformToByteArray()}`);
       res.send(data.Body.transformToByteArray());
     },
       (error) => {
