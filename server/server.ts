@@ -1,6 +1,7 @@
 const express = require('express')
 const path = require('path')
 const mysql = require('mysql')
+const aws = require('aws-sdk')
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -19,18 +20,28 @@ const dbPool = mysql.createPool({
 
 // Create a GET route
 app.get('/server/express_backend', (req, res) => {
-  dbPool.query(`SELECT topic FROM challenges WHERE id=1`, function (error, results, fields) {
+  dbPool.query(`SELECT entryNames FROM challenges WHERE id=1`, function (error, results, fields) {
     if (error) {
       res.send(error);
       console.log(error);
 
     } else {
-      res.send(String(results[0].topic));
+      res.send("Beep beep");
     }
   });
 });
 
-const root = require('path').join(__dirname, '../build')
+// Serve up any accesses to the uploads folder
+app.get('/uploads/*', (req, res) => {
+  if (!process.env.PRODUCTION) {
+    const uploadPath = path.join(__dirname, "../uploads")
+    const filename = req.url.split("/").slice(-1); // Gets the last part of the request
+    console.log(filename);
+    res.sendFile(filename[0], { root: uploadPath });
+  }
+});
+
+const root = path.join(__dirname, '../build')
 app.use(express.static(root));
 app.get("*", (req, res) => {
   res.sendFile('index.html', { root });
