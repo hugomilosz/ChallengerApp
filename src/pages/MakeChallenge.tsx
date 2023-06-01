@@ -2,45 +2,38 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const MakeChallenge = () => {
-    let navigate = useNavigate();
-    const postButton = () => {
-        let path = '../viewChallenge';
-        navigate(path);
-    }
+    const handleSubmit = async (event: React.SyntheticEvent) => {
+        event.preventDefault();
 
-    const sendFiles = async () => {
-        // var input: any = document.getElementById('fileInput');
-    
-        // const form = document.getElementById('form');
-        const formData = new FormData()
+        const target = event.target as typeof event.target & {
+            chName: { value: string },
+            chDesc: { value: string },
+            insFile: { files: FileList }
+        };
 
-        // FormData.set(myFiles.get)
+        const formData = new FormData();
+        formData.append("name", target.chName.value);
+        formData.append("desc", target.chDesc.value);
+        formData.append("file", target.insFile.files[0], target.insFile.files[0].name);
 
         const response = await fetch('./server/createChallenge', {
             method: 'POST',
-            body: formData
+            body: formData,
         })
 
         const json = await response.json()
-
         console.log(json)
-    }
-
-    const handleSubmit = (event: { preventDefault: () => void; }) => {
-        alert("Here");
-        event.preventDefault();
-        sendFiles();
     }
 
     return (
         <div className="makeChallenge">
             <h1>Make a Challenge</h1>
             <form onSubmit={handleSubmit} id="form">
-                <input type="text" placeholder='Challenge Name' />
-                <textarea name="Description" cols={40} rows={5} placeholder='Description'></textarea>
+                <input type="text" placeholder='Challenge Name' name="chName" />
+                <textarea cols={40} rows={5} placeholder='Description' name="chDesc"></textarea>
 
                 {/* add initial inspiration (image/text) - this button links to UploadSubmission*/}
-                <input type="file" id="myFiles" accept="image/jpg" multiple />
+                <input type="file" id="myFiles" accept="image/jpg" name="insFile" />
                 <input type="submit" />
             </form>
         </div>

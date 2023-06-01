@@ -1,6 +1,7 @@
 const express = require('express')
 const path = require('path')
 const mysql = require('mysql')
+const multer = require('multer')
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3')
 
 const app = express();
@@ -42,6 +43,15 @@ app.get('/server/challenge/:chId', (req, res) => {
     }
   })
 });
+
+// Create challenge when appropriate formdata is supplied
+app.post('/server/createChallenge', multer().single('file'), (req, res) => {
+  console.log(req.file);
+  console.log(req.body);
+  console.log(req.body.name);
+  console.log(req.body.desc);
+
+})
 
 // Serve up any accesses to the uploads folder
 app.get('/uploads/*', async (req, res) => {
