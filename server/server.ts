@@ -22,6 +22,8 @@ app.get('/server/express_backend', (req, res) => {
   db.query(`SELECT topic FROM challenges WHERE id=1`, function (error, results, fields) {
     if (error) {
       res.send(error);
+      console.log(error);
+
     } else {
       res.send(String(results[0].topic));
     }
