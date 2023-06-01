@@ -1,7 +1,7 @@
 const express = require('express')
 const path = require('path')
 const mysql = require('mysql')
-const aws = require('aws-sdk')
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3')
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -32,12 +32,37 @@ app.get('/server/express_backend', (req, res) => {
 });
 
 // Serve up any accesses to the uploads folder
-app.get('/uploads/*', (req, res) => {
-  if (!process.env.PRODUCTION) {
+app.get('/uploads/*', async (req, res) => {
+  const filename = req.url.split("/").slice(-1)[0]; // Gets the last part of the request
+  if (!(process.env.NODE_ENV === "production")) {
+    // Local
     const uploadPath = path.join(__dirname, "../uploads")
-    const filename = req.url.split("/").slice(-1); // Gets the last part of the request
+
     console.log(filename);
-    res.sendFile(filename[0], { root: uploadPath });
+    res.sendFile(filename, { root: uploadPath });
+  } else {
+
+    // Heroku / S3
+    const s3 = new S3Client({
+      region: "eu-west-2",
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY,
+        secretAccessKey: process.env.AWS_SECRET_KEY
+      }
+    });
+    const params = { Bucket: process.env.S3_BUCKET_NAME || "challengerdrp", Key: filename };
+
+    s3.send(new GetObjectCommand(params)).then((data) => {
+      res.attachment(params.Key);
+      res.type(data.ContentType);
+      res.send(data.Body.toArray());
+    },
+      (error) => {
+        console.log(error);
+
+        res.status(200);
+        res.end("Error fetching file");
+      });
   }
 });
 
