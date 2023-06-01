@@ -13,15 +13,15 @@ function NavBar() {
             <li>
                 <Link to="/makeChallenge">Make Challenge</Link>
             </li>
-            <li>
+            {/* <li>
                 <Link to="/viewChallenge">View Challenge</Link>
-            </li>
+            </li> */}
             <li>
                 <Link to="/viewSubmissions">View Submissions</Link>
             </li>
-            <li>
+            {/* <li>
                 <Link to="/uploadSubmission">Upload Submission</Link>
-            </li>
+            </li> */}
         </ul>
     );
 }
