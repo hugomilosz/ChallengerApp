@@ -9,17 +9,17 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 
 const database = process.env.DBNAME || 'challenger_db';
 
-const db = mysql.createConnection({
+const dbPool = mysql.createPool({
+  connectionLimit: 10,
   host: process.env.DBHOST || 'localhost',
   user: process.env.DBUSER || 'dev',
   password: process.env.DBPASS || 'dev',
   database: process.env.DBNAME || 'challenger_db'
 });
-db.connect();
 
 // Create a GET route
 app.get('/server/express_backend', (req, res) => {
-  db.query(`SELECT topic FROM challenges WHERE id=1`, function (error, results, fields) {
+  dbPool.query(`SELECT topic FROM challenges WHERE id=1`, function (error, results, fields) {
     if (error) {
       res.send(error);
       console.log(error);
