@@ -24,11 +24,23 @@ app.get('/server/express_backend', (req, res) => {
     if (error) {
       res.send(error);
       console.log(error);
-
     } else {
       res.send("Beep beep");
     }
   });
+});
+
+// Return queries about challenges
+app.get('/server/challenge/:chId', (req, res) => {
+  const id = req.params.chId;
+  dbPool.query(`SELECT * FROM challenges WHERE id=${id}`, function (error, results, fields) {
+    if (error) {
+      res.send(error);
+      console.log(error);
+    } else {
+      res.json(results[0]);
+    }
+  })
 });
 
 // Serve up any accesses to the uploads folder
@@ -63,6 +75,11 @@ app.get('/uploads/*', async (req, res) => {
         res.end("Error fetching file");
       });
   }
+});
+
+// Handle POSTs to the upload of challenge submissions
+app.post("/uploadImg", (req, res) => {
+  //
 });
 
 const root = path.join(__dirname, '../build')
