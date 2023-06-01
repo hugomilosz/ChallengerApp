@@ -41,7 +41,7 @@ app.get('/uploads/*', async (req, res) => {
     console.log(filename);
     res.sendFile(filename, { root: uploadPath });
   } else {
-
+    console.log("We made it!")
     // Heroku / S3
     const s3 = new S3Client({
       region: "eu-west-2",
@@ -55,7 +55,10 @@ app.get('/uploads/*', async (req, res) => {
     s3.send(new GetObjectCommand(params)).then((data) => {
       res.attachment(params.Key);
       res.type(data.ContentType);
-      res.send(data.Body.transformToByteArray());
+      const bytes = data.body.transformToByteArray();
+      console.log(bytes);
+
+      res.send(bytes);
     },
       (error) => {
         console.log(error);
