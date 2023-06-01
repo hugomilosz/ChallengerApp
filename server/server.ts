@@ -52,10 +52,10 @@ app.get('/uploads/*', async (req, res) => {
     });
     const params = { Bucket: process.env.S3_BUCKET_NAME || "challengerdrp", Key: filename };
 
-    s3.send(new GetObjectCommand(params)).then((data) => {
+    s3.send(new GetObjectCommand(params)).then(async (data) => {
       res.attachment(params.Key);
       res.type(data.ContentType);
-      const bytes = data.Body.transformToString();
+      const bytes = await data.Body.transformToString();
       console.log(bytes);
 
       //res.send(bytes);
