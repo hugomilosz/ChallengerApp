@@ -20,8 +20,11 @@ db.connect();
 // Create a GET route
 app.get('/server/express_backend', (req, res) => {
   db.query(`SELECT topic FROM challenges WHERE id=1`, function (error, results, fields) {
-    if (error) throw error;
-    res.send(String(results[0].topic))
+    if (error) {
+      res.send(error);
+    } else {
+      res.send(String(results[0].topic));
+    }
   });
 });
 
