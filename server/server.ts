@@ -55,10 +55,10 @@ app.get('/uploads/*', async (req, res) => {
     s3.send(new GetObjectCommand(params)).then((data) => {
       res.attachment(params.Key);
       res.type(data.ContentType);
-      const bytes = data.body.transformToByteArray();
+      const bytes = data.body.transformToStringArray();
       console.log(bytes);
 
-      res.send(bytes);
+      //res.send(bytes);
     },
       (error) => {
         console.log(error);
