@@ -30,12 +30,12 @@ const MakeChallenge = () => {
         <div className="makeChallenge" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <h1>Make a Challenge</h1>
             <form onSubmit={handleSubmit} id="form" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <input type="text" placeholder='Challenge Name' style={{ marginBottom: 10 }} />
-                <textarea name="Description" cols={40} rows={5} placeholder='Description' style={{ marginBottom: 10 }}></textarea>
-                <input type="file" id="myFiles" accept="image/jpg" multiple style={{ marginBottom: 10 }} />
+                <input type="text" placeholder='Challenge Name' style={{ marginBottom: 10 }} name="chName" />
+                <textarea cols={40} rows={5} placeholder='Description' style={{ marginBottom: 10 }} name="chDesc"></textarea>
+                <input type="file" id="myFiles" accept="image/jpg" multiple style={{ marginBottom: 10 }} name="insFile" />
                 <input type="submit" style={{ marginBottom: 10 }} />
             </form>
-        </div>
+        </div >
     )
 }
 

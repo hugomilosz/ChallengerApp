@@ -96,7 +96,7 @@ app.post('/server/createChallenge', multer().single('file'), (req, res) => {
   // Now to update the database
   dbPool.query("SELECT COUNT(*) FROM challenges", function (error, results, fields) {
     if (error) {
-      res.status(200);
+      res.status(500);
       res.end("Error putting file");
     } else {
       const newId = Number(results[0][`COUNT(*)`]) + 1;
@@ -176,8 +176,56 @@ app.get('/uploadsURL/*', async (req, res) => {
 });
 
 // Handle POSTs to the upload of challenge submissions
-app.post("/uploadImg", (req, res) => {
-  //
+app.post("/server/uploadImg", multer().single('file'), (req, res) => {
+  // Quick bodge: upload the file, put its name in the Topic part of the db
+  if (!(process.env.NODE_ENV === "production")) {
+    const filepath = path.join(__dirname, '../uploads', req.file.originalname);
+    const fs = require('fs');
+    fs.writeFile(filepath, req.file.buffer, (err) => { });
+  } else {
+    // Heroku / S3
+    const s3 = new S3Client({
+      region: "eu-west-2",
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY,
+        secretAccessKey: process.env.AWS_SECRET_KEY
+      }
+    });
+    const params = {
+      Bucket: process.env.S3_BUCKET_NAME || "challengerdrp",
+      Key: req.file.originalname,
+      Body: req.file.buffer
+    };
+
+    s3.send(new PutObjectCommand(params)).then(async (response) => {
+      console.log(response);
+    },
+      (error) => {
+        console.log(error);
+
+        res.status(500);
+        res.send("Error putting file");
+      });
+  }
+  // Now to update the database
+  dbPool.query(`SELECT entryNames FROM challenges WHERE id=${req.body.chId}`, function (error, results, fields) {
+    if (error) {
+      res.status(500);
+      res.end("Error find challenge");
+    } else {
+      const entryNames = results[0].entryNames + "," + req.file.originalname;
+      dbPool.query(`UPDATE challenges SET entryNames = "${entryNames}" WHERE id=${req.body.chId}`, function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.status(500);
+          res.end("Error updating database");
+        } else {
+          res.status(200);
+          res.send();
+        }
+      });
+    }
+  });
 });
 
 const root = path.join(__dirname, '../build')
