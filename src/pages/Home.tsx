@@ -9,9 +9,9 @@ const Home = () => {
     }, []);
 
     let navigate = useNavigate();
-    const viewChallengeButton = () => {
+    const viewChallengeButton = (id: Number) => {
         let path = '../viewChallenge';
-        navigate(path);
+        navigate(path, { state: { id: id } });
     }
 
 
@@ -38,7 +38,7 @@ const Home = () => {
                     <div key={challenge.id}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
                             <span style={{ marginRight: 10 }}>{challenge.name}</span>
-                            <button onClick={viewChallengeButton}>View Challenge</button>
+                            <button onClick={() => viewChallengeButton(challenge.id)}>View Challenge</button>
                         </div>
                     </div>
                 ))}

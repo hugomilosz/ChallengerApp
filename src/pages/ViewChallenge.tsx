@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ViewChallenge = () => {
     let navigate = useNavigate();
@@ -7,9 +7,12 @@ const ViewChallenge = () => {
         let path = '../uploadSubmission';
         navigate(path);
     }
+
+    const { state } = useLocation();
+
     return (
         <div className="viewChallenge">
-            <h1>View a Challenge</h1>
+            <h1>View Challenge {state.id}</h1>
             <form>
                 <h2>Name</h2>
                 <body> Get request here to get name </body>
