@@ -22,7 +22,7 @@ const ViewChallenge = () => {
             name: chs.name as string,
             description: chs.description as string,
             imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
-            entryNamesUrls: await Promise.all(urls)
+            entryNamesUrls: chs.entryNames === "" ? [] : await Promise.all(urls)
         });
     };
 
