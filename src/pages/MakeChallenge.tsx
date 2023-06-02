@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const MakeChallenge = () => {
     const handleSubmit = async (event: React.SyntheticEvent) => {
@@ -20,6 +19,11 @@ const MakeChallenge = () => {
             method: 'POST',
             body: formData,
         })
+        if (response.status === 200) {
+            alert("Challenge created!");
+        } else {
+            alert("Error creating challenge!");
+        }
     }
 
     return (
