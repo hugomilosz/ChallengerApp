@@ -89,7 +89,7 @@ app.post('/server/createChallenge', multer().single('file'), (req, res) => {
         console.log(error);
 
         res.status(200);
-        res.end("Error putting file");
+        res.send("Error putting file");
       });
   }
   // Now to update the database
@@ -104,9 +104,10 @@ app.post('/server/createChallenge', multer().single('file'), (req, res) => {
           console.log(error);
 
           res.status(500);
-          res.end("Error updating DB");
+          res.send("Error updating DB");
         } else {
           res.status(200);
+          res.send();
         }
       });
     }
