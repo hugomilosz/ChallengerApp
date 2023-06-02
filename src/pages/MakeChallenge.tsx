@@ -19,6 +19,11 @@ const MakeChallenge = () => {
             method: 'POST',
             body: formData,
         })
+        if (response.status === 200) {
+            alert("Challenge created!");
+        } else {
+            alert("Error creating challenge!");
+        }
     }
 
     return (

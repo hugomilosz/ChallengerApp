@@ -103,7 +103,7 @@ app.post('/server/createChallenge', multer().single('file'), (req, res) => {
         if (error) {
           console.log(error);
 
-          res.status(200);
+          res.status(500);
           res.end("Error updating DB");
         } else {
           res.status(200);
