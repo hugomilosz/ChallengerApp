@@ -11,8 +11,8 @@ const ViewChallenge = () => {
         const responseDBInfo = await fetch(`/server/challenge/${state.id}`);
         const body = await responseDBInfo.text();
         const chs = JSON.parse(body);
-        const splitArray = chs.entryNames == "" ? [] : (chs.entryNames as String).split(",")
-        const urls = (chs.entryNames as String).split(",").map(async (entryName: String) => {
+        const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",")
+        const urls = splitArray.map(async (entryName: String) => {
             return (await (await fetch(`/uploadsURL/${entryName}`)).text());
         });
         setChallenge({
@@ -25,7 +25,7 @@ const ViewChallenge = () => {
 
     useEffect(() => {
         fetchInfo();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleSubmitSubmission = async (event: React.SyntheticEvent) => {
         event.preventDefault();
