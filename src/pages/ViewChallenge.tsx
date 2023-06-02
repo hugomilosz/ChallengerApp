@@ -64,21 +64,21 @@ const ViewChallenge = () => {
                     <h1>View Challenge {state.id}</h1>
                     <h2>Name</h2>
                     <body>{challengeInfo.name}</body>
-        
+
                     <h2>Description</h2>
                     <body>{challengeInfo.description}</body>
-        
+
                     <h2>Initial Inspiration</h2>
-                    <body><img src={challengeInfo.imgURL} className="insImage" /></body>
-        
+                    <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
+
                     <form onSubmit={handleSubmitSubmission} id="form" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                         <input type="file" id="myFiles" accept="image/jpg" multiple style={{ marginBottom: 10 }} name="file" />
                         <input type="submit" style={{ marginBottom: 10 }} />
                     </form>
-        
+
                     <h1>Existing Submissions!</h1>
                     {challengeInfo.entryNamesUrls.map((entry) => (
-                        <body><img src={entry} className="insImage" /></body>
+                        <body><img src={entry} className="insImage" alt="" /></body>
                     ))}
                 </>
             ) : (
