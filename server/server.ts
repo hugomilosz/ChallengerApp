@@ -155,7 +155,7 @@ app.get('/uploadsURL/*', async (req, res) => {
   const filename = req.url.split("/").slice(-1)[0]; // Gets the last part of the request
   if (!(process.env.NODE_ENV === "production")) {
     // Local
-    const uploadPath = path.join(__dirname, "../uploads", filename)
+    const uploadPath = path.join("http://localhost:5000", "../uploads", filename)
 
     console.log(filename);
     res.send(uploadPath);
