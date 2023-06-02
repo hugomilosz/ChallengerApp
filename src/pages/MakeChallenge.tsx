@@ -20,9 +20,6 @@ const MakeChallenge = () => {
             method: 'POST',
             body: formData,
         })
-
-        const json = await response.json()
-        console.log(json)
     }
 
     return (

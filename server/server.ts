@@ -2,7 +2,7 @@ const express = require('express')
 const path = require('path')
 const mysql = require('mysql')
 const multer = require('multer')
-const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3')
+const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3')
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -46,10 +46,60 @@ app.get('/server/challenge/:chId', (req, res) => {
 
 // Create challenge when appropriate formdata is supplied
 app.post('/server/createChallenge', multer().single('file'), (req, res) => {
-  console.log(req.file);
-  console.log(req.body);
-  console.log(req.body.name);
-  console.log(req.body.desc);
+  // console.log(req.file);
+  // console.log(req.body);
+  // console.log(req.body.name);
+  // console.log(req.body.desc);
+
+  // Quick bodge: upload the file, put its name in the Topic part of the db
+  if (!(process.env.NODE_ENV === "production")) {
+    const filepath = path.join(__dirname, '../uploads', req.file.originalname);
+    const fs = require('fs');
+    fs.writeFile(filepath, req.file.buffer, (err) => { });
+  } else {
+    // Heroku / S3
+    const s3 = new S3Client({
+      region: "eu-west-2",
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY,
+        secretAccessKey: process.env.AWS_SECRET_KEY
+      }
+    });
+    const params = {
+      Bucket: process.env.S3_BUCKET_NAME || "challengerdrp",
+      Key: req.file.originalname,
+      Body: req.file.buffer
+    };
+
+    s3.send(new PutObjectCommand(params)).then(async (response) => {
+      console.log(response);
+    },
+      (error) => {
+        console.log(error);
+
+        res.status(200);
+        res.end("Error putting file");
+      });
+  }
+  // Now to update the database
+  dbPool.query("SELECT COUNT(*) FROM challenges", function (error, results, fields) {
+    if (error) {
+      res.status(200);
+      res.end("Error putting file");
+    } else {
+      const newId = Number(results[0][`COUNT(*)`]) + 1;
+      dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`) VALUES ('${newId}', '${req.body.name}', '${req.body.desc}', '${req.file.originalname}', '', 'Image');`, function (error, results, fields) {
+        if (error) {
+          console.log(error);
+
+          res.status(200);
+          res.end("Error updating DB");
+        } else {
+          res.status(200);
+        }
+      });
+    }
+  })
 
 })
 
