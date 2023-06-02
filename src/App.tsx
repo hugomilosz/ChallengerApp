@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-// import logo from './logo.svg';
 import './App.css';
 import Login from './pages/Login';
 import MakeChallenge from './pages/MakeChallenge';
