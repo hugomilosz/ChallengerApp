@@ -11,7 +11,7 @@ const ViewChallenge = () => {
         const responseDBInfo = await fetch(`/server/challenge/${state.id}`);
         const body = await responseDBInfo.text();
         const chs = JSON.parse(body);
-        const splitArray = chs.entryNames == "" ? (chs.entryNames as String).split(",") : []
+        const splitArray = chs.entryNames == "" ? [] : (chs.entryNames as String).split(",")
         const urls = (chs.entryNames as String).split(",").map(async (entryName: String) => {
             return (await (await fetch(`/uploadsURL/${entryName}`)).text());
         });
