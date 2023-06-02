@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const ViewChallenge = () => {
-    const [challengeInfo, setChallenge] = useState<any>({ name: "none", description: "none", imgURL: "", entryNames: "" });
+    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<string> }>
+        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [] });
 
     useEffect(() => {
         fetchInfo();
@@ -14,11 +15,14 @@ const ViewChallenge = () => {
         const responseDBInfo = await fetch(`/server/challenge/${state.id}`);
         const body = await responseDBInfo.text();
         const chs = JSON.parse(body);
+        const urls = (chs.entryNames as String).split(",").map(async (entryName: String) => {
+            return (await (await fetch(`/uploadsURL/${entryName}`)).text());
+        });
         setChallenge({
-            name: chs.name,
-            description: chs.description,
+            name: chs.name as string,
+            description: chs.description as string,
             imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
-            entryNames: chs.entryNames
+            entryNamesUrls: await Promise.all(urls)
         });
     };
 
@@ -38,7 +42,7 @@ const ViewChallenge = () => {
             body: formData,
         })
         if (response.status === 200) {
-            alert("It worked!");
+            fetchInfo();
         } else {
             alert("Error creating submission!");
         }
@@ -62,6 +66,9 @@ const ViewChallenge = () => {
             </form>
 
             <h1>Existing Submissions!</h1>
+            {challengeInfo.entryNamesUrls.map((entry) => (
+                <body><img src={entry} className="insImage" /></body>
+            ))}
 
         </div>
     )
