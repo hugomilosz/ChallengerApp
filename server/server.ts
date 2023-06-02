@@ -169,16 +169,9 @@ app.get('/uploadsURL/*', async (req, res) => {
       }
     });
     const params = { Bucket: process.env.S3_BUCKET_NAME || "challengerdrp", Key: filename };
-
-    s3.send(new GetObjectCommand(params)).then(async (data) => {
-      res.send(await getSignedUrl(s3, data, { expiresIn: 3600 }));
-    },
-      (error) => {
-        console.log(error);
-
-        res.status(200);
-        res.end("Error fetching file");
-      });
+    const command = new GetObjectCommand(params);
+    const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+    res.send(url);
   }
 });
 
