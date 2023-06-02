@@ -27,15 +27,13 @@ const MakeChallenge = () => {
     }
 
     return (
-        <div className="makeChallenge">
+        <div className="makeChallenge" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <h1>Make a Challenge</h1>
-            <form onSubmit={handleSubmit} id="form">
-                <input type="text" placeholder='Challenge Name' name="chName" />
-                <textarea cols={40} rows={5} placeholder='Description' name="chDesc"></textarea>
-
-                {/* add initial inspiration (image/text) - this button links to UploadSubmission*/}
-                <input type="file" id="myFiles" accept="image/jpg" name="insFile" />
-                <input type="submit" />
+            <form onSubmit={handleSubmit} id="form" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <input type="text" placeholder='Challenge Name' style={{ marginBottom: 10 }} />
+                <textarea name="Description" cols={40} rows={5} placeholder='Description' style={{ marginBottom: 10 }}></textarea>
+                <input type="file" id="myFiles" accept="image/jpg" multiple style={{ marginBottom: 10 }} />
+                <input type="submit" style={{ marginBottom: 10 }} />
             </form>
         </div>
     )
