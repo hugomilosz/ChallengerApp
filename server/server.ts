@@ -213,7 +213,7 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
       res.status(500);
       res.end("Error find challenge");
     } else {
-      const entryNames = results[0].entryNames + "," + req.file.originalname;
+      const entryNames = results[0].entryNames === "" ? req.file.originalname : results[0].entryNames + "," + req.file.originalname;
       dbPool.query(`UPDATE challenges SET entryNames = "${entryNames}" WHERE id=${req.body.chId}`, function (error, results, fields) {
         if (error) {
           console.log(error);
