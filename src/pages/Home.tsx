@@ -32,7 +32,7 @@ const Home = () => {
 
     return (
         <div className="home">
-            <h1>Home Page</h1>
+            <h1>CI/CD Test</h1>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                 {challenges.map((challenge) => (
                     <div key={challenge.id}>
