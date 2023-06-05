@@ -63,44 +63,17 @@ app.post('/server/createChallenge', multer().single('file'), (req, res) => {
   // console.log(req.body.name);
   // console.log(req.body.desc);
 
-  // Quick bodge: upload the file, put its name in the Topic part of the db
-  if (!(process.env.NODE_ENV === "production")) {
-    const filepath = path.join(__dirname, '../uploads', req.file.originalname);
-    const fs = require('fs');
-    fs.writeFile(filepath, req.file.buffer, (err) => { });
-  } else {
-    // Heroku / S3
-    const s3 = new S3Client({
-      region: "eu-west-2",
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY,
-        secretAccessKey: process.env.AWS_SECRET_KEY
-      }
-    });
-    const params = {
-      Bucket: process.env.S3_BUCKET_NAME || "challengerdrp",
-      Key: req.file.originalname,
-      Body: req.file.buffer
-    };
-
-    s3.send(new PutObjectCommand(params)).then(async (response) => {
-      console.log(response);
-    },
-      (error) => {
-        console.log(error);
-
-        res.status(200);
-        res.send("Error putting file");
-      });
-  }
-  // Now to update the database
   dbPool.query("SELECT COUNT(*) FROM challenges", function (error, results, fields) {
     if (error) {
       res.status(500);
       res.end("Error putting file");
     } else {
       const newId = Number(results[0][`COUNT(*)`]) + 1;
-      dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`) VALUES ('${newId}', '${req.body.name}', '${req.body.desc}', '${req.file.originalname}', '', 'Image');`, function (error, results, fields) {
+
+      const fileName = `${newId}_0` + req.file.originalname.split(".").pop();
+      uploadFile(fileName, req.file.buffer);
+
+      dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`) VALUES ('${newId}', '${req.body.name}', '${req.body.desc}', '${fileName}', '', 'Image');`, function (error, results, fields) {
         if (error) {
           console.log(error);
 
@@ -175,13 +148,12 @@ app.get('/uploadsURL/*', async (req, res) => {
   }
 });
 
-// Handle POSTs to the upload of challenge submissions
-app.post("/server/uploadImg", multer().single('file'), (req, res) => {
-  // Quick bodge: upload the file, put its name in the Topic part of the db
+// Uploads a file either locally or to S3
+function uploadFile(newName, fileBuffer) {
   if (!(process.env.NODE_ENV === "production")) {
-    const filepath = path.join(__dirname, '../uploads', req.file.originalname);
+    const filepath = path.join(__dirname, '../uploads', newName);
     const fs = require('fs');
-    fs.writeFile(filepath, req.file.buffer, (err) => { });
+    fs.writeFile(filepath, fileBuffer, (err) => { });
   } else {
     // Heroku / S3
     const s3 = new S3Client({
@@ -193,8 +165,8 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
     });
     const params = {
       Bucket: process.env.S3_BUCKET_NAME || "challengerdrp",
-      Key: req.file.originalname,
-      Body: req.file.buffer
+      Key: newName,
+      Body: fileBuffer
     };
 
     s3.send(new PutObjectCommand(params)).then(async (response) => {
@@ -207,12 +179,24 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
         res.send("Error putting file");
       });
   }
+}
+
+// Handle POSTs to the upload of challenge submissions
+app.post("/server/uploadImg", multer().single('file'), (req, res) => {
+  // File buffer is req.file.buffer
+
   // Now to update the database
   dbPool.query(`SELECT entryNames FROM challenges WHERE id=${req.body.chId}`, function (error, results, fields) {
     if (error) {
       res.status(500);
       res.end("Error find challenge");
     } else {
+      const numSubmissions = results[0].entryNames === "" ? 0 : results[0].entryNames.split(",").length;
+      const fileName = `${req.body.chId}_${numSubmissions + 1}` + req.file.originalname.split(".").pop();
+
+      // The file name is ID_SUBMISSIONNUMBER.ext
+      uploadFile(fileName, req.file.buffer);
+
       const entryNames = results[0].entryNames === "" ? req.file.originalname : results[0].entryNames + "," + req.file.originalname;
       dbPool.query(`UPDATE challenges SET entryNames = "${entryNames}" WHERE id=${req.body.chId}`, function (error, results, fields) {
         if (error) {
