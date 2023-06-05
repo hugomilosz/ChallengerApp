@@ -33,7 +33,7 @@ app.get('/server/express_backend', (req, res) => {
 });
 
 app.get('/server/challenges', (req, res) => {
-  dbPool.query('SELECT * FROM challenges LIMIT 10', function (error, results, fields) {
+  dbPool.query('SELECT * FROM challenges LIMIT 15', function (error, results, fields) {
     if (error) {
       console.log(error);
       res.status(500).send('Error fetching challenges');

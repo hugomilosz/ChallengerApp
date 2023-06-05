@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
+import Checkbox from "../checkbox/checkbox";
 
 const ViewChallenge = () => {
 
@@ -25,6 +26,36 @@ const ViewChallenge = () => {
             imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
             entryNamesUrls: await Promise.all(urls)
         });
+    };
+
+    const [isCheckedLike, setIsCheckedLike] = useState(false);
+    const handleChangeLike = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsCheckedLike(e.target.checked);
+    };
+
+    const [isCheckedHaha, setIsCheckedHaha] = useState(false);
+    const handleChangeHaha = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsCheckedHaha(e.target.checked);
+    };
+
+    const [isCheckedSmile, setIsCheckedSmile] = useState(false);
+    const handleChangeSmile = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsCheckedSmile(e.target.checked);
+    };
+
+    const [isCheckedWow, setIsCheckedWow] = useState(false);
+    const handleChangeWow = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsCheckedWow(e.target.checked);
+    };
+
+    const [isCheckedSad, setIsCheckedSad] = useState(false);
+    const handleChangeSad = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsCheckedSad(e.target.checked);
+    };
+
+    const [isCheckedStars, setIsCheckedStars] = useState(false);
+    const handleChangeStars = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsCheckedStars(e.target.checked);
     };
 
     useEffect(() => {
@@ -78,7 +109,53 @@ const ViewChallenge = () => {
 
                     <h1>Existing Submissions!</h1>
                     {challengeInfo.entryNamesUrls.map((entry) => (
-                        <body><img src={entry} className="insImage" alt="" /></body>
+                        <body>
+                            <img src={entry} className="insImage" alt="" />
+                            <div style={{display: 'flex', justifyContent: "center"}}>
+                            <div style={{ marginRight: '10px' }}>
+                                <Checkbox
+                                    handleChange={handleChangeLike}
+                                    isChecked={isCheckedLike}
+                                    label="❤️"
+                                />
+                            </div>
+                            <div style={{ marginRight: '10px' }}>
+                                <Checkbox
+                                    handleChange={handleChangeHaha}
+                                    isChecked={isCheckedHaha}
+                                    label="😂"
+                                />
+                            </div>
+                            <div style={{ marginRight: '10px' }}>
+                                <Checkbox
+                                    handleChange={handleChangeSmile}
+                                    isChecked={isCheckedSmile}
+                                    label="☺️"
+                                />
+                            </div>
+                            <div style={{ marginRight: '10px' }}>
+                                <Checkbox
+                                    handleChange={handleChangeWow}
+                                    isChecked={isCheckedWow}
+                                    label="😯"
+                                />
+                            </div>
+                            <div style={{ marginRight: '10px' }}>
+                                <Checkbox
+                                    handleChange={handleChangeSad}
+                                    isChecked={isCheckedSad}
+                                    label="😢"
+                                />
+                            </div>
+                            <div style={{ marginRight: '10px' }}>
+                                <Checkbox
+                                    handleChange={handleChangeStars}
+                                    isChecked={isCheckedStars}
+                                    label="🤩"
+                                />
+                            </div>
+                            </div>
+                        </body>
                     ))}
                 </>
             ) : (
