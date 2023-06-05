@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ViewChallenge = () => {
+
+    const navigate = useNavigate();
+
+
     const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<string> }>
         ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [] });
 
@@ -49,28 +53,41 @@ const ViewChallenge = () => {
         }
     }
 
+    const navigateToHomeScreen = () => {
+        navigate('/')
+    }
+
     return (
         <div className="viewChallenge">
-            <h1>View Challenge {state.id}</h1>
-            <h2>Name</h2>
-            <body>{challengeInfo.name}</body>
+            {state?.id ? (
+                <>
+                    <h1>View Challenge {state.id}</h1>
+                    <h2>Name</h2>
+                    <body>{challengeInfo.name}</body>
 
-            <h2>Description</h2>
-            <body>{challengeInfo.description}</body>
+                    <h2>Description</h2>
+                    <body>{challengeInfo.description}</body>
 
-            <h2>Initial Inspiration</h2>
-            <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
+                    <h2>Initial Inspiration</h2>
+                    <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
 
-            <form onSubmit={handleSubmitSubmission} id="form" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <input type="file" id="myFiles" accept="image/jpg" multiple style={{ marginBottom: 10 }} name="file" />
-                <input type="submit" style={{ marginBottom: 10 }} />
-            </form>
+                    <form onSubmit={handleSubmitSubmission} id="form" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <input type="file" id="myFiles" accept="image/jpg" multiple style={{ marginBottom: 10 }} name="file" />
+                        <input type="submit" style={{ marginBottom: 10 }} />
+                    </form>
 
-            <h1>Existing Submissions!</h1>
-            {challengeInfo.entryNamesUrls.map((entry) => (
-                <body><img src={entry} className="insImage" alt="" /></body>
-            ))}
-
+                    <h1>Existing Submissions!</h1>
+                    {challengeInfo.entryNamesUrls.map((entry) => (
+                        <body><img src={entry} className="insImage" alt="" /></body>
+                    ))}
+                </>
+            ) : (
+                <>
+                    <h1>Invalid Challenge ID</h1>
+                    <button onClick={navigateToHomeScreen}>Click here to go back to the Home Screen</button>
+                </>
+            )}
+            
         </div>
     )
 }
