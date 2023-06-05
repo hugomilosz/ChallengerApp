@@ -197,7 +197,7 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
       // The file name is ID_SUBMISSIONNUMBER.ext
       uploadFile(fileName, req.file.buffer);
 
-      const entryNames = results[0].entryNames === "" ? req.file.originalname : results[0].entryNames + "," + fileName;
+      const entryNames = results[0].entryNames === "" ? fileName : results[0].entryNames + "," + fileName;
       dbPool.query(`UPDATE challenges SET entryNames = "${entryNames}" WHERE id=${req.body.chId}`, function (error, results, fields) {
         if (error) {
           console.log(error);
