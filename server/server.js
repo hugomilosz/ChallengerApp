@@ -70,7 +70,7 @@ app.post('/server/createChallenge', multer().single('file'), (req, res) => {
     } else {
       const newId = Number(results[0][`COUNT(*)`]) + 1;
 
-      const fileName = `${newId}_0` + req.file.originalname.split(".").pop();
+      const fileName = `${newId}_0.` + req.file.originalname.split(".").pop();
       uploadFile(fileName, req.file.buffer);
 
       dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`) VALUES ('${newId}', '${req.body.name}', '${req.body.desc}', '${fileName}', '', 'Image');`, function (error, results, fields) {
@@ -192,7 +192,7 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
       res.end("Error find challenge");
     } else {
       const numSubmissions = results[0].entryNames === "" ? 0 : results[0].entryNames.split(",").length;
-      const fileName = `${req.body.chId}_${numSubmissions + 1}` + req.file.originalname.split(".").pop();
+      const fileName = `${req.body.chId}_${numSubmissions + 1}.` + req.file.originalname.split(".").pop();
 
       // The file name is ID_SUBMISSIONNUMBER.ext
       uploadFile(fileName, req.file.buffer);
