@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import React from "react";
 
 export default function SearchBar() {
   const handleSubmit = async (event: React.SyntheticEvent) => {
