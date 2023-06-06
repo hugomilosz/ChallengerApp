@@ -8,13 +8,13 @@ export default function Search() {
 
   const { query } = useParams();
 
-  if (query === undefined) {
-    return <></>; // Will never happen thanks to routing in App
-  }
-
   useEffect(() => {
     queryChallenges();
   }, []);
+
+  if (query === undefined) {
+    return <></>; // Will never happen thanks to routing in App
+  }
 
   const viewChallengeButton = (id: Number) => {
     let path = '../viewChallenge';
