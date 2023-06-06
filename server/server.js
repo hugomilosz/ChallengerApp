@@ -212,6 +212,48 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
   });
 });
 
+// TO GET THE NUMBER OF THE CERTAIN REACTION
+app.get('/viewReactions/:fileName/:reactionName', (req, res) => {
+  dbPool.query(`SELECT ${reactionName} FROM submissions WHERE filename=${fileName}`, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500);
+      res.end("Error updating database (reaction numbers)");
+    } else {
+      res.status(200);
+      res.send();
+    }
+  });
+});
+
+// TO INCREMENT THE NUMBER OF THE REACTION
+app.post('/updateReactions/inc/:fileName/:reactionName', (req, res) => {
+  dbPool.query(`UPDATE submissions SET reactionName = reactionName + 1 WHERE filename = ${fileName}`, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500);
+      res.end("Error updating database (reaction numbers)");
+    } else {
+      res.status(200);
+      res.send();
+    }
+  });
+});
+
+// TO DECREMENT THE NUMBER OF THE REACTION
+app.post('/updateReactions/dec/:fileName/:reactionName', (req, res) => {
+  dbPool.query(`UPDATE submissions SET reactionName = reactionName - 1 WHERE filename = ${fileName}`, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500);
+      res.end("Error updating database (reaction numbers)");
+    } else {
+      res.status(200);
+      res.send();
+    }
+  });
+});
+
 const root = path.join(__dirname, '../build')
 app.use(express.static(root));
 

@@ -29,8 +29,15 @@ const ViewChallenge = () => {
     };
 
     const [isCheckedLike, setIsCheckedLike] = useState(false);
-    const handleChangeLike = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setIsCheckedLike(e.target.checked);
+    const handleChangeLike = (entry: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setIsCheckedLike(e.target.checked);
+        if (e.target.checked) {
+            // increment because we have just checked the box
+            return await fetch(`/updateReactions/inc/${entry}/likeCount`);
+        } else {
+            // decrement because we just unchecked the box
+            return await fetch(`/updateReactions/dec/${entry}/likeCount`);
+        }  
     };
 
     const [isCheckedHaha, setIsCheckedHaha] = useState(false);
@@ -88,6 +95,8 @@ const ViewChallenge = () => {
         navigate('/')
     }
 
+
+
     return (
         <div className="viewChallenge">
             {state?.id ? (
@@ -110,52 +119,56 @@ const ViewChallenge = () => {
                     <h1>Existing Submissions!</h1>
                     {challengeInfo.entryNamesUrls.map((entry) => (
                         <body>
-                            <img src={entry} className="insImage" alt="" />
-                            <div style={{display: 'flex', justifyContent: "center"}}>
-                            <div style={{ marginRight: '10px' }}>
-                                <Checkbox
-                                    handleChange={handleChangeLike}
-                                    isChecked={isCheckedLike}
-                                    label="❤️"
-                                />
-                            </div>
-                            <div style={{ marginRight: '10px' }}>
-                                <Checkbox
-                                    handleChange={handleChangeHaha}
-                                    isChecked={isCheckedHaha}
-                                    label="😂"
-                                />
-                            </div>
-                            <div style={{ marginRight: '10px' }}>
-                                <Checkbox
-                                    handleChange={handleChangeSmile}
-                                    isChecked={isCheckedSmile}
-                                    label="☺️"
-                                />
-                            </div>
-                            <div style={{ marginRight: '10px' }}>
-                                <Checkbox
-                                    handleChange={handleChangeWow}
-                                    isChecked={isCheckedWow}
-                                    label="😯"
-                                />
-                            </div>
-                            <div style={{ marginRight: '10px' }}>
-                                <Checkbox
-                                    handleChange={handleChangeSad}
-                                    isChecked={isCheckedSad}
-                                    label="😢"
-                                />
-                            </div>
-                            <div style={{ marginRight: '10px' }}>
-                                <Checkbox
-                                    handleChange={handleChangeAngry}
-                                    isChecked={isCheckedAngry}
-                                    label="😡"
-                                />
-                            </div>
-                            </div>
-                        </body>
+                        <img src={entry} className="insImage" alt="" />
+                        <div style={{display: 'flex', justifyContent: "center"}}>
+                        <div style={{ marginRight: '10px' }}>
+                        <script>
+                            const numReactions = await fetch(`/viewReactions/${entry}/likeCount`);
+                            $("#target").text(numReactions);
+                        </script>
+                        <Checkbox
+                            handleChange={handleChangeLike(entry)}
+                            isChecked={isCheckedLike}
+                            label={"target" + "❤️"}
+                        />
+                        </div>
+                        <div style={{ marginRight: '10px' }}>
+                            <Checkbox
+                                handleChange={handleChangeHaha}
+                                isChecked={isCheckedHaha}
+                                label="😂"
+                            />
+                        </div>
+                        <div style={{ marginRight: '10px' }}>
+                            <Checkbox
+                                handleChange={handleChangeSmile}
+                                isChecked={isCheckedSmile}
+                                label="😃"
+                            />
+                        </div>
+                        <div style={{ marginRight: '10px' }}>
+                            <Checkbox
+                                handleChange={handleChangeWow}
+                                isChecked={isCheckedWow}
+                                label="😯"
+                            />
+                        </div>
+                        <div style={{ marginRight: '10px' }}>
+                            <Checkbox
+                                handleChange={handleChangeSad}
+                                isChecked={isCheckedSad}
+                                label="😢"
+                            />
+                        </div>
+                        <div style={{ marginRight: '10px' }}>
+                            <Checkbox
+                                handleChange={handleChangeAngry}
+                                isChecked={isCheckedAngry}
+                                label="😡"
+                            />
+                        </div>
+                        </div>
+                    </body>
                     ))}
                 </>
             ) : (
