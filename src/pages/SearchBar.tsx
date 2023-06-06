@@ -11,7 +11,7 @@ export default function SearchBar() {
       searchText: { value: string }
     };
 
-    if (target.searchText.value.trim() != "") {
+    if (target.searchText.value.trim() !== "") {
       navigate("/search/" + encodeURI(target.searchText.value));
     } else {
       alert("Please enter a search query");

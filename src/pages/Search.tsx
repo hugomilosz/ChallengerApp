@@ -9,8 +9,23 @@ export default function Search() {
   const { query } = useParams();
 
   useEffect(() => {
+    const queryChallenges = async () => {
+      try {
+        const response = await fetch("/server/search/" + query);
+        const chs = JSON.parse(await response.text());
+
+        if (Array.isArray(chs)) {
+          setChallenges(chs);
+        } else {
+          console.error("Invalid response data format:", response.body);
+        }
+      }
+      catch (error) {
+        console.error("Error fetching challenges:", error);
+      }
+    };
     queryChallenges();
-  }, []);
+  }, [query]);
 
   if (query === undefined) {
     return <></>; // Will never happen thanks to routing in App
@@ -20,22 +35,6 @@ export default function Search() {
     let path = '../viewChallenge';
     navigate(path, { state: { id: id } });
   }
-
-  const queryChallenges = async () => {
-    try {
-      const response = await fetch("/server/search/" + query);
-      const chs = JSON.parse(await response.text());
-
-      if (Array.isArray(chs)) {
-        setChallenges(chs);
-      } else {
-        console.error("Invalid response data format:", response.body);
-      }
-    }
-    catch (error) {
-      console.error("Error fetching challenges:", error);
-    }
-  };
 
   console.log(query);
 
