@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function SearchBar() {
+  const navigate = useNavigate();
+
   const handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
 
@@ -8,7 +11,11 @@ export default function SearchBar() {
       searchText: { value: string }
     };
 
-    alert(target.searchText.value);
+    if (target.searchText.value.trim() != "") {
+      navigate("/search/" + encodeURI(target.searchText.value));
+    } else {
+      alert("Please enter a search query");
+    }
   }
 
   return (
