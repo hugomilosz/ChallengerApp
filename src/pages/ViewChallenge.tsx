@@ -129,7 +129,7 @@ const ViewChallenge = () => {
                         <Checkbox
                             handleChange={handleChangeLike(entry)}
                             isChecked={isCheckedLike}
-                            label={"target" + "❤️"}
+                            label={"target❤️"}
                         />
                         </div>
                         <div style={{ marginRight: '10px' }}>
