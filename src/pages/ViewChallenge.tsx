@@ -53,9 +53,9 @@ const ViewChallenge = () => {
       setIsCheckedSad(e.target.checked);
     };
 
-    const [isCheckedStars, setIsCheckedStars] = useState(false);
-    const handleChangeStars = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setIsCheckedStars(e.target.checked);
+    const [isCheckedAngry, setIsCheckedAngry] = useState(false);
+    const handleChangeAngry = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsCheckedAngry(e.target.checked);
     };
 
     useEffect(() => {
@@ -149,9 +149,9 @@ const ViewChallenge = () => {
                             </div>
                             <div style={{ marginRight: '10px' }}>
                                 <Checkbox
-                                    handleChange={handleChangeStars}
-                                    isChecked={isCheckedStars}
-                                    label="🤩"
+                                    handleChange={handleChangeAngry}
+                                    isChecked={isCheckedAngry}
+                                    label="😡"
                                 />
                             </div>
                             </div>
