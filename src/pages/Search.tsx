@@ -25,6 +25,7 @@ export default function Search() {
     try {
       const response = await fetch("/server/search/" + query);
       const chs = JSON.parse(await response.text());
+
       if (Array.isArray(chs)) {
         setChallenges(chs);
       } else {

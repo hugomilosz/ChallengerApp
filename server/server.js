@@ -56,6 +56,19 @@ app.get('/server/challenge/:chId', (req, res) => {
   })
 });
 
+// Return search queries for challenges
+app.get('/server/search/:terms', (req, res) => {
+  const terms = decodeURI(req.params.terms);
+  dbPool.query(`SELECT * FROM challenges WHERE (name LIKE '%${terms}%') OR (description LIKE '%${terms}%') OR (tags LIKE '${terms}') LIMIT 10`, function (error, results, fields) {
+    if (error) {
+      res.send(error);
+      console.log(error);
+    } else {
+      res.json(results);
+    }
+  })
+})
+
 // Create challenge when appropriate formdata is supplied
 app.post('/server/createChallenge', multer().single('file'), (req, res) => {
   // console.log(req.file);
