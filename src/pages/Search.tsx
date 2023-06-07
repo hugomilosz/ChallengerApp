@@ -40,6 +40,7 @@ export default function Search() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <h1>Search Results</h1>
       {challenges.map((challenge) => (
         <div key={challenge.id}>
           <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
