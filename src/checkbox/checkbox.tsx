@@ -1,5 +1,7 @@
 import React from "react";
 
+var labelCount = 0;
+
 interface Props {
   isChecked: boolean;
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -7,12 +9,14 @@ interface Props {
 }
 
 const Checkbox = (props: Props) => {
+  labelCount++;
   return (
     <div>
       <label htmlFor={props.label}>{props.label}</label>
       <input
         type="checkbox"
-        id={props.label}
+        // id={props.label}
+        id={labelCount.toString()}
         checked={props.isChecked}
         onChange={props.handleChange}
       />

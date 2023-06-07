@@ -6,8 +6,8 @@ const ViewChallenge = () => {
 
     const navigate = useNavigate();
 
-    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number  }> }>
-            ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [] });
+    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }> }>
+        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [] });
 
     const { state } = useLocation();
 
@@ -32,18 +32,18 @@ const ViewChallenge = () => {
         const body = await responseDBInfo.text();
         const chs = JSON.parse(body);
         const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",")
-        const urls = splitArray.map(async (entryName: String) => {
-            const entryWithoutPrefix = entryName.replace("http:/uploads/", "");
+        const urls = splitArray.map(async (entryName: string) => {
+
             const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
 
-            const likeCount = await getReactionCount(entryWithoutPrefix, "likeCount");
-            const hahaCount = await getReactionCount(entryWithoutPrefix, "hahaCount");
-            const smileCount = await getReactionCount(entryWithoutPrefix, "smileCount");
-            const wowCount = await getReactionCount(entryWithoutPrefix, "wowCount");
-            const sadCount = await getReactionCount(entryWithoutPrefix, "sadCount");
-            const angryCount = await getReactionCount(entryWithoutPrefix, "angryCount");
+            const likeCount = await getReactionCount(entryName, "likeCount");
+            const hahaCount = await getReactionCount(entryName, "hahaCount");
+            const smileCount = await getReactionCount(entryName, "smileCount");
+            const wowCount = await getReactionCount(entryName, "wowCount");
+            const sadCount = await getReactionCount(entryName, "sadCount");
+            const angryCount = await getReactionCount(entryName, "angryCount");
 
-            return { url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
+            return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
         });
         setChallenge({
             name: chs.name as string,
@@ -62,19 +62,19 @@ const ViewChallenge = () => {
     const handleChangeReaction = (entry: string, reaction: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
         switch (reaction) {
             case "likeCount": setIsCheckedLike(e.target.checked); break;
-            case "hahaCount":setIsCheckedHaha(e.target.checked); break;
-            case "smileCount":setIsCheckedSmile(e.target.checked); break;
-            case "wowCount":setIsCheckedWow(e.target.checked); break;
-            case "sadCount":setIsCheckedSad(e.target.checked); break;
-            case "angryCount":setIsCheckedAngry(e.target.checked); break;
+            case "hahaCount": setIsCheckedHaha(e.target.checked); break;
+            case "smileCount": setIsCheckedSmile(e.target.checked); break;
+            case "wowCount": setIsCheckedWow(e.target.checked); break;
+            case "sadCount": setIsCheckedSad(e.target.checked); break;
+            case "angryCount": setIsCheckedAngry(e.target.checked); break;
             default: console.error("not a valid reaction"); break;
         }
-        
+        console.log(entry);
         const entryWithoutPrefix = entry.replace("http:/uploads/", "");
         if (e.target.checked) {
             const response = await fetch(`/updateReactions/inc/${entryWithoutPrefix}/${reaction}`, {
                 method: "POST",
-              });
+            });
             if (response.ok) {
                 console.log("Updated like count");
                 fetchInfo();
@@ -82,18 +82,18 @@ const ViewChallenge = () => {
                 console.error("Failed to update like count");
             }
         } else {
-          // Decrement logic
-          const response = await fetch(`/updateReactions/dec/${entryWithoutPrefix}/${reaction}`, {
-            method: "POST",
-          });
-        if (response.ok) {
-            console.log("Updated like count");
-            fetchInfo();
-        } else {
-            console.error("Failed to update like count");
+            // Decrement logic
+            const response = await fetch(`/updateReactions/dec/${entryWithoutPrefix}/${reaction}`, {
+                method: "POST",
+            });
+            if (response.ok) {
+                console.log("Updated like count");
+                fetchInfo();
+            } else {
+                console.error("Failed to update like count");
+            }
         }
-        }
-      };
+    };
 
     useEffect(() => {
         fetchInfo();
@@ -147,52 +147,52 @@ const ViewChallenge = () => {
                     <h1>Existing Submissions!</h1>
                     {challengeInfo.entryNamesUrls.map((entry) => (
                         <body>
-                        <img src={entry.url} className="insImage" alt="" />
-                        <div style={{display: 'flex', justifyContent: "center"}}>
-                        <div style={{ marginRight: '10px' }}>
-                        <Checkbox
-                            handleChange={handleChangeReaction(entry.url, "likeCount")}
-                            isChecked={isCheckedLike}
-                            label={`${entry.likeCount}❤️`}
-                        />
-                        </div>
-                        <div style={{ marginRight: '10px' }}>
-                            <Checkbox
-                                handleChange={handleChangeReaction(entry.url, "hahaCount")}
-                                isChecked={isCheckedHaha}
-                                label={`${entry.hahaCount}😂`}
-                            />
-                        </div>
-                        <div style={{ marginRight: '10px' }}>
-                            <Checkbox
-                                handleChange={handleChangeReaction(entry.url, "smileCount")}
-                                isChecked={isCheckedSmile}
-                                label = {`${entry.smileCount}😃`}
-                            />
-                        </div>
-                        <div style={{ marginRight: '10px' }}>
-                            <Checkbox
-                                handleChange={handleChangeReaction(entry.url, "wowCount")}
-                                isChecked={isCheckedWow}
-                                label={`${entry.wowCount}😯`}
-                            />
-                        </div>
-                        <div style={{ marginRight: '10px' }}>
-                            <Checkbox
-                                handleChange={handleChangeReaction(entry.url, "sadCount")}
-                                isChecked={isCheckedSad}
-                                label={`${entry.sadCount}😢`}
-                            />
-                        </div>
-                        <div style={{ marginRight: '10px' }}>
-                            <Checkbox
-                                handleChange={handleChangeReaction(entry.url, "angryCount")}
-                                isChecked={isCheckedAngry}
-                                label={`${entry.angryCount}😡`}
-                            />
-                        </div>
-                        </div>
-                    </body>
+                            <img src={entry.url} className="insImage" alt="" />
+                            <div style={{ display: 'flex', justifyContent: "center" }}>
+                                <div style={{ marginRight: '10px' }}>
+                                    <Checkbox
+                                        handleChange={handleChangeReaction(entry.entryName, "likeCount")}
+                                        isChecked={isCheckedLike}
+                                        label={`${entry.likeCount}❤️`}
+                                    />
+                                </div>
+                                <div style={{ marginRight: '10px' }}>
+                                    <Checkbox
+                                        handleChange={handleChangeReaction(entry.entryName, "hahaCount")}
+                                        isChecked={isCheckedHaha}
+                                        label={`${entry.hahaCount}😂`}
+                                    />
+                                </div>
+                                <div style={{ marginRight: '10px' }}>
+                                    <Checkbox
+                                        handleChange={handleChangeReaction(entry.entryName, "smileCount")}
+                                        isChecked={isCheckedSmile}
+                                        label={`${entry.smileCount}😃`}
+                                    />
+                                </div>
+                                <div style={{ marginRight: '10px' }}>
+                                    <Checkbox
+                                        handleChange={handleChangeReaction(entry.entryName, "wowCount")}
+                                        isChecked={isCheckedWow}
+                                        label={`${entry.wowCount}😯`}
+                                    />
+                                </div>
+                                <div style={{ marginRight: '10px' }}>
+                                    <Checkbox
+                                        handleChange={handleChangeReaction(entry.entryName, "sadCount")}
+                                        isChecked={isCheckedSad}
+                                        label={`${entry.sadCount}😢`}
+                                    />
+                                </div>
+                                <div style={{ marginRight: '10px' }}>
+                                    <Checkbox
+                                        handleChange={handleChangeReaction(entry.entryName, "angryCount")}
+                                        isChecked={isCheckedAngry}
+                                        label={`${entry.angryCount}😡`}
+                                    />
+                                </div>
+                            </div>
+                        </body>
                     ))}
                 </>
             ) : (
