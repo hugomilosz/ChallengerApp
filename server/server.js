@@ -257,16 +257,16 @@ app.post('/updateReactions/inc/:fileName/likeCount', (req, res) => {
 });
 
 // TO DECREMENT THE NUMBER OF THE REACTION
-app.post('/updateReactions/dec/:fileName/:reactionName', (req, res) => {
-  dbPool.query(`UPDATE submissions SET reactionName = reactionName - 1 WHERE filename = ${fileName}`, function (error, results, fields) {
+app.post('/updateReactions/dec/:fileName/likeCount', (req, res) => {
+  const fileName = req.params.fileName;
+  dbPool.query(`UPDATE submissions SET likeCount = likeCount - 1 WHERE filename = '${fileName}'`, function (error, results, fields) {
     if (error) {
       console.log(error);
       res.status(500);
       res.end("Error updating database (reaction numbers)");
     } else {
       res.status(200);
-      console.log("decr: ", results)
-      res.send(results);
+      res.send("Like count incremented successfully");
     }
   });
 });

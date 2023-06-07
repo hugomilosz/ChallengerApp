@@ -41,18 +41,21 @@ const ViewChallenge = () => {
             const response = await fetch(`/updateReactions/inc/${entryWithoutPrefix}/likeCount`, {
                 method: "POST",
               });
-            console.log("Like inc", response)
             if (response.ok) {
-                //remove http:/uploads/ from entry and get the likeCount
-                const res = await fetch(`/viewReactions/${entryWithoutPrefix}/likeCount`);
-                const response = await res.json();
-                const likeCount = response[0].likeCount;
-                console.log("Updated like count:", likeCount);
+                console.log("Updated like count");
             } else {
                 console.error("Failed to update like count");
             }
         } else {
           // Decrement logic
+          const response = await fetch(`/updateReactions/dec/${entryWithoutPrefix}/likeCount`, {
+            method: "POST",
+          });
+        if (response.ok) {
+            console.log("Updated like count");
+        } else {
+            console.error("Failed to update like count");
+        }
         }
       };
 
