@@ -61,7 +61,8 @@ const ViewChallenge = () => {
     const [isCheckedAngry, setIsCheckedAngry] = useState<{ [key: string]: boolean }>({});
 
     const [selectedCheckbox, setSelectedCheckbox] = useState("");
-    const [_, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
+    // eslint-disable-next-line no-unused-vars
+    const [isChecked, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
     const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
 
     const [isCheckedLike, setIsCheckedLike] = useState<{ [entry: string]: boolean }>({});
