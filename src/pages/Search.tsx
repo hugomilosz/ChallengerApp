@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import SearchBar from "./SearchBar";
 
 export default function Search() {
   const [challenges, setChallenges] = useState<{ id: number; name: string }[]>([]);
@@ -40,7 +41,7 @@ export default function Search() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <h1>Search Results</h1>
+      <h1>Search Results: "{query}"</h1>
       {challenges.map((challenge) => (
         <div key={challenge.id}>
           <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
@@ -49,6 +50,12 @@ export default function Search() {
           </div>
         </div>
       ))}
+      {challenges.length === 0 &&
+        <>
+          <h2>No results found!</h2>
+          <p>Try using a shorter query, such as 1 or 2 keywords.</p>
+          <SearchBar />
+        </>}
     </div>
   )
 }

@@ -20,7 +20,7 @@ export default function SearchBar() {
 
   return (
     <form className="searchForm" onSubmit={handleSubmit}>
-      <input type="text" id="searchBar" placeholder="Find a challenge!" name="searchText" />
+      <input type="text" id="searchBar" placeholder='Medium, Topic, "Art" ...' name="searchText" />
       <input type="submit" value="Search" />
     </form>)
 }
