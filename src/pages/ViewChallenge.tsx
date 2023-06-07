@@ -53,7 +53,7 @@ const ViewChallenge = () => {
         });
     };
 
-    const [isCheckedLike, setIsCheckedLike] = useState<{ [key: string]: boolean }>({});
+    // const [isCheckedLike, setIsCheckedLike] = useState<{ [key: string]: boolean }>({});
     const [isCheckedHaha, setIsCheckedHaha] = useState<{ [key: string]: boolean }>({});
     const [isCheckedSmile, setIsCheckedSmile] = useState<{ [key: string]: boolean }>({});
     const [isCheckedWow, setIsCheckedWow] = useState<{ [key: string]: boolean }>({});
@@ -61,73 +61,125 @@ const ViewChallenge = () => {
     const [isCheckedAngry, setIsCheckedAngry] = useState<{ [key: string]: boolean }>({});
 
     const [selectedCheckbox, setSelectedCheckbox] = useState("");
-    const [isChecked, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
+    // const [isChecked, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
     const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
 
-
-    const handleChangeReaction = (entry: string, reaction: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
-
-        const updatedSelectedReaction = { ...selectedReaction };
-
-        if (updatedSelectedReaction[entry] === reaction) {
-            // If the same reaction is already selected, deselect it
-            delete updatedSelectedReaction[entry];
-        } else {
-            // Select the new reaction
-            updatedSelectedReaction[entry] = reaction;
-        }
-
-        setSelectedReaction(updatedSelectedReaction);
-
-
-        // Update the respective checkbox state variable
-        switch (reaction) {
-            case "likeCount": setIsCheckedLike({ ...isCheckedLike, [entry]: e.target.checked }); break;
-            case "hahaCount": setIsCheckedHaha({ ...isCheckedHaha, [entry]: e.target.checked }); break;
-            case "smileCount": setIsCheckedSmile({ ...isCheckedSmile, [entry]: e.target.checked }); break;
-            case "wowCount": setIsCheckedWow({ ...isCheckedWow, [entry]: e.target.checked }); break;
-            case "sadCount": setIsCheckedSad({ ...isCheckedSad, [entry]: e.target.checked }); break;
-            case "angryCount": setIsCheckedAngry({ ...isCheckedAngry, [entry]: e.target.checked }); break;
-            default: console.error("not a valid reaction"); break;
-        }
-
+    const [isCheckedLike, setIsCheckedLike] = useState(false);
+    const handleChangeLike = (entry: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setIsCheckedLike(e.target.checked);
         const entryWithoutPrefix = entry.replace("http:/uploads/", "");
-
-        const previousReaction = selectedCheckbox;
-        
-
         if (e.target.checked) {
-
-            setSelectedCheckbox(reaction);
-
-            // Increment logic
-            const response = await fetch(`/updateReactions/inc/${entryWithoutPrefix}/${reaction}`, {
+            const response = await fetch(`/updateReactions/inc/${entryWithoutPrefix}/likeCount`, {
                 method: "POST",
-            });
+              });
             if (response.ok) {
-                // setSelectedCheckbox(reaction);
                 console.log("Updated like count");
                 fetchInfo();
             } else {
                 console.error("Failed to update like count");
             }
         } else {
-        
-            setSelectedCheckbox("");
-        // Decrement logic
-        const response = await fetch(`/updateReactions/dec/${entryWithoutPrefix}/${reaction}`, {
+          // Decrement logic
+          const response = await fetch(`/updateReactions/dec/${entryWithoutPrefix}/likeCount`, {
             method: "POST",
-        });
+          });
         if (response.ok) {
-            // setSelectedCheckbox("");
             console.log("Updated like count");
             fetchInfo();
         } else {
             console.error("Failed to update like count");
         }
-    
+        }
+      };
+
+
+
+const handleChangeReaction = (entry: string, reaction: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const updatedSelectedReaction = { ...selectedReaction };
+
+  if (updatedSelectedReaction[entry] === reaction) {
+    // If the same reaction is already selected, deselect it
+    delete updatedSelectedReaction[entry];
+  } else {
+    // Select the new reaction
+    updatedSelectedReaction[entry] = reaction;
+  }
+
+  setSelectedReaction(updatedSelectedReaction);
+
+  if (reaction === "likeCount") {
+    setIsChecked({ [entry]: { [reaction]: e.target.checked } });
+  } else {
+    setIsChecked((prevState) => ({
+      ...prevState,
+      [entry]: { [reaction]: e.target.checked },
+    }));
+  }
+
+  // Update the respective checkbox state variable
+  switch (reaction) {
+    case "hahaCount": setIsCheckedHaha({ ...isCheckedHaha, [entry]: e.target.checked }); break;
+    case "smileCount":setIsCheckedSmile({ ...isCheckedSmile, [entry]: e.target.checked }); break;
+    case "wowCount": setIsCheckedWow({ ...isCheckedWow, [entry]: e.target.checked }); break;
+    case "sadCount": setIsCheckedSad({ ...isCheckedSad, [entry]: e.target.checked }); break;
+    case "angryCount": setIsCheckedAngry({ ...isCheckedAngry, [entry]: e.target.checked }); break;
+    default: console.error("Not a valid reaction"); break;
+  }
+
+  const entryWithoutPrefix = entry.replace("http:/uploads/", "");
+
+  if (selectedCheckbox && selectedCheckbox !== reaction && selectedCheckbox != "likeCount" && reaction != "likeCount") {
+    const previousEntryWithoutPrefix = selectedCheckbox.replace("http:/uploads/", "");
+    const response = await fetch(
+      `/updateReactions/dec/${previousEntryWithoutPrefix}/${selectedCheckbox}`,
+      {
+        method: "POST",
+      }
+    );
+    if (response.ok) {
+      console.log("Decremented previous reaction count", selectedCheckbox);
+      fetchInfo();
+    } else {
+      console.error("Failed to decrement previous reaction count");
     }
-    };
+  }
+
+  if (e.target.checked) {
+    setSelectedCheckbox(reaction);
+
+    // Increment logic
+    const response = await fetch(
+      `/updateReactions/inc/${entryWithoutPrefix}/${reaction}`,
+      {
+        method: "POST",
+      }
+    );
+    if (response.ok) {
+      console.log("Incremented reaction count: ", reaction);
+      fetchInfo();
+    } else {
+      console.error("Failed to increment reaction count");
+    }
+  } else {
+    if (reaction != "likeCount") {
+        setSelectedCheckbox("");
+    }
+
+    // Decrement logic for current reaction
+    const response = await fetch(
+      `/updateReactions/dec/${entryWithoutPrefix}/${reaction}`,
+      {
+        method: "POST",
+      }
+    );
+    if (response.ok) {
+      console.log("Decremented reaction count: ", reaction);
+      fetchInfo();
+    } else {
+      console.error("Failed to decrement reaction count");
+    }
+  }
+};
 
     useEffect(() => {
         fetchInfo();
@@ -182,14 +234,12 @@ const ViewChallenge = () => {
                     <h3>Use ❤️ to vote for your favourites!</h3>
                     {challengeInfo.entryNamesUrls.map((entry) => (
                         <body>
-                            {/* <input type="checkbox" className="checkoption" value="1" 
-                                    onClick={(event) => checkedOnClick({ checked: event.currentTarget.checked })}> Option1 </input> */}
                             <img src={entry.url} className="insImage" alt="" />
                             <div style={{ display: 'flex', justifyContent: "center" }}>
                                 <div style={{ marginRight: '10px' }}>
                                 <Checkbox
-                                    handleChange={handleChangeReaction(entry.entryName, "likeCount")}
-                                    isChecked={isCheckedLike[entry.entryName] || false}
+                                    handleChange={handleChangeLike(entry.entryName)}
+                                    isChecked={isCheckedLike}
                                     label={`${entry.likeCount}❤️`}
                                 />
                                 </div>
