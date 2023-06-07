@@ -61,7 +61,7 @@ const ViewChallenge = () => {
     const [isCheckedAngry, setIsCheckedAngry] = useState<{ [key: string]: boolean }>({});
 
     const [selectedCheckbox, setSelectedCheckbox] = useState("");
-    const [isChecked, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
+    const [_isChecked, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
     const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
 
     const [isCheckedLike, setIsCheckedLike] = useState<{ [entry: string]: boolean }>({});
@@ -164,7 +164,7 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
       console.error("Failed to increment reaction count");
     }
   } else {
-    if (reaction != "likeCount") {
+    if (reaction !== "likeCount") {
         setSelectedCheckbox("");
     }
 
