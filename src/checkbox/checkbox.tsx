@@ -15,7 +15,6 @@ const Checkbox = (props: Props) => {
       <label htmlFor={props.label}>{props.label}</label>
       <input
         type="checkbox"
-        // id={props.label}
         id={labelCount.toString()}
         checked={props.isChecked}
         onChange={props.handleChange}

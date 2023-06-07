@@ -59,8 +59,27 @@ const ViewChallenge = () => {
     const [isCheckedWow, setIsCheckedWow] = useState<{ [key: string]: boolean }>({});
     const [isCheckedSad, setIsCheckedSad] = useState<{ [key: string]: boolean }>({});
     const [isCheckedAngry, setIsCheckedAngry] = useState<{ [key: string]: boolean }>({});
+
+    const [selectedCheckbox, setSelectedCheckbox] = useState("");
+    const [isChecked, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
+    const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
+
+
     const handleChangeReaction = (entry: string, reaction: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
-        
+
+        const updatedSelectedReaction = { ...selectedReaction };
+
+        if (updatedSelectedReaction[entry] === reaction) {
+            // If the same reaction is already selected, deselect it
+            delete updatedSelectedReaction[entry];
+        } else {
+            // Select the new reaction
+            updatedSelectedReaction[entry] = reaction;
+        }
+
+        setSelectedReaction(updatedSelectedReaction);
+
+
         // Update the respective checkbox state variable
         switch (reaction) {
             case "likeCount": setIsCheckedLike({ ...isCheckedLike, [entry]: e.target.checked }); break;
@@ -73,29 +92,41 @@ const ViewChallenge = () => {
         }
 
         const entryWithoutPrefix = entry.replace("http:/uploads/", "");
+
+        const previousReaction = selectedCheckbox;
+        
+
         if (e.target.checked) {
+
+            setSelectedCheckbox(reaction);
+
             // Increment logic
             const response = await fetch(`/updateReactions/inc/${entryWithoutPrefix}/${reaction}`, {
                 method: "POST",
             });
             if (response.ok) {
+                // setSelectedCheckbox(reaction);
                 console.log("Updated like count");
                 fetchInfo();
             } else {
                 console.error("Failed to update like count");
             }
         } else {
-            // Decrement logic
-            const response = await fetch(`/updateReactions/dec/${entryWithoutPrefix}/${reaction}`, {
-                method: "POST",
-            });
-            if (response.ok) {
-                console.log("Updated like count");
-                fetchInfo();
-            } else {
-                console.error("Failed to update like count");
-            }
+        
+            setSelectedCheckbox("");
+        // Decrement logic
+        const response = await fetch(`/updateReactions/dec/${entryWithoutPrefix}/${reaction}`, {
+            method: "POST",
+        });
+        if (response.ok) {
+            // setSelectedCheckbox("");
+            console.log("Updated like count");
+            fetchInfo();
+        } else {
+            console.error("Failed to update like count");
         }
+    
+    }
     };
 
     useEffect(() => {
@@ -148,49 +179,52 @@ const ViewChallenge = () => {
                     </form>
 
                     <h1>Existing Submissions!</h1>
+                    <h3>Use ❤️ to vote for your favourites!</h3>
                     {challengeInfo.entryNamesUrls.map((entry) => (
                         <body>
+                            {/* <input type="checkbox" className="checkoption" value="1" 
+                                    onClick={(event) => checkedOnClick({ checked: event.currentTarget.checked })}> Option1 </input> */}
                             <img src={entry.url} className="insImage" alt="" />
                             <div style={{ display: 'flex', justifyContent: "center" }}>
                                 <div style={{ marginRight: '10px' }}>
-                                    <Checkbox
-                                        handleChange={handleChangeReaction(entry.entryName, "likeCount")}
-                                        isChecked={isCheckedLike[entry.entryName] || false}
-                                        label={`${entry.likeCount}❤️`}
-                                    />
+                                <Checkbox
+                                    handleChange={handleChangeReaction(entry.entryName, "likeCount")}
+                                    isChecked={selectedReaction[entry.entryName] === "likeCount"}
+                                    label={`${entry.likeCount}❤️`}
+                                />
                                 </div>
                                 <div style={{ marginRight: '10px' }}>
                                     <Checkbox
                                         handleChange={handleChangeReaction(entry.entryName, "hahaCount")}
-                                        isChecked={isCheckedHaha[entry.entryName] || false}
-                                        label={`${entry.hahaCount}😂`}
-                                    />
+                                        isChecked={selectedReaction[entry.entryName] === "hahaCount"}
+                                        label={`${entry.hahaCount}❤️`}
+                                      />
                                 </div>
                                 <div style={{ marginRight: '10px' }}>
                                     <Checkbox
                                         handleChange={handleChangeReaction(entry.entryName, "smileCount")}
-                                        isChecked={isCheckedSmile[entry.entryName] || false}
+                                        isChecked={selectedReaction[entry.entryName] === "smileCount"}
                                         label={`${entry.smileCount}😃`}
                                     />
                                 </div>
                                 <div style={{ marginRight: '10px' }}>
                                     <Checkbox
                                         handleChange={handleChangeReaction(entry.entryName, "wowCount")}
-                                        isChecked={isCheckedWow[entry.entryName] || false}
+                                        isChecked={selectedReaction[entry.entryName] === "wowCount"}
                                         label={`${entry.wowCount}😯`}
                                     />
                                 </div>
                                 <div style={{ marginRight: '10px' }}>
                                     <Checkbox
                                         handleChange={handleChangeReaction(entry.entryName, "sadCount")}
-                                        isChecked={isCheckedSad[entry.entryName] || false}
+                                        isChecked={selectedReaction[entry.entryName] === "sadCount"}
                                         label={`${entry.sadCount}😢`}
                                     />
                                 </div>
                                 <div style={{ marginRight: '10px' }}>
                                     <Checkbox
                                         handleChange={handleChangeReaction(entry.entryName, "angryCount")}
-                                        isChecked={isCheckedAngry[entry.entryName] || false}
+                                        isChecked={selectedReaction[entry.entryName] === "angryCount"}
                                         label={`${entry.angryCount}😡`}
                                     />
                                 </div>
