@@ -189,7 +189,7 @@ const ViewChallenge = () => {
                                 <div style={{ marginRight: '10px' }}>
                                 <Checkbox
                                     handleChange={handleChangeReaction(entry.entryName, "likeCount")}
-                                    isChecked={selectedReaction[entry.entryName] === "likeCount"}
+                                    isChecked={isCheckedLike[entry.entryName] || false}
                                     label={`${entry.likeCount}❤️`}
                                 />
                                 </div>
@@ -197,7 +197,7 @@ const ViewChallenge = () => {
                                     <Checkbox
                                         handleChange={handleChangeReaction(entry.entryName, "hahaCount")}
                                         isChecked={selectedReaction[entry.entryName] === "hahaCount"}
-                                        label={`${entry.hahaCount}❤️`}
+                                        label={`${entry.hahaCount}😂`}
                                       />
                                 </div>
                                 <div style={{ marginRight: '10px' }}>
