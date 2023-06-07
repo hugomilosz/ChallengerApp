@@ -7,8 +7,8 @@ const ViewChallenge = () => {
     const navigate = useNavigate();
 
 
-    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<string> }>
-        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [] });
+    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ url: string, likeCount: number }> }>
+            ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [] });
 
     const { state } = useLocation();
 
@@ -18,7 +18,12 @@ const ViewChallenge = () => {
         const chs = JSON.parse(body);
         const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",")
         const urls = splitArray.map(async (entryName: String) => {
-            return (await (await fetch(`/uploadsURL/${entryName}`)).text());
+            const entryWithoutPrefix = entryName.replace("http:/uploads/", "");
+            const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
+            const likeCountResponse = await fetch(`/viewReactions/${entryWithoutPrefix}/likeCount`);
+            const likeCountData = await likeCountResponse.json();
+            const likeCount = likeCountData.length > 0 ? likeCountData[0].likeCount : 0;
+            return { url, likeCount };
         });
         setChallenge({
             name: chs.name as string,
@@ -31,14 +36,25 @@ const ViewChallenge = () => {
     const [isCheckedLike, setIsCheckedLike] = useState(false);
     const handleChangeLike = (entry: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsCheckedLike(e.target.checked);
+        const entryWithoutPrefix = entry.replace("http:/uploads/", "");
         if (e.target.checked) {
-            // increment because we have just checked the box
-            return await fetch(`/updateReactions/inc/${entry}/likeCount`);
+            const response = await fetch(`/updateReactions/inc/${entryWithoutPrefix}/likeCount`, {
+                method: "POST",
+              });
+            console.log("Like inc", response)
+            if (response.ok) {
+                //remove http:/uploads/ from entry and get the likeCount
+                const res = await fetch(`/viewReactions/${entryWithoutPrefix}/likeCount`);
+                const response = await res.json();
+                const likeCount = response[0].likeCount;
+                console.log("Updated like count:", likeCount);
+            } else {
+                console.error("Failed to update like count");
+            }
         } else {
-            // decrement because we just unchecked the box
-            return await fetch(`/updateReactions/dec/${entry}/likeCount`);
-        }  
-    };
+          // Decrement logic
+        }
+      };
 
     const [isCheckedHaha, setIsCheckedHaha] = useState(false);
     const handleChangeHaha = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,17 +135,13 @@ const ViewChallenge = () => {
                     <h1>Existing Submissions!</h1>
                     {challengeInfo.entryNamesUrls.map((entry) => (
                         <body>
-                        <img src={entry} className="insImage" alt="" />
+                        <img src={entry.url} className="insImage" alt="" />
                         <div style={{display: 'flex', justifyContent: "center"}}>
                         <div style={{ marginRight: '10px' }}>
-                        <script>
-                            const numReactions = await fetch(`/viewReactions/${entry}/likeCount`);
-                            $("#target").text(numReactions);
-                        </script>
                         <Checkbox
-                            handleChange={handleChangeLike(entry)}
+                            handleChange={handleChangeLike(entry.url)}
                             isChecked={isCheckedLike}
-                            label={"target❤️"}
+                            label={`${entry.likeCount}❤️`}
                         />
                         </div>
                         <div style={{ marginRight: '10px' }}>

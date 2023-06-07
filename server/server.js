@@ -197,6 +197,19 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
       // The file name is ID_SUBMISSIONNUMBER.ext
       uploadFile(fileName, req.file.buffer);
 
+      // insert fileName into submissions table
+      dbPool.query(`INSERT INTO submissions (\`likeCount\`, \`hahaCount\`, \`smileCount\`, \`wowCount\`, \`sadCount\`, \`angryCount\`, \`username\`, \`filename\`) VALUES (0, 0, 0, 0, 0, 0, "NULL", '${fileName}');`, function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.status(500);
+          res.send("Error updating DB");
+        } else {
+          res.status(200);
+          res.send();
+        }
+      });
+
+
       const entryNames = results[0].entryNames === "" ? fileName : results[0].entryNames + "," + fileName;
       dbPool.query(`UPDATE challenges SET entryNames = "${entryNames}" WHERE id=${req.body.chId}`, function (error, results, fields) {
         if (error) {
@@ -214,28 +227,31 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
 
 // TO GET THE NUMBER OF THE CERTAIN REACTION
 app.get('/viewReactions/:fileName/:reactionName', (req, res) => {
-  dbPool.query(`SELECT ${reactionName} FROM submissions WHERE filename=${fileName}`, function (error, results, fields) {
+  const fileName = req.params.fileName;
+  const reactionName = req.params.reactionName;
+  dbPool.query(`SELECT ${reactionName} FROM submissions WHERE filename='${fileName}'`, function (error, results, fields) {
     if (error) {
       console.log(error);
       res.status(500);
       res.end("Error updating database (reaction numbers)");
     } else {
       res.status(200);
-      res.send();
+      res.send(results);
     }
   });
 });
 
 // TO INCREMENT THE NUMBER OF THE REACTION
-app.post('/updateReactions/inc/:fileName/:reactionName', (req, res) => {
-  dbPool.query(`UPDATE submissions SET reactionName = reactionName + 1 WHERE filename = ${fileName}`, function (error, results, fields) {
+app.post('/updateReactions/inc/:fileName/likeCount', (req, res) => {
+  const fileName = req.params.fileName;
+  dbPool.query(`UPDATE submissions SET likeCount = likeCount + 1 WHERE filename = '${fileName}'`, function (error, results, fields) {
     if (error) {
       console.log(error);
       res.status(500);
       res.end("Error updating database (reaction numbers)");
     } else {
       res.status(200);
-      res.send();
+      res.send("Like count incremented successfully");
     }
   });
 });
@@ -249,7 +265,8 @@ app.post('/updateReactions/dec/:fileName/:reactionName', (req, res) => {
       res.end("Error updating database (reaction numbers)");
     } else {
       res.status(200);
-      res.send();
+      console.log("decr: ", results)
+      res.send(results);
     }
   });
 });
