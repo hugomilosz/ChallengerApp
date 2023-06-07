@@ -64,9 +64,12 @@ const ViewChallenge = () => {
     const [isChecked, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
     const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
 
-    const [isCheckedLike, setIsCheckedLike] = useState(false);
-    const handleChangeLike = (entry: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
-        setIsCheckedLike(e.target.checked);
+    const [isCheckedLike, setIsCheckedLike] = useState<{ [entry: string]: boolean }>({});
+
+  const handleChangeLike = (entry: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const updatedIsCheckedLike = { ...isCheckedLike };
+    updatedIsCheckedLike[entry] = e.target.checked;
+    setIsCheckedLike(updatedIsCheckedLike);
         const entryWithoutPrefix = entry.replace("http:/uploads/", "");
         if (e.target.checked) {
             const response = await fetch(`/updateReactions/inc/${entryWithoutPrefix}/likeCount`, {
@@ -128,8 +131,8 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
 
   const entryWithoutPrefix = entry.replace("http:/uploads/", "");
 
-  if (selectedCheckbox && selectedCheckbox !== reaction && selectedCheckbox != "likeCount" && reaction != "likeCount") {
-    const previousEntryWithoutPrefix = selectedCheckbox.replace("http:/uploads/", "");
+  if (selectedCheckbox && selectedCheckbox !== reaction) {
+    const previousEntryWithoutPrefix = entry.replace("http:/uploads/", "");
     const response = await fetch(
       `/updateReactions/dec/${previousEntryWithoutPrefix}/${selectedCheckbox}`,
       {
@@ -239,7 +242,7 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
                                 <div style={{ marginRight: '10px' }}>
                                 <Checkbox
                                     handleChange={handleChangeLike(entry.entryName)}
-                                    isChecked={isCheckedLike}
+                                    isChecked={isCheckedLike[entry.entryName] || false}
                                     label={`${entry.likeCount}❤️`}
                                 />
                                 </div>
