@@ -242,9 +242,10 @@ app.get('/viewReactions/:fileName/:reactionName', (req, res) => {
 });
 
 // TO INCREMENT THE NUMBER OF THE REACTION
-app.post('/updateReactions/inc/:fileName/likeCount', (req, res) => {
+app.post('/updateReactions/inc/:fileName/:reactionName', (req, res) => {
   const fileName = req.params.fileName;
-  dbPool.query(`UPDATE submissions SET likeCount = likeCount + 1 WHERE filename = '${fileName}'`, function (error, results, fields) {
+  const reactionName = req.params.reactionName;
+  dbPool.query(`UPDATE submissions SET ${reactionName} = ${reactionName} + 1 WHERE filename = '${fileName}'`, function (error, results, fields) {
     if (error) {
       console.log(error);
       res.status(500);
@@ -257,9 +258,10 @@ app.post('/updateReactions/inc/:fileName/likeCount', (req, res) => {
 });
 
 // TO DECREMENT THE NUMBER OF THE REACTION
-app.post('/updateReactions/dec/:fileName/likeCount', (req, res) => {
+app.post('/updateReactions/dec/:fileName/:reactionName', (req, res) => {
   const fileName = req.params.fileName;
-  dbPool.query(`UPDATE submissions SET likeCount = likeCount - 1 WHERE filename = '${fileName}'`, function (error, results, fields) {
+  const reactionName = req.params.reactionName;
+  dbPool.query(`UPDATE submissions SET ${reactionName} = ${reactionName} - 1 WHERE filename = '${fileName}'`, function (error, results, fields) {
     if (error) {
       console.log(error);
       res.status(500);
