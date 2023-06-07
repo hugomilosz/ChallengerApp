@@ -61,7 +61,7 @@ const ViewChallenge = () => {
     const [isCheckedAngry, setIsCheckedAngry] = useState<{ [key: string]: boolean }>({});
 
     const [selectedCheckbox, setSelectedCheckbox] = useState("");
-    // const [isChecked, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
+    const [isChecked, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
     const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
 
     const [isCheckedLike, setIsCheckedLike] = useState(false);
