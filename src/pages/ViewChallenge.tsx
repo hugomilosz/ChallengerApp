@@ -61,7 +61,6 @@ const ViewChallenge = () => {
     const [isCheckedAngry, setIsCheckedAngry] = useState<{ [key: string]: boolean }>({});
 
     const [selectedCheckbox, setSelectedCheckbox] = useState("");
-    // eslint-disable-next-line no-unused-vars
     const [isChecked, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
     const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
 
@@ -279,7 +278,7 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
                                     <Checkbox
                                         handleChange={handleChangeReaction(entry.entryName, "angryCount")}
                                         isChecked={selectedReaction[entry.entryName] === "angryCount"}
-                                        label={`${entry.angryCount}😡`}
+                                        label={`${entry.angryCount}🤩`}
                                     />
                                 </div>
                             </div>
