@@ -1,0 +1,19 @@
+.SelectField {
+  width: 100%;
+}
+
+.Label {
+  margin: 0 0 0.5rem;
+}
+
+select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+}
+
+select:focus {
+  border-color: #000;
+  outline: 0;
+}
