@@ -228,6 +228,7 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
                     <h2>Initial Inspiration</h2>
                     <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
 
+                    <h1>Add a Submission!</h1>
                     <form onSubmit={handleSubmitSubmission} id="form" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                         <input type="file" id="myFiles" accept="image/*" multiple style={{ marginBottom: 10 }} name="file" />
                         <input type="submit" style={{ marginBottom: 10 }} />
@@ -239,7 +240,7 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
                         <body>
                             <img src={entry.url} className="insImage" alt="" />
                             <div style={{ display: 'flex', justifyContent: "center" }}>
-                                <div style={{ marginRight: '10px' }}>
+                                <div style={{ marginRight: '10px', backgroundColor: "#bff0a1" }}>
                                 <Checkbox
                                     handleChange={handleChangeLike(entry.entryName)}
                                     isChecked={isCheckedLike[entry.entryName] || false}
