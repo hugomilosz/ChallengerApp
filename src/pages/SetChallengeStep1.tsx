@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState }  from "react";
+import React, { ChangeEvent, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Radio, RadioGroup } from "../components/SquareRadioButton/SquareRadioButton";
 
@@ -20,55 +20,55 @@ type ChDataProps1 = ChData1 & {
     updateFields: (fields: Partial<ChData1>) => void
 }
 
-const SetChallengeStep1 = ({ category, updateFields } : ChDataProps1) => {
+const SetChallengeStep1 = ({ category, updateFields }: ChDataProps1) => {
 
     const [ctgr, setCtgr] = React.useState(category);
 
-    const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setCtgr(event.target.value);
-        updateFields({ category: event.target.value })
+    const onChange = (label: string) => (_: ChangeEvent<HTMLInputElement>) => {
+        setCtgr(label);
+        updateFields({ category: label })
     };
 
     return (
-        <div className="setChallengeStep1">    
+        <div className="setChallengeStep1">
             <h2 id="group_heading">Choose category</h2>
             <p>Please select the category that best describes your challenge</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr", justifyItems: "center", alignItems: "center"}}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr", justifyItems: "center", alignItems: "center" }}>
                 <RadioGroup>
                     <Radio id="artcraft" name="radio" checked={ctgr} value="Art & Craft" onChange={onChange} >
-                        <img src={artcraftIcon} alt=""/>
+                        <img src={artcraftIcon} alt="" />
                         <h3>ART & CRAFT</h3>
                     </Radio>
                     <Radio id="culinary" name="radio" checked={ctgr} value="Culinary" onChange={onChange} >
-                        <img src={culinaryIcon} alt=""/>
+                        <img src={culinaryIcon} alt="" />
                         <h3>CULINARY</h3>
                     </Radio>
                     <Radio id="videography" name="radio" checked={ctgr} value="Videography" onChange={onChange} >
-                        <img src={filmingIcon} alt=""/>
-                        <h3>VIDEOGRAPHY</h3>                    
+                        <img src={filmingIcon} alt="" />
+                        <h3>VIDEOGRAPHY</h3>
                     </Radio>
                     <Radio id="gardening" name="radio" checked={ctgr} value="Gardening" onChange={onChange} >
-                        <img src={gardeningIcon} alt=""/>
+                        <img src={gardeningIcon} alt="" />
                         <h3>GARDENING</h3>
                     </Radio>
                     <Radio id="music" name="radio" checked={ctgr} value="Music" onChange={onChange} >
-                        <img src={musicIcon} alt=""/>
+                        <img src={musicIcon} alt="" />
                         <h3>MUSIC</h3>
                     </Radio>
                     <Radio id="photography" name="radio" checked={ctgr} value="Photography" onChange={onChange} >
-                        <img src={photographyIcon} alt=""/>
+                        <img src={photographyIcon} alt="" />
                         <h3>PHOTOGRAPHY</h3>
                     </Radio>
                     <Radio id="sport" name="radio" checked={ctgr} value="Sport" onChange={onChange} >
-                        <img src={sportIcon} alt=""/>
+                        <img src={sportIcon} alt="" />
                         <h3>SPORT</h3>
                     </Radio>
                     <Radio id="travel" name="radio" checked={ctgr} value="Travel" onChange={onChange} >
-                        <img src={travelIcon} alt=""/>
+                        <img src={travelIcon} alt="" />
                         <h3>TRAVEL</h3>
                     </Radio>
                     <Radio id="writing" name="radio" checked={ctgr} value="Writing" onChange={onChange} >
-                        <img src={writingIcon} alt=""/>
+                        <img src={writingIcon} alt="" />
                         <h3>WRITING</h3>
                     </Radio>
                     <Radio id="other" name="radio" checked={ctgr} value="Other" onChange={onChange} >

@@ -20,10 +20,10 @@ export const Radio = ({
   value,
   checked,
   onChange,
-}: PropsWithChildren<{ id: string; name: string, value: string, checked: string, onChange: (event: ChangeEvent<HTMLInputElement>) => void }>) => {
+}: PropsWithChildren<{ id: string; name: string, value: string, checked: string, onChange: (label: string) => (event: ChangeEvent<HTMLInputElement>) => void }>) => {
   return (
     <>
-      <input required type="radio" id={id} name={name} checked={checked === value} onChange={onChange}/>
+      <input required type="radio" id={id} name={name} checked={checked === value} onChange={onChange(value)} />
       <label className={styles.radiolabel} htmlFor={id}>
         {children}
       </label>
