@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import SearchBar from "./SearchBar";
 
 const Home = () => {
     const [challenges, setChallenges] = useState<{ id: number; name: string }[]>([]);
@@ -32,6 +33,7 @@ const Home = () => {
 
     return (
         <div className="home">
+            <SearchBar />
             <h1>Home Page</h1>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                 {challenges.map((challenge) => (
