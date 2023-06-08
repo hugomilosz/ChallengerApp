@@ -234,12 +234,12 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
                     </form>
 
                     <h1>Existing Submissions!</h1>
-                    <h3 style={{color: "#42a642"}}>Use ❤️ to vote for your favourites!</h3>
+                    <h3>Use ❤️ to vote for your favourites!</h3>
                     {challengeInfo.entryNamesUrls.map((entry) => (
                         <body>
                             <img src={entry.url} className="insImage" alt="" />
                             <div style={{ display: 'flex', justifyContent: "center" }}>
-                                <div style={{ marginRight: '10px', backgroundColor: "#bff0a1" }}>
+                                <div style={{ marginRight: '10px' }}>
                                 <Checkbox
                                     handleChange={handleChangeLike(entry.entryName)}
                                     isChecked={isCheckedLike[entry.entryName] || false}
