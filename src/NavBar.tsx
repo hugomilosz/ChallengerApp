@@ -11,7 +11,7 @@ function NavBar() {
                 <Link to="/login">Login</Link>
             </li>
             <li>
-                <Link to="/setChallengeChoice">Set Challenge</Link>
+                <Link to="/makeChallenge">Make Challenge</Link>
             </li>
             {/* <li>
                 <Link to="/viewChallenge">View Challenge</Link>

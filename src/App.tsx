@@ -2,9 +2,7 @@ import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Login from './pages/Login';
-import SetChallengeChoice from './pages/SetChallengeChoice';
-import SetChallengeTemplate from './pages/SetChallengeTemplate'
-import SetChallengeCheckout from './pages/SetChallengeCheckout';
+import MakeChallenge from './pages/MakeChallenge';
 import Home from './pages/Home';
 import NavBar from './NavBar'
 import ViewChallenge from './pages/ViewChallenge';
@@ -18,9 +16,7 @@ function App() {
       <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/setChallengeChoice" element={<SetChallengeChoice />} />
-        <Route path="/setChallengeCheckout" element={<SetChallengeCheckout />} />
-        <Route path="/setChallengeTemplate" element={<SetChallengeTemplate />} /> 
+        <Route path="/makeChallenge" element={<MakeChallenge />} />
         <Route path="/login" element={<Login />} />
         <Route path="/viewChallenge" element={<ViewChallenge />} />
         <Route path="/viewSubmissions" element={<ViewSubmissions />} />
