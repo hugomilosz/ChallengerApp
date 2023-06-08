@@ -1,5 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import React, { ChangeEvent } from "react";
 import { Radio, RadioGroup } from "../components/SquareRadioButton/SquareRadioButton";
 
 import artcraftIcon from "../assets/icons/categories/artcraft.png"

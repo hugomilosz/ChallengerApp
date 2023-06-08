@@ -26,6 +26,37 @@ const INITIAL_DATA: ChData = {
 }
 
 const SetChallengeTemplate = () => {
+
+    const handleSubmit = async (event: React.SyntheticEvent) => {
+        event.preventDefault();
+        
+        const target = event.target as typeof event.target & {
+            chName: { value: string },
+            chCtgr: { value: string },
+            chDesc: { value: string },
+            chTags: { value: string },
+            chFile: { files: FileList },
+            chDate: { value: string }
+        };
+
+        const formData = new FormData();
+        formData.append("name", target.chName.value);
+        formData.append("ctgr", target.chCtgr.value);
+        formData.append("desc", target.chDesc.value);
+        formData.append("tags", target.chTags.value);
+        formData.append("file", target.chFile.files[0], target.chFile.files[0].name);
+        formData.append("date", target.chDate.value);
+
+        const response = await fetch('./server/createChallenge', {
+            method: 'POST',
+            body: formData,
+        })
+        if (response.status === 200) {
+            alert("Challenge created!");
+        } else {
+            alert("Error creating challenge!");
+        }
+    }
     
     const [chData, setChData] = useState(INITIAL_DATA)
 
@@ -45,7 +76,7 @@ const SetChallengeTemplate = () => {
     function onSubmit(e: FormEvent) {
         e.preventDefault();
         if (!isLastStep) return nextStep();
-        alert("Successful Challenge Submission")
+        handleSubmit(e);
     }
 
 

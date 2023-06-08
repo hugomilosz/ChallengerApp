@@ -1,8 +1,4 @@
 import React from "react";
-import { useState, ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { SelectBox } from '../components';
-import type { SelectOption } from '../components';
 
 type ChData2 = {
     type: string
