@@ -49,9 +49,9 @@ const SetChallengeCheckout = ({ category, type, style, twist, tags, date, name, 
                 </Tooltip>
             </div>
             <SelectBox required={true} options={options} value={ctgr} onChange={onChange} label="Category:" name="chCtgr" />
-            <textarea required cols={40} rows={5} placeholder='Description' style={{ marginTop:10, marginBottom: 10 }} name="chDesc" defaultValue={getDescription(type, style, twist)} />
+            <textarea required cols={40} rows={5} placeholder='Description' style={{ marginTop: 10, marginBottom: 10 }} name="chDesc" defaultValue={getDescription(type, style, twist)} />
             <div style={{ display: "flex" }}>
-                <input required type="text" placeholder='Tags' style={{ marginBottom: 10 }} name="chName" value={tags} onChange={e => updateFields({ tags: e.target.value })} />
+                <input required type="text" placeholder='Tags' style={{ marginBottom: 10 }} name="chTags" value={tags} onChange={e => updateFields({ tags: e.target.value })} />
                 <div className="tags"><button>?</button></div>
                 <Tooltip anchorSelect=".tags" place="top" style={{ width: "400px" }}>
                     Add the tags (separated by ',') that could help find your challenge.
