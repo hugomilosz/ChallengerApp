@@ -7,8 +7,6 @@ import filmingIcon from "../assets/icons/categories/filming.png"
 import gardeningIcon from "../assets/icons/categories/gardening.png"
 import musicIcon from "../assets/icons/categories/music.png"
 import photographyIcon from "../assets/icons/categories/photography.png"
-import sportIcon from "../assets/icons/categories/sport.png"
-import travelIcon from "../assets/icons/categories/travel.png"
 import writingIcon from "../assets/icons/categories/writing.png"
 
 type ChData1 = {
@@ -57,14 +55,6 @@ const SetChallengeStep1 = ({ category, updateFields }: ChDataProps1) => {
                     <Radio id="photography" name="radio" checked={ctgr} value="Photography" onChange={onChange} >
                         <img src={photographyIcon} alt="" />
                         <h3>PHOTOGRAPHY</h3>
-                    </Radio>
-                    <Radio id="sport" name="radio" checked={ctgr} value="Sport" onChange={onChange} >
-                        <img src={sportIcon} alt="" />
-                        <h3>SPORT</h3>
-                    </Radio>
-                    <Radio id="travel" name="radio" checked={ctgr} value="Travel" onChange={onChange} >
-                        <img src={travelIcon} alt="" />
-                        <h3>TRAVEL</h3>
                     </Radio>
                     <Radio id="writing" name="radio" checked={ctgr} value="Writing" onChange={onChange} >
                         <img src={writingIcon} alt="" />

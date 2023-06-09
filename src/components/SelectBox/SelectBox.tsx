@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { ChangeEvent } from 'react';
 import { Label } from '../Label';
 import styles from './SelectBox.module.css';
@@ -16,6 +15,7 @@ type Props = {
   className?: string;
   options: SelectOption[];
   onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+  required: boolean;
 };
 
 const SelectBox = ({
@@ -26,9 +26,11 @@ const SelectBox = ({
   className,
   options,
   onChange,
+  required,
 }: Props) => {
   const selectBox = (
     <select
+      required={required}
       name={name}
       className={className}
       disabled={disabled}

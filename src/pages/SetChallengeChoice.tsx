@@ -13,11 +13,12 @@ const SetChallengeChoice = () => {
     };
 
     return (
-        <div className="setChallengeChoice">
-            <h1>Set up Challange</h1>
+        <div className="setChallengeChoice" style={{ display: "grid", gridTemplateColumns: "1fr", justifyItems: "center", alignItems: "center" }}>
+            <h2>Set up Challange</h2>
+            <p style={{ width: 300 }}>Please follow the template to create a new challenge or skip it and go straign to the submission form.</p>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <button style={{ marginBottom: 10 }} onClick={navigateToTemplate}>Get Help</button>
                 <button style={{ marginBottom: 10 }} onClick={navigateToCheckout}>Skip</button>
-                <button style={{ marginBottom: 10 }} onClick={navigateToTemplate}>Get Help</button>
             </div>
         </div>
     );
