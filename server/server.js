@@ -309,6 +309,33 @@ app.post('/selectWinner/:fileName', (req, res) => {
   });
 });
 
+// Get the winner of a challenge
+app.get('/getWinner/:challengeId', (req, res) => {
+  const challengeId = req.params.challengeId;
+
+  // 1. get the entryNames for challengeId
+  // 2. get the winner from those
+  //    a) select the fileName with winner = TRUE (1)
+
+  dbPool.query(`
+    SELECT filename 
+    FROM submissions 
+    WHERE 
+      filename IN (SELECT entryNames FROM challenges WHERE id = ${challengeId})
+      AND
+      filename IN (SELECT winner FROM submissions WHERE winner = 1)
+    `, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500);
+      res.end("Error getting winner from database");
+    } else {
+      res.status(200);
+      res.send(results);
+    }
+  });
+});
+
 const root = path.join(__dirname, '../build')
 app.use(express.static(root));
 

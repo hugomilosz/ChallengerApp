@@ -12,6 +12,7 @@ import ViewSubmissions from './pages/ViewSubmissions';
 import UploadSubmission from './pages/UploadSubmission';
 import Search from './pages/Search'
 import ChooseWinner from './pages/ChooseWinner'
+import AnnounceWinner from './pages/AnnounceWinner';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/uploadSubmission" element={<UploadSubmission />} />
         <Route path="/search/:query" element={<Search />} />;
         <Route path="/chooseWinner" element={<ChooseWinner />} />
+        <Route path="/announceWinner" element={<AnnounceWinner />} />
         <Route path='*' element={<Navigate to="/" />} />
       </Routes>
     </div >

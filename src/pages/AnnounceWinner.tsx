@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-import Checkbox from "../checkbox/checkbox";
 
-const ChooseWinner = () => {
+const AnnounceWinner = () => {
 
-    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>}>
-        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: []});
+    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, winner: string}>
+        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], winner: ""});
 
     const { state } = useLocation();
     const navigate = useNavigate();
@@ -58,11 +57,15 @@ const ChooseWinner = () => {
 
             return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
         });
+
+        const winningEntry = await (await fetch(`/getWinner/${state.id}`)).text();
+
         setChallenge({
             name: chs.name as string,
             description: chs.description as string,
             imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
             entryNamesUrls: await Promise.all(urls),
+            winner: await (await fetch(`/uploadsURL/${winningEntry}`)).text(),
         });
     };
 
@@ -75,65 +78,22 @@ const ChooseWinner = () => {
         navigate('/')
     }
 
-    const selectAsWinner = async (fileName: string) => {
-        // console.log("Do we even make it here");
-        // make the post req here to set the "winner" column in submissions
-        const response = await fetch(`/selectWinner/${fileName}`, {
-            method: "POST",
-        });
-
-        if (response.ok) {
-            console.log("Selected winner successfully");
-            fetchInfo();
-        } else {
-            console.error("Failed to select winner");
-        }
-
-        let path = '../announceWinner';
-        navigate(path, { state: { id: state.id } });
-    }
-
     return (
-        <div className="chooseWinner">
+        <div className="announceWinner">
         {state?.id ? (
             <>
-                <h1>Choose the Winner for Challenge {state.id}</h1>
-                <h2>Name</h2>
-                <body>{challengeInfo.name}</body>
-
-                <h2>Description</h2>
-                <body>{challengeInfo.description}</body>
-
-                <h2>Initial Inspiration</h2>
-                <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
-
-                <h1>Vote for your favourite submission here!</h1>
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginBottom: "10px",
-                        flexWrap: "wrap"
-                    }}>
-                    {challengeInfo.entryNamesUrls.map((entry, index) => (
-                        <div
-                        key={index}
-                        style={{
-                            border: "5px solid black",
-                            margin: "0 5px",
-                            textAlign: "center",
-                            flex: "1",
-                            width: "50%"
-                        }}
-                        >
-                        <img src={entry.url} className="insImage" alt="" />
-                        <br />
-                        <button style={{ marginTop: "5px" }} onClick={() => selectAsWinner(entry.entryName)}>Vote</button>
-                        </div>
-                    ))}
+                <h1>Winner of challenge {state.id}!</h1>
+                <body><img src={challengeInfo.winner} className="insImage" alt="" /></body>
+                
+                <h2>Runners-up</h2>
+                <div>
+                    <p>"2 runners-up here"</p>
                 </div>
 
-
+                <h2>Other submissions</h2>
+                <div>
+                    <p>"Rest of submissions here"</p>
+                </div>
             </>
         ) : (
             <>
@@ -146,4 +106,4 @@ const ChooseWinner = () => {
     )
 };
 
-export default ChooseWinner;
+export default AnnounceWinner;
