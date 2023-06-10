@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const AnnounceWinner = () => {
@@ -74,10 +74,9 @@ const AnnounceWinner = () => {
     };
 
     useEffect(() => {
-          fetchInfo();
-      }, []);
+        fetchInfo();
+    });
 
-    
     const navigateToHomeScreen = () => {
         navigate('/')
     }

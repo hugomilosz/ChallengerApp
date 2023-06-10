@@ -215,7 +215,7 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
     };
   
     fetchChallengeInfo();
-  }, [deadlineDate]);
+  }, [deadlineDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleSubmitSubmission = async (event: React.SyntheticEvent) => {
         event.preventDefault();

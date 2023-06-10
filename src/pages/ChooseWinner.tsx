@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-import Checkbox from "../checkbox/checkbox";
 
 const ChooseWinner = () => {
 
@@ -67,10 +66,9 @@ const ChooseWinner = () => {
     };
 
     useEffect(() => {
-          fetchInfo();
-      }, []);
+        fetchInfo();
+    });
 
-    
     const navigateToHomeScreen = () => {
         navigate('/')
     }
