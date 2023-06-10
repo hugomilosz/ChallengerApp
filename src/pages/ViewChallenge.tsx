@@ -191,18 +191,31 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
 };
 
   // checks the deadline time/date. Change this so it only does it once per page load
-    useEffect(() => {
-      const fetchChallengeInfo = async () => {
-        await fetchInfo();
-        console.log("deadline ", challengeInfo.deadline);
-        const currentDate = new Date();
-        if (challengeInfo.deadline && currentDate > challengeInfo.deadline) {
+  useEffect(() => {
+    const fetchChallengeInfo = async () => {
+      await fetchInfo();
+      console.log("deadline ", challengeInfo.deadline);
+      const currentDate = new Date();
+      if (challengeInfo.deadline && currentDate > challengeInfo.deadline) {
+        try {
+          const winningEntry = await (await fetch(`/getWinner/${state.id}`)).json();
+          console.log("winningentry: ", winningEntry.filename);
+          if (!winningEntry || winningEntry.length === 0) {
+            let path = '../chooseWinner';
+            navigate(path, { state: { id: state.id } });
+          } else {
+            let path = '../announceWinner';
+            navigate(path, { state: { id: state.id } });
+          }
+        } catch (error) {
           let path = '../chooseWinner';
           navigate(path, { state: { id: state.id } });
         }
-      };
-        fetchChallengeInfo();
-    }, [deadlineDate]);
+      }
+    };
+  
+    fetchChallengeInfo();
+  }, [deadlineDate]);
 
     const handleSubmitSubmission = async (event: React.SyntheticEvent) => {
         event.preventDefault();
