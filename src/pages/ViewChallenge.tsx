@@ -251,7 +251,7 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
                     </form>
 
                     <h1>Existing Submissions!</h1>
-                    <h3>Use ❤️ to vote for your favourites!</h3>
+                    <h3 style={{color: "#42a642"}}>Use ❤️ to vote for your favourites!</h3>
                     {challengeInfo.entryNamesUrls.map((entry) => (
                         <body>
                             <img src={entry.url} className="insImage" alt="" />
