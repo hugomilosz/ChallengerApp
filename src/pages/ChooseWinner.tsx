@@ -75,6 +75,21 @@ const ChooseWinner = () => {
         navigate('/')
     }
 
+    const selectAsWinner = (fileName: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
+        // console.log("Do we even make it here");
+        // make the post req here to set the "winner" column in submissions
+        const response = await fetch(`/selectWinner/${fileName}`, {
+            method: "POST",
+        });
+
+        if (response.ok) {
+            console.log("Selected winner successfully");
+            fetchInfo();
+        } else {
+            console.error("Failed to select winner");
+        }
+    }
+
     return (
         <div className="chooseWinner">
         {state?.id ? (
@@ -110,7 +125,7 @@ const ChooseWinner = () => {
                         >
                         <img src={entry.url} className="insImage" alt="" />
                         <br />
-                        <button style={{ marginTop: "5px" }}>Vote</button>
+                        <button style={{ marginTop: "5px" }} onClick={() => selectAsWinner(entry.entryName)}>Vote</button>
                         </div>
                     ))}
                 </div>

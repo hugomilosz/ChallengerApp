@@ -211,7 +211,7 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
       uploadFile(fileName, req.file.buffer);
 
       // insert fileName into submissions table
-      dbPool.query(`INSERT INTO submissions (\`likeCount\`, \`hahaCount\`, \`smileCount\`, \`wowCount\`, \`sadCount\`, \`angryCount\`, \`username\`, \`filename\`) VALUES (0, 0, 0, 0, 0, 0, "NULL", '${fileName}');`, function (error, results, fields) {
+      dbPool.query(`INSERT INTO submissions (\`likeCount\`, \`hahaCount\`, \`smileCount\`, \`wowCount\`, \`sadCount\`, \`angryCount\`, \`username\`, \`filename\`, \`winner\`) VALUES (0, 0, 0, 0, 0, 0, "NULL", '${fileName}', FALSE);`, function (error, results, fields) {
         if (error) {
           console.log(error);
           res.status(500);
@@ -282,6 +282,29 @@ app.post('/updateReactions/dec/:fileName/:reactionName', (req, res) => {
     } else {
       res.status(200);
       res.send("Like count incremented successfully");
+    }
+  });
+});
+
+// Setting the winner of the challenge
+// (May change depending on how/if we choose to retrieve runners-up)
+// should the winner column just be TRUE/FALSE or have numbers
+// so we dont have to do another long req and filter to get the
+// second and third most liked things?
+// I will do second option for now (TRUE/FALSE on winner)
+
+// when checking who has won, we need to iterate over only the subs
+// filenames associated with this challenge
+app.post('/selectWinner/:fileName', (req, res) => {
+  const fileName = req.params.fileName;
+  dbPool.query(`UPDATE submissions SET winner = TRUE WHERE filename = '${fileName}'`, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500);
+      res.end("Error updating database (setting winner)");
+    } else {
+      res.status(200);
+      res.send("Successfully chosen winner!");
     }
   });
 });
