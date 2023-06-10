@@ -6,8 +6,8 @@ const ViewChallenge = () => {
 
     const navigate = useNavigate();
 
-    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }> }>
-        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [] });
+    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, deadline: Date | null }>
+        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], deadline: null});
 
     const { state } = useLocation();
 
@@ -32,6 +32,10 @@ const ViewChallenge = () => {
         const body = await responseDBInfo.text();
         const chs = JSON.parse(body);
         const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",")
+        // const challengeData = await responseDBInfo.json();
+        const deadlineDate = new Date(chs.date);
+        console.log("deadlineDate ", deadlineDate);
+        setDeadlineDate(deadlineDate);
         const urls = splitArray.map(async (entryName: string) => {
 
             const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
@@ -49,7 +53,8 @@ const ViewChallenge = () => {
             name: chs.name as string,
             description: chs.description as string,
             imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
-            entryNamesUrls: await Promise.all(urls)
+            entryNamesUrls: await Promise.all(urls),
+            deadline: deadlineDate
         });
     };
 
@@ -63,6 +68,7 @@ const ViewChallenge = () => {
     const [selectedCheckbox, setSelectedCheckbox] = useState("");
     const [, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
     const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
+    const [deadlineDate, setDeadlineDate] = useState<Date | null>(null);
 
     const [isCheckedLike, setIsCheckedLike] = useState<{ [entry: string]: boolean }>({});
 
@@ -184,9 +190,19 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
   }
 };
 
+  // checks the deadline time/date. Change this so it only does it once per page load
     useEffect(() => {
-        fetchInfo();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+      const fetchChallengeInfo = async () => {
+        await fetchInfo();
+        console.log("deadline ", challengeInfo.deadline);
+        const currentDate = new Date();
+        if (challengeInfo.deadline && currentDate > challengeInfo.deadline) {
+          let path = '../chooseWinner';
+          navigate(path, { state: { id: state.id } });
+        }
+      };
+        fetchChallengeInfo();
+    }, [deadlineDate]);
 
     const handleSubmitSubmission = async (event: React.SyntheticEvent) => {
         event.preventDefault();

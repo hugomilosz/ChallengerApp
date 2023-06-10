@@ -11,6 +11,7 @@ import ViewChallenge from './pages/ViewChallenge';
 import ViewSubmissions from './pages/ViewSubmissions';
 import UploadSubmission from './pages/UploadSubmission';
 import Search from './pages/Search'
+import ChooseWinner from './pages/ChooseWinner'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/viewSubmissions" element={<ViewSubmissions />} />
         <Route path="/uploadSubmission" element={<UploadSubmission />} />
         <Route path="/search/:query" element={<Search />} />;
+        <Route path="/chooseWinner" element={<ChooseWinner />} />
         <Route path='*' element={<Navigate to="/" />} />
       </Routes>
     </div >
