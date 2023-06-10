@@ -3,8 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const AnnounceWinner = () => {
 
-    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, winner: string}>
-        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], winner: ""});
+    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, winner: string, runnersUp: string[]}>
+        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], winner: "", runnersUp: []});
 
     const { state } = useLocation();
     const navigate = useNavigate();
@@ -58,14 +58,18 @@ const AnnounceWinner = () => {
             return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
         });
 
-        const winningEntry = await (await fetch(`/getWinner/${state.id}`)).text();
+        const winningEntryDB = await (await fetch(`/getWinner/${state.id}`)).json();
+        console.log("winner from DB req: " + winningEntryDB.filename);
+        const winningEntry = await (await fetch(`/uploadsURL/${winningEntryDB.filename}`)).text()
+        const entryNameList = topEntries.map((entry) => entry.url);
 
         setChallenge({
             name: chs.name as string,
             description: chs.description as string,
             imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
             entryNamesUrls: await Promise.all(urls),
-            winner: await (await fetch(`/uploadsURL/${winningEntry}`)).text(),
+            winner: winningEntry,
+            runnersUp: entryNameList.filter(function (url) {return url !== winningEntry;}),
         });
     };
 
@@ -86,13 +90,28 @@ const AnnounceWinner = () => {
                 <body><img src={challengeInfo.winner} className="insImage" alt="" /></body>
                 
                 <h2>Runners-up</h2>
-                <div>
-                    <p>"2 runners-up here"</p>
-                </div>
-
-                <h2>Other submissions</h2>
-                <div>
-                    <p>"Rest of submissions here"</p>
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        marginBottom: "10px",
+                        flexWrap: "wrap"
+                    }}>
+                    {challengeInfo.runnersUp.map((entry, index) => (
+                        <div
+                        key={index}
+                        style={{
+                            border: "5px solid black",
+                            margin: "0 5px",
+                            textAlign: "center",
+                            flex: "1",
+                            width: "50%"
+                        }}
+                        >
+                        <img src={entry} className="insImage" alt="" />
+                        <br />
+                        </div>
+                    ))}
                 </div>
             </>
         ) : (

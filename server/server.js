@@ -33,7 +33,7 @@ app.get('/server/express_backend', (req, res) => {
 });
 
 app.get('/server/challenges', (req, res) => {
-  dbPool.query('SELECT * FROM challenges LIMIT 15', function (error, results, fields) {
+  dbPool.query('SELECT * FROM challenges LIMIT 20', function (error, results, fields) {
     if (error) {
       console.log(error);
       res.status(500).send('Error fetching challenges');
@@ -287,14 +287,6 @@ app.post('/updateReactions/dec/:fileName/:reactionName', (req, res) => {
 });
 
 // Setting the winner of the challenge
-// (May change depending on how/if we choose to retrieve runners-up)
-// should the winner column just be TRUE/FALSE or have numbers
-// so we dont have to do another long req and filter to get the
-// second and third most liked things?
-// I will do second option for now (TRUE/FALSE on winner)
-
-// when checking who has won, we need to iterate over only the subs
-// filenames associated with this challenge
 app.post('/selectWinner/:fileName', (req, res) => {
   const fileName = req.params.fileName;
   dbPool.query(`UPDATE submissions SET winner = TRUE WHERE filename = '${fileName}'`, function (error, results, fields) {
@@ -313,25 +305,24 @@ app.post('/selectWinner/:fileName', (req, res) => {
 app.get('/getWinner/:challengeId', (req, res) => {
   const challengeId = req.params.challengeId;
 
-  // 1. get the entryNames for challengeId
-  // 2. get the winner from those
-  //    a) select the fileName with winner = TRUE (1)
-
   dbPool.query(`
     SELECT filename 
     FROM submissions 
     WHERE 
-      filename IN (SELECT entryNames FROM challenges WHERE id = ${challengeId})
-      AND
-      filename IN (SELECT winner FROM submissions WHERE winner = 1)
-    `, function (error, results, fields) {
+      winner = 1 
+      AND 
+      FIND_IN_SET(filename, (SELECT entryNames
+                             FROM challenges
+                             WHERE id = ${challengeId}))
+    `, function(error, results, fields) {
     if (error) {
       console.log(error);
       res.status(500);
       res.end("Error getting winner from database");
     } else {
       res.status(200);
-      res.send(results);
+      console.log("This is the DB result: " + JSON.stringify(results))
+      res.send(results[0]);
     }
   });
 });
