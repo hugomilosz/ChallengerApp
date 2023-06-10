@@ -75,7 +75,7 @@ const ChooseWinner = () => {
         navigate('/')
     }
 
-    const selectAsWinner = (fileName: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectAsWinner = async (fileName: string) => {
         // console.log("Do we even make it here");
         // make the post req here to set the "winner" column in submissions
         const response = await fetch(`/selectWinner/${fileName}`, {
