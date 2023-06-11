@@ -201,6 +201,7 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
         try {
           const winningEntry = await (await fetch(`/getWinner/${state.id}`)).json();
           console.log("winningentry: ", winningEntry.filename);
+          // if user, go to winnerPending
           if (!winningEntry || winningEntry.length === 0) {
             let path = '../chooseWinner';
             navigate(path, { state: { id: state.id } });
@@ -208,8 +209,12 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
             let path = '../announceWinner';
             navigate(path, { state: { id: state.id } });
           }
-        } catch (error) {
-          let path = '../chooseWinner';
+        } 
+        
+        //if user, go to winnerPending
+        catch (error) {
+          // let path = '../chooseWinner';
+          let path = '../winnerPending';
           navigate(path, { state: { id: state.id } });
         }
       }
