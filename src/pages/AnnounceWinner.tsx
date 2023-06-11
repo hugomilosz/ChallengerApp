@@ -112,7 +112,7 @@ const AnnounceWinner = () => {
             });
         };
         fetchInfo();
-    }, []);
+    }, [state.id]);
 
     const navigateToHomeScreen = () => {
         navigate('/')
