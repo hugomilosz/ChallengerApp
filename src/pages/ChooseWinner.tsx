@@ -40,29 +40,8 @@ const ChooseWinner = () => {
         // Sort the entries based on the like count in descending order
         const sortedEntries = await Promise.all(entries);
         sortedEntries.sort((a, b) => b.likeCount - a.likeCount);
-    
-        const maxLikes = sortedEntries[0].likeCount;
-    
-        // Take all entries with maximum number of likes
-        var topEntries = sortedEntries.filter(
-            function (sub) {
-                return sub.likeCount === maxLikes;
-            }
-        );
 
-        // If there is only 1 with the most likes, take all entries with the
-        // second highest number of likes too
-        if (topEntries.length === 1) {
-            const secondEntries = sortedEntries.filter(
-                function (sub) {
-                    return sub.likeCount === (maxLikes - 1)
-                }
-            );
-
-            topEntries = topEntries.concat(secondEntries);
-        }
-
-        const urls = topEntries.map((entry) => entry.entryName).map(async (entryName: string) => {
+        const urls = sortedEntries.map((entry) => entry.entryName).map(async (entryName: string) => {
 
             const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
 
@@ -124,27 +103,11 @@ const ChooseWinner = () => {
                 <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
 
                 <h1>Vote for your favourite submission here!</h1>
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginBottom: "10px",
-                        flexWrap: "wrap"
-                    }}>
+                <div>
                     {challengeInfo.entryNamesUrls.map((entry, index) => (
-                        <div
-                        key={index}
-                        style={{
-                            border: "5px solid black",
-                            margin: "0 5px",
-                            textAlign: "center",
-                            flex: "1",
-                            width: "50%"
-                        }}
-                        >
-                        <img src={entry.url} className="insImage" alt="" />
-                        <br />
-                        <button style={{ marginTop: "5px" }} onClick={() => selectAsWinner(entry.entryName)}>Vote</button>
+                        <div key={index}>
+                        <img src={entry.url} className="insImage" alt="" /> <br />
+                        <button style={{margin: 5}} onClick={() => selectAsWinner(entry.entryName)}>Vote</button>
                         </div>
                     ))}
                 </div>

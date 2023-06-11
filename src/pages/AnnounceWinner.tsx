@@ -41,28 +41,7 @@ const AnnounceWinner = () => {
         const sortedEntries = await Promise.all(entries);
         sortedEntries.sort((a, b) => b.likeCount - a.likeCount);
 
-        const maxLikes = sortedEntries[0].likeCount;
-    
-        // Take all entries with maximum number of likes
-        var topEntries = sortedEntries.filter(
-            function (sub) {
-                return sub.likeCount === maxLikes;
-            }
-        );
-
-        // If there is only 1 with the most likes, take all entries with the
-        // second highest number of likes too
-        if (topEntries.length === 1) {
-            const secondEntries = sortedEntries.filter(
-                function (sub) {
-                    return sub.likeCount === (maxLikes - 1)
-                }
-            );
-
-            topEntries = topEntries.concat(secondEntries);
-        }
-
-        const urls = topEntries.map((entry) => entry.entryName).map(async (entryName: string) => {
+        const urls = sortedEntries.map((entry) => entry.entryName).map(async (entryName: string) => {
 
             const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
 
@@ -79,7 +58,7 @@ const AnnounceWinner = () => {
         const winningEntryDB = await (await fetch(`/getWinner/${state.id}`)).json();
         console.log("winner from DB req: " + winningEntryDB.filename);
         const winningEntry = await (await fetch(`/uploadsURL/${winningEntryDB.filename}`)).text()
-        const entryNameList = topEntries.map((entry) => entry.url);
+        const entryNameList = sortedEntries.map((entry) => entry.url);
 
         setChallenge({
             name: chs.name as string,
@@ -108,26 +87,10 @@ const AnnounceWinner = () => {
                 <body><img src={challengeInfo.winner} className="insImage" alt="" /></body>
                 
                 <h2>Runners-up</h2>
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginBottom: "10px",
-                        flexWrap: "wrap"
-                    }}>
+                <div>
                     {challengeInfo.runnersUp.map((entry, index) => (
-                        <div
-                        key={index}
-                        style={{
-                            border: "5px solid black",
-                            margin: "0 5px",
-                            textAlign: "center",
-                            flex: "1",
-                            width: "50%"
-                        }}
-                        >
+                        <div key={index}>
                         <img src={entry} className="insImage" alt="" />
-                        <br />
                         </div>
                     ))}
                 </div>
