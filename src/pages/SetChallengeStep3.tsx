@@ -25,7 +25,9 @@ return (
                 Format: "tag1, tag2, tag3, etc".
             </Tooltip>
         </div>
+        <p>Set Deadline:</p>
         <input required type="datetime-local" style={{ marginBottom: 10 }} name="chDeadline" value={date} onChange={e => updateFields({ date: e.target.value })} />
+        <br />
         <div style={{ display: "flex" }}>
             <input required type="text" placeholder='Challenge Title' style={{ marginBottom: 10 }} name="chName" value={name} onChange={e => updateFields({ name: e.target.value })} />
             <div className="title"><button>?</button></div>

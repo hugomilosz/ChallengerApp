@@ -24,10 +24,10 @@ enum tooltipValueType {
 
 const TYPES_QUESTION = "What kind of submission do you expect for the challenge? ";
 const TYPES_EXAMPLES = new Map<string, string>();
-TYPES_EXAMPLES.set("Art & Craft", "Painting, wooden sculpture, knitted scard, etc.");
+TYPES_EXAMPLES.set("Art & Craft", "Painting, wooden sculpture, knitted scarf, etc.");
 TYPES_EXAMPLES.set("Culinary", "Muffins, Cocktail, Sauce recipe, etc.");
 TYPES_EXAMPLES.set("Videography", "Sunrise timelapse, dance video, pet meme, etc.");
-TYPES_EXAMPLES.set("Gardening", "Pumpkin carving, shaped bush, flowerbed, etc.");
+TYPES_EXAMPLES.set("Gardening", "Pumpkin carving, shaped hedge, flowerbed, etc.");
 TYPES_EXAMPLES.set("Music", "Song cover, lip sync, sound effect of car crash, etc.");
 TYPES_EXAMPLES.set("Photography", "Picture of an insect, portrait, photo-collage layout, etc.");
 TYPES_EXAMPLES.set("Writing", "Poem about love, 'How I spent summer' essay, anecdote, etc.");
@@ -35,7 +35,7 @@ TYPES_EXAMPLES.set("Writing", "Poem about love, 'How I spent summer' essay, anec
 const STYLES_QUESTION = "With what style do you expect challenge to be performed? ";
 const STYLES_EXAMPLES = new Map<string, string>();
 STYLES_EXAMPLES.set("Art & Craft", "Abstract style, modern vibe, wool material, etc.");
-STYLES_EXAMPLES.set("Culinary", "Chocolate chip, christmas vibe, hottest taste, etc.");
+STYLES_EXAMPLES.set("Culinary", "Chocolate chip, christmas vibe, mediterranean food, etc.");
 STYLES_EXAMPLES.set("Videography", "City environment, hip-hop style, fails, etc.");
 STYLES_EXAMPLES.set("Gardening", "Famous paintings design, 'Alice in Wonderland' style, tulips, etc.");
 STYLES_EXAMPLES.set("Music", "Raspy voice, song of your choice, explosions and screams, etc.");
@@ -47,9 +47,9 @@ const TWISTS_EXAMPLES = new Map<string, string>();
 TWISTS_EXAMPLES.set("Art & Craft", "You can only use blue and yellow colours, etc.");
 TWISTS_EXAMPLES.set("Culinary", "No berries or fruits allowed, etc.");
 TWISTS_EXAMPLES.set("Videography", "Only cats accepted, etc.");
-TWISTS_EXAMPLES.set("Gardening", "It must be not higher than 1m, etc.");
-TWISTS_EXAMPLES.set("Music", "it must include word 'Love', etc.");
-TWISTS_EXAMPLES.set("Photography", "No post editing is allowed, etc.");
+TWISTS_EXAMPLES.set("Gardening", "The hedge must be not taller than 1m, etc.");
+TWISTS_EXAMPLES.set("Music", "you must include word 'Love', etc.");
+TWISTS_EXAMPLES.set("Photography", "No photo editing is allowed, etc.");
 TWISTS_EXAMPLES.set("Writing", "You can use at most 300 words, etc.");
 
 function renderTooltip(category: string, valueType: tooltipValueType): string {
