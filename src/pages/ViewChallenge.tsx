@@ -11,6 +11,8 @@ const ViewChallenge = () => {
 
     const { state } = useLocation();
 
+    const [submissionsArray, setSubmissionsArray] = useState<string[]>([]);
+
     async function getReactionCount(entryWithoutPrefix: string, reactionName: string) {
         const reactionCountResponse = await fetch(`/viewReactions/${entryWithoutPrefix}/${reactionName}`);
         const reactionCountData = await reactionCountResponse.json();
@@ -32,7 +34,7 @@ const ViewChallenge = () => {
         const body = await responseDBInfo.text();
         const chs = JSON.parse(body);
         const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",")
-        // const challengeData = await responseDBInfo.json();
+        setSubmissionsArray(splitArray);
         const deadlineDate = new Date(chs.date);
         console.log("deadlineDate ", deadlineDate);
         setDeadlineDate(deadlineDate);
@@ -202,20 +204,28 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
           const winningEntry = await (await fetch(`/getWinner/${state.id}`)).json();
           console.log("winningentry: ", winningEntry.filename);
           // if user, go to winnerPending
-          if (!winningEntry || winningEntry.length === 0) {
+          if (submissionsArray.length === 0) {
+            let path = '../noSubmissions';
+            navigate(path, { state: { id: state.id } });
+          }
+          else if (!winningEntry || winningEntry.length === 0) {
             let path = '../chooseWinner';
             navigate(path, { state: { id: state.id } });
           } else {
             let path = '../announceWinner';
             navigate(path, { state: { id: state.id } });
           }
-        } 
-        
+        }
         //if user, go to winnerPending
         catch (error) {
+          if (submissionsArray.length === 0) {
+            let path = '../noSubmissions';
+            navigate(path, { state: { id: state.id } });
+          } else {
           let path = '../chooseWinner';
           // let path = '../winnerPending';
           navigate(path, { state: { id: state.id } });
+          }
         }
       }
     };
@@ -267,6 +277,7 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
                     <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
 
                     <h2 style={{color: "#FF0000"}}>Deadline</h2>
+                    {/* <body style={{color: "#FF0000"}}>Challenge ends at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body> */}
                     <body style={{color: "#FF0000"}}>Challenge ends at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body>
 
                     <h1>Add a Submission!</h1>

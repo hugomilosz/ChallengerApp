@@ -342,6 +342,23 @@ app.get('/getWinner/:challengeId', (req, res) => {
   });
 });
 
+app.post('/extendDeadline/:challengeId/:newDeadline', (req, res) => {
+  const challengeId = req.params.challengeId;
+  const newDeadline = req.params.newDeadline;
+
+  dbPool.query(`UPDATE challenges SET date="${newDeadline}" WHERE id=${challengeId}`, 
+  function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500);
+      res.end("Error updating database (extending the deadline)");
+    } else {
+      res.status(200);
+      res.send("Successfully extended the deadline!");
+    }
+  });
+});
+
 const root = path.join(__dirname, '../build')
 app.use(express.static(root));
 
