@@ -321,7 +321,7 @@ app.get('/getWinner/:challengeId', (req, res) => {
   const challengeId = req.params.challengeId;
 
   dbPool.query(`
-    SELECT filename 
+    SELECT * 
     FROM submissions 
     WHERE 
       winner = 1 

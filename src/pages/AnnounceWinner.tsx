@@ -17,7 +17,16 @@ const AnnounceWinner = () => {
                     sadCount: number, 
                     angryCount: number 
                 }>, 
-                winner: string, 
+                winner: Array<{ 
+                    entryName: string, 
+                    url: string, 
+                    likeCount: number, 
+                    hahaCount: number, 
+                    smileCount: number, 
+                    wowCount: number, 
+                    sadCount: number, 
+                    angryCount: number 
+                }>,  
                 runnersUp: Array<{ 
                     entryName: string, 
                     url: string, 
@@ -30,7 +39,7 @@ const AnnounceWinner = () => {
                 }>,
                 category: string
             }>
-        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], winner: "", runnersUp: [], category: ""});
+        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], winner: [], runnersUp: [], category: ""});
 
     const { state } = useLocation();
     const navigate = useNavigate();
@@ -83,8 +92,8 @@ const AnnounceWinner = () => {
             });
     
             const winningEntryDB = await (await fetch(`/getWinner/${state.id}`)).json();
-            console.log("winner from DB req: " + winningEntryDB.filename);
-            const winningEntry = await (await fetch(`/uploadsURL/${winningEntryDB.filename}`)).text()
+            console.log("winner from DB req: " + winningEntryDB.angryCount);
+            const winningEntry = await (await fetch(`/uploadsURL/${winningEntryDB.filename}`)).text();
     
             const entryNameList = sortedEntries.map((entry) => entry.entryName).map( async (entryName: string) => {
                 const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
@@ -103,7 +112,10 @@ const AnnounceWinner = () => {
                 description: chs.description as string,
                 imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
                 entryNamesUrls: await Promise.all(urls),
-                winner: winningEntry,
+                winner: await Promise.all(entryNameList.filter(async function (entry) {
+                    const entryData = await entry;
+                    return entryData.url === winningEntry;
+                })),      
                 runnersUp: await Promise.all(entryNameList.filter(async function (entry) {
                     const entryData = await entry;
                     return entryData.url !== winningEntry;
@@ -118,13 +130,39 @@ const AnnounceWinner = () => {
         navigate('/')
     }
 
+    console.log("winningEntryDB:", challengeInfo.winner);
+
     return (
         <div className="announceWinner">
         {state?.id ? (
             <>
+            {challengeInfo.winner.length > 0 ? (
+                <>
                 <h1>Winner of challenge {state.id}!</h1>
                 <body>
-                    <img src={challengeInfo.winner} className="insImage" alt="" />
+                    <img src={challengeInfo.winner[0].url} className="insImage" alt="" />
+                    <body>
+                        <div style={{ display: 'flex', justifyContent: "center" }}>
+                            <div style={{ marginRight: '10px'}}>
+                            <h3>{challengeInfo.winner[0].likeCount}❤️</h3>
+                            </div>
+                            <div style={{ marginRight: '10px'}}>
+                                <h3>{challengeInfo.winner[0].hahaCount}😂</h3>
+                            </div>
+                            <div style={{ marginRight: '10px'}}>
+                                <h3>{challengeInfo.winner[0].smileCount}😃</h3>
+                            </div>
+                            <div style={{ marginRight: '10px'}}>
+                                <h3>{challengeInfo.winner[0].wowCount}😯</h3>
+                            </div>
+                            <div style={{ marginRight: '10px'}}>
+                                <h3>{challengeInfo.winner[0].sadCount}😢</h3>
+                            </div>
+                            <div style={{ marginRight: '10px'}}>
+                                <h3>{challengeInfo.winner[0].angryCount}🤩</h3>
+                            </div>
+                        </div>
+                    </body>
                 </body>
                 
                 <h2>Runners-up</h2>
@@ -170,6 +208,10 @@ const AnnounceWinner = () => {
 
                     <h2>Initial Inspiration</h2>
                     <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
+                    </>
+          ) : (
+            <h1>Loading...</h1>
+          )}
             </>
         ) : (
             <>
