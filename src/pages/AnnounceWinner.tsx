@@ -3,8 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const AnnounceWinner = () => {
 
-    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, winner: string, runnersUp: string[]}>
-        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], winner: "", runnersUp: []});
+    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, winner: string, runnersUp: string[], category: string}>
+        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], winner: "", runnersUp: [], category: ""});
 
     const { state } = useLocation();
     const navigate = useNavigate();
@@ -40,9 +40,27 @@ const AnnounceWinner = () => {
         // Sort the entries based on the like count in descending order
         const sortedEntries = await Promise.all(entries);
         sortedEntries.sort((a, b) => b.likeCount - a.likeCount);
+
+        const maxLikes = sortedEntries[0].likeCount;
     
-        // Take the top three entries with the greatest like counts
-        const topEntries = sortedEntries.slice(0, 3);
+        // Take all entries with maximum number of likes
+        var topEntries = sortedEntries.filter(
+            function (sub) {
+                return sub.likeCount == maxLikes;
+            }
+        );
+
+        // If there is only 1 with the most likes, take all entries with the
+        // second highest number of likes too
+        if (topEntries.length == 1) {
+            const secondEntries = sortedEntries.filter(
+                function (sub) {
+                    return sub.likeCount == (maxLikes - 1)
+                }
+            );
+
+            topEntries = topEntries.concat(secondEntries);
+        }
 
         const urls = topEntries.map((entry) => entry.entryName).map(async (entryName: string) => {
 
@@ -70,6 +88,7 @@ const AnnounceWinner = () => {
             entryNamesUrls: await Promise.all(urls),
             winner: winningEntry,
             runnersUp: entryNameList.filter(function (url) {return url !== winningEntry;}),
+            category: (await (await fetch(`/category/${state.id}`)).json()).subject,
         });
     };
 
@@ -112,6 +131,18 @@ const AnnounceWinner = () => {
                         </div>
                     ))}
                 </div>
+                <h1>Challenge Prompt:</h1>
+                    <h2>Name</h2>
+                    <body>{challengeInfo.name}</body>
+
+                    <h2>Category</h2>
+                    <body>{challengeInfo.category}</body>
+
+                    <h2>Description</h2>
+                    <body>{challengeInfo.description}</body>
+
+                    <h2>Initial Inspiration</h2>
+                    <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
             </>
         ) : (
             <>

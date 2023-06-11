@@ -41,8 +41,26 @@ const ChooseWinner = () => {
         const sortedEntries = await Promise.all(entries);
         sortedEntries.sort((a, b) => b.likeCount - a.likeCount);
     
-        // Take the top three entries with the greatest like counts
-        const topEntries = sortedEntries.slice(0, 3);
+        const maxLikes = sortedEntries[0].likeCount;
+    
+        // Take all entries with maximum number of likes
+        var topEntries = sortedEntries.filter(
+            function (sub) {
+                return sub.likeCount == maxLikes;
+            }
+        );
+
+        // If there is only 1 with the most likes, take all entries with the
+        // second highest number of likes too
+        if (topEntries.length == 1) {
+            const secondEntries = sortedEntries.filter(
+                function (sub) {
+                    return sub.likeCount == (maxLikes - 1)
+                }
+            );
+
+            topEntries = topEntries.concat(secondEntries);
+        }
 
         const urls = topEntries.map((entry) => entry.entryName).map(async (entryName: string) => {
 
