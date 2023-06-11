@@ -63,7 +63,7 @@ const ChooseWinner = () => {
             });
         };
         fetchInfo();
-    }, []);
+    }, [state.id]);
 
     const navigateToHomeScreen = () => {
         navigate('/')

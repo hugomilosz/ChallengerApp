@@ -34,6 +34,7 @@ function App() {
         <Route path="/announceWinner" element={<AnnounceWinner />} />
         <Route path="/winnerPending" element={<WinnerPending />} />
         <Route path="/noSubmissions" element={<NoSubmissions />} />
+        <Route path='*' element={<Navigate to="/" />} />
       </Routes>
     </div >
   );
