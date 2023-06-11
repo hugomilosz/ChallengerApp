@@ -6,8 +6,8 @@ const ViewChallenge = () => {
 
     const navigate = useNavigate();
 
-    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, deadline: Date | null }>
-        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], deadline: null});
+    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, deadline: Date | null, category: string }>
+        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], deadline: null, category: ""});
 
     const { state } = useLocation();
 
@@ -54,7 +54,8 @@ const ViewChallenge = () => {
             description: chs.description as string,
             imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
             entryNamesUrls: await Promise.all(urls),
-            deadline: deadlineDate
+            deadline: deadlineDate,
+            category: (await (await fetch(`/category/${state.id}`)).json()).subject,
         });
     };
 
@@ -251,11 +252,17 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
                     <h2>Name</h2>
                     <body>{challengeInfo.name}</body>
 
+                    <h2>Category</h2>
+                    <body>{challengeInfo.category}</body>
+
                     <h2>Description</h2>
                     <body>{challengeInfo.description}</body>
 
                     <h2>Initial Inspiration</h2>
                     <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
+
+                    <h2 style={{color: "#FF0000"}}>Deadline</h2>
+                    <body style={{color: "#FF0000"}}>Challenge ends at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body>
 
                     <h1>Add a Submission!</h1>
                     <form onSubmit={handleSubmitSubmission} id="form" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>

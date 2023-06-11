@@ -238,6 +238,21 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
   });
 });
 
+// Get category for a challenge (with ID chId)
+app.get('/category/:chId', (req, res) => {
+  const challId = req.params.chId;
+  dbPool.query(`SELECT subject FROM challenges WHERE id=${challId}`, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500);
+      res.end("Error getting category from database");
+    } else {
+      res.status(200);
+      res.send(results[0]);
+    }
+  });
+});
+
 // TO GET THE NUMBER OF THE CERTAIN REACTION
 app.get('/viewReactions/:fileName/:reactionName', (req, res) => {
   const fileName = req.params.fileName;
