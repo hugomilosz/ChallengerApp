@@ -107,8 +107,31 @@ const ChooseWinner = () => {
                     {challengeInfo.entryNamesUrls.map((entry, index) => (
                         <div key={index}>
                         <img src={entry.url} className="insImage" alt="" /> <br />
+                        <body>
+                            <div style={{ display: 'flex', justifyContent: "center" }}>
+                                <div style={{ marginRight: '10px'}}>
+                                <h3>{entry.likeCount}❤️</h3>
+                                </div>
+                                <div style={{ marginRight: '10px'}}>
+                                <h3>{entry.hahaCount}😂</h3>
+                                </div>
+                                <div style={{ marginRight: '10px'}}>
+                                <h3>{entry.smileCount}😃</h3>
+                                </div>
+                                <div style={{ marginRight: '10px'}}>
+                                <h3>{entry.wowCount}😯</h3>
+                                </div>
+                                <div style={{ marginRight: '10px'}}>
+                                <h3>{entry.sadCount}😢</h3>
+                                </div>
+                                <div style={{ marginRight: '10px'}}>
+                                <h3>{entry.angryCount}🤩</h3>
+                                </div>
+                            </div>
+                        </body>
                         <button style={{margin: 5}} onClick={() => selectAsWinner(entry.entryName)}>Vote</button>
                         </div>
+                        
                     ))}
                 </div>
 

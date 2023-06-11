@@ -213,8 +213,8 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
         
         //if user, go to winnerPending
         catch (error) {
-          // let path = '../chooseWinner';
-          let path = '../winnerPending';
+          let path = '../chooseWinner';
+          // let path = '../winnerPending';
           navigate(path, { state: { id: state.id } });
         }
       }

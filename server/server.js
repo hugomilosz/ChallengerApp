@@ -336,7 +336,7 @@ app.get('/getWinner/:challengeId', (req, res) => {
       res.end("Error getting winner from database");
     } else {
       res.status(200);
-      console.log("This is the DB result: " + results);
+      console.log("This is the DB result: " + results[0]);
       res.send(results[0]);
     }
   });

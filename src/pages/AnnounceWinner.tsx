@@ -3,7 +3,33 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const AnnounceWinner = () => {
 
-    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, winner: string, runnersUp: string[], category: string}>
+    const [challengeInfo, setChallenge] = useState<{ 
+                name: string, 
+                description: string, 
+                imgURL: string, 
+                entryNamesUrls: Array<{ 
+                    entryName: string, 
+                    url: string, 
+                    likeCount: number, 
+                    hahaCount: number, 
+                    smileCount: number, 
+                    wowCount: number, 
+                    sadCount: number, 
+                    angryCount: number 
+                }>, 
+                winner: string, 
+                runnersUp: Array<{ 
+                    entryName: string, 
+                    url: string, 
+                    likeCount: number, 
+                    hahaCount: number, 
+                    smileCount: number, 
+                    wowCount: number, 
+                    sadCount: number, 
+                    angryCount: number 
+                }>,
+                category: string
+            }>
         ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], winner: "", runnersUp: [], category: ""});
 
     const { state } = useLocation();
@@ -25,55 +51,68 @@ const AnnounceWinner = () => {
         return reactionCount;
     }
 
-    const fetchInfo = async () => {
-        const responseDBInfo = await fetch(`/server/challenge/${state.id}`);
-        const body = await responseDBInfo.text();
-        const chs = JSON.parse(body);
-        const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",");
-
-        const entries = splitArray.map(async (entryName: string) => {
-            const url = await (await fetch(`/uploadsURL/${entryName}`)).text();
-            const likeCount = await getReactionCount(entryName, "likeCount");
-            return { entryName, url, likeCount };
-        });
-    
-        // Sort the entries based on the like count in descending order
-        const sortedEntries = await Promise.all(entries);
-        sortedEntries.sort((a, b) => b.likeCount - a.likeCount);
-
-        const urls = sortedEntries.map((entry) => entry.entryName).map(async (entryName: string) => {
-
-            const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
-
-            const likeCount = await getReactionCount(entryName, "likeCount");
-            const hahaCount = await getReactionCount(entryName, "hahaCount");
-            const smileCount = await getReactionCount(entryName, "smileCount");
-            const wowCount = await getReactionCount(entryName, "wowCount");
-            const sadCount = await getReactionCount(entryName, "sadCount");
-            const angryCount = await getReactionCount(entryName, "angryCount");
-
-            return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
-        });
-
-        const winningEntryDB = await (await fetch(`/getWinner/${state.id}`)).json();
-        console.log("winner from DB req: " + winningEntryDB.filename);
-        const winningEntry = await (await fetch(`/uploadsURL/${winningEntryDB.filename}`)).text()
-        const entryNameList = sortedEntries.map((entry) => entry.url);
-
-        setChallenge({
-            name: chs.name as string,
-            description: chs.description as string,
-            imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
-            entryNamesUrls: await Promise.all(urls),
-            winner: winningEntry,
-            runnersUp: entryNameList.filter(function (url) {return url !== winningEntry;}),
-            category: (await (await fetch(`/category/${state.id}`)).json()).subject,
-        });
-    };
-
     useEffect(() => {
+        const fetchInfo = async () => {
+            const responseDBInfo = await fetch(`/server/challenge/${state.id}`);
+            const body = await responseDBInfo.text();
+            const chs = JSON.parse(body);
+            const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",");
+    
+            const entries = splitArray.map(async (entryName: string) => {
+                const url = await (await fetch(`/uploadsURL/${entryName}`)).text();
+                const likeCount = await getReactionCount(entryName, "likeCount");
+                return { entryName, url, likeCount };
+            });
+        
+            // Sort the entries based on the like count in descending order
+            const sortedEntries = await Promise.all(entries);
+            sortedEntries.sort((a, b) => b.likeCount - a.likeCount);
+    
+            const urls = sortedEntries.map((entry) => entry.entryName).map(async (entryName: string) => {
+    
+                const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
+    
+                const likeCount = await getReactionCount(entryName, "likeCount");
+                const hahaCount = await getReactionCount(entryName, "hahaCount");
+                const smileCount = await getReactionCount(entryName, "smileCount");
+                const wowCount = await getReactionCount(entryName, "wowCount");
+                const sadCount = await getReactionCount(entryName, "sadCount");
+                const angryCount = await getReactionCount(entryName, "angryCount");
+    
+                return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
+            });
+    
+            const winningEntryDB = await (await fetch(`/getWinner/${state.id}`)).json();
+            console.log("winner from DB req: " + winningEntryDB.filename);
+            const winningEntry = await (await fetch(`/uploadsURL/${winningEntryDB.filename}`)).text()
+    
+            const entryNameList = sortedEntries.map((entry) => entry.entryName).map( async (entryName: string) => {
+                const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
+                const likeCount = await getReactionCount(entryName, "likeCount");
+                const hahaCount = await getReactionCount(entryName, "hahaCount");
+                const smileCount = await getReactionCount(entryName, "smileCount");
+                const wowCount = await getReactionCount(entryName, "wowCount");
+                const sadCount = await getReactionCount(entryName, "sadCount");
+                const angryCount = await getReactionCount(entryName, "angryCount");
+    
+                return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
+            });
+    
+            setChallenge({
+                name: chs.name as string,
+                description: chs.description as string,
+                imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
+                entryNamesUrls: await Promise.all(urls),
+                winner: winningEntry,
+                runnersUp: await Promise.all(entryNameList.filter(async function (entry) {
+                    const entryData = await entry;
+                    return entryData.url !== winningEntry;
+                })),            
+                category: (await (await fetch(`/category/${state.id}`)).json()).subject,
+            });
+        };
         fetchInfo();
-    });
+    }, []);
 
     const navigateToHomeScreen = () => {
         navigate('/')
@@ -84,14 +123,39 @@ const AnnounceWinner = () => {
         {state?.id ? (
             <>
                 <h1>Winner of challenge {state.id}!</h1>
-                <body><img src={challengeInfo.winner} className="insImage" alt="" /></body>
+                <body>
+                    <img src={challengeInfo.winner} className="insImage" alt="" />
+                </body>
                 
                 <h2>Runners-up</h2>
                 <div>
                     {challengeInfo.runnersUp.map((entry, index) => (
                         <div key={index}>
-                        <img src={entry} className="insImage" alt="" />
-                        </div>
+                        <img src={entry.url} className="insImage" alt="" />
+                        <body>
+                            <div style={{ display: 'flex', justifyContent: "center" }}>
+                                <div style={{ marginRight: '10px'}}>
+                                <h3>{entry.likeCount}❤️</h3>
+                                </div>
+                                <div style={{ marginRight: '10px'}}>
+                                    <h3>{entry.hahaCount}😂</h3>
+                                </div>
+                                <div style={{ marginRight: '10px'}}>
+                                    <h3>{entry.smileCount}😃</h3>
+                                </div>
+                                <div style={{ marginRight: '10px'}}>
+                                    <h3>{entry.wowCount}😯</h3>
+                                </div>
+                                <div style={{ marginRight: '10px'}}>
+                                    <h3>{entry.sadCount}😢</h3>
+                                </div>
+                                <div style={{ marginRight: '10px'}}>
+                                    <h3>{entry.angryCount}🤩</h3>
+                                </div>
+                            </div>
+                        </body>
+                </div>
+                        
                     ))}
                 </div>
                 <h1>Challenge Prompt:</h1>
