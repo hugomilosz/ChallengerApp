@@ -46,16 +46,16 @@ const AnnounceWinner = () => {
         // Take all entries with maximum number of likes
         var topEntries = sortedEntries.filter(
             function (sub) {
-                return sub.likeCount == maxLikes;
+                return sub.likeCount === maxLikes;
             }
         );
 
         // If there is only 1 with the most likes, take all entries with the
         // second highest number of likes too
-        if (topEntries.length == 1) {
+        if (topEntries.length === 1) {
             const secondEntries = sortedEntries.filter(
                 function (sub) {
-                    return sub.likeCount == (maxLikes - 1)
+                    return sub.likeCount === (maxLikes - 1)
                 }
             );
 
