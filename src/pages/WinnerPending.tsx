@@ -26,42 +26,40 @@ const WinnerPending = () => {
         return reactionCount;
     }
 
-    const fetchInfo = async () => {
-        const responseDBInfo = await fetch(`/server/challenge/${state.id}`);
-        const body = await responseDBInfo.text();
-        const chs = JSON.parse(body);
-        const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",")
-        const deadlineDate = new Date(chs.date);
-        setDeadlineDate(deadlineDate);
-        const urls = splitArray.map(async (entryName: string) => {
+  useEffect(() => {
+        const fetchInfo = async () => {
+            const responseDBInfo = await fetch(`/server/challenge/${state.id}`);
+            const body = await responseDBInfo.text();
+            const chs = JSON.parse(body);
+            const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",")
+            const deadlineDate = new Date(chs.date);
+            setDeadlineDate(deadlineDate);
+            const urls = splitArray.map(async (entryName: string) => {
 
-            const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
+                const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
 
-            const likeCount = await getReactionCount(entryName, "likeCount");
-            const hahaCount = await getReactionCount(entryName, "hahaCount");
-            const smileCount = await getReactionCount(entryName, "smileCount");
-            const wowCount = await getReactionCount(entryName, "wowCount");
-            const sadCount = await getReactionCount(entryName, "sadCount");
-            const angryCount = await getReactionCount(entryName, "angryCount");
+                const likeCount = await getReactionCount(entryName, "likeCount");
+                const hahaCount = await getReactionCount(entryName, "hahaCount");
+                const smileCount = await getReactionCount(entryName, "smileCount");
+                const wowCount = await getReactionCount(entryName, "wowCount");
+                const sadCount = await getReactionCount(entryName, "sadCount");
+                const angryCount = await getReactionCount(entryName, "angryCount");
 
-            return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
-        });
-        setChallenge({
-            name: chs.name as string,
-            description: chs.description as string,
-            imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
-            entryNamesUrls: await Promise.all(urls),
-            deadline: deadlineDate,
-            category: (await (await fetch(`/category/${state.id}`)).json()).subject,
-        });
-    };
+                return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
+            });
+            setChallenge({
+                name: chs.name as string,
+                description: chs.description as string,
+                imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
+                entryNamesUrls: await Promise.all(urls),
+                deadline: deadlineDate,
+                category: (await (await fetch(`/category/${state.id}`)).json()).subject,
+            });
+        };
+        fetchInfo();
+    }, [state.id]);
 
     const [, setDeadlineDate] = useState<Date | null>(null);
-
-  // checks the deadline time/date. Change this so it only does it once per page load
-  useEffect(() => {
-    fetchInfo();
-  }, []);
 
     const navigateToHomeScreen = () => {
         navigate('/')
