@@ -116,10 +116,7 @@ const AnnounceWinner = () => {
                     const entryData = await entry;
                     return entryData.url === winningEntry;
                 })),      
-                runnersUp: await Promise.all(entryNameList.filter(async function (entry) {
-                    const entryData = await entry;
-                    return entryData.url !== winningEntry;
-                })),            
+                runnersUp: await Promise.all(entryNameList.slice(1)), 
                 category: (await (await fetch(`/category/${state.id}`)).json()).subject,
             });
         };
