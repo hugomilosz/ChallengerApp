@@ -106,92 +106,97 @@ const ViewChallenge = () => {
 
 
 
-const handleChangeReaction = (entry: string, reaction: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const updatedSelectedReaction = { ...selectedReaction };
 
-  if (updatedSelectedReaction[entry] === reaction) {
-    // If the same reaction is already selected, deselect it
-    delete updatedSelectedReaction[entry];
-  } else {
-    // Select the new reaction
-    updatedSelectedReaction[entry] = reaction;
+  const [checkboxStates, setCheckboxStates] = useState<Map<string, string>>(new Map());
+
+
+  function handleCheckboxChange(entry: string, reaction: string) {
+    const updatedCheckboxStates = new Map(checkboxStates);
+    updatedCheckboxStates.set(entry, reaction);
+    setCheckboxStates(updatedCheckboxStates);
   }
 
-  setSelectedReaction(updatedSelectedReaction);
+  const handleChangeReaction = (entry: string, reaction: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
+    let previouslyChecked = checkboxStates.get(entry);
+    if (!previouslyChecked) {
+      previouslyChecked = "";
+    }
+    const updatedSelectedReaction = { ...selectedReaction };
 
-  if (reaction === "likeCount") {
-    setIsChecked({ [entry]: { [reaction]: e.target.checked } });
-  } else {
-    setIsChecked((prevState) => ({
-      ...prevState,
-      [entry]: { [reaction]: e.target.checked },
-    }));
-  }
-
-  // Update the respective checkbox state variable
-  switch (reaction) {
-    case "hahaCount": setIsCheckedHaha({ ...isCheckedHaha, [entry]: e.target.checked }); break;
-    case "smileCount":setIsCheckedSmile({ ...isCheckedSmile, [entry]: e.target.checked }); break;
-    case "wowCount": setIsCheckedWow({ ...isCheckedWow, [entry]: e.target.checked }); break;
-    case "sadCount": setIsCheckedSad({ ...isCheckedSad, [entry]: e.target.checked }); break;
-    case "angryCount": setIsCheckedAngry({ ...isCheckedAngry, [entry]: e.target.checked }); break;
-    default: console.error("Not a valid reaction"); break;
-  }
-
-  const entryWithoutPrefix = entry.replace("http:/uploads/", "");
-
-  if (selectedCheckbox && selectedCheckbox !== reaction) {
-    const previousEntryWithoutPrefix = entry.replace("http:/uploads/", "");
-    const response = await fetch(
-      `/updateReactions/dec/${previousEntryWithoutPrefix}/${selectedCheckbox}`,
-      {
-        method: "POST",
-      }
-    );
-    if (response.ok) {
-      console.log("Decremented previous reaction count", selectedCheckbox);
-      fetchInfo();
+    if (updatedSelectedReaction[entry] === reaction) {
+      // If the same reaction is already selected, deselect it
+      handleCheckboxChange(entry, "");
+      delete updatedSelectedReaction[entry];
     } else {
-      console.error("Failed to decrement previous reaction count");
+      // Select the new reaction
+      handleCheckboxChange(entry, reaction);
+      updatedSelectedReaction[entry] = reaction;
     }
-  }
+    console.log("previously: ", previouslyChecked);
+    setSelectedReaction(updatedSelectedReaction);
 
-  if (e.target.checked) {
-    setSelectedCheckbox(reaction);
+    // Decrement logic for previous reaction
+    if (previouslyChecked !== "") {
+      const entryWithoutPrefix = entry.replace("http:/uploads/", "");
+      const decrementResponse = await fetch(
+        `/updateReactions/dec/${entryWithoutPrefix}/${previouslyChecked}`,
+        {
+          method: "POST",
+        }
+      );
 
-    // Increment logic
-    const response = await fetch(
-      `/updateReactions/inc/${entryWithoutPrefix}/${reaction}`,
-      {
-        method: "POST",
+      if (decrementResponse.ok) {
+        console.log("Decremented previous reaction count: ", previouslyChecked);
+        await fetchInfo();
+      } else {
+        console.error("Failed to decrement previous reaction count");
       }
-    );
-    if (response.ok) {
-      console.log("Incremented reaction count: ", reaction);
-      fetchInfo();
-    } else {
-      console.error("Failed to increment reaction count");
-    }
-  } else {
-    if (reaction !== "likeCount") {
-        setSelectedCheckbox("");
     }
 
-    // Decrement logic for current reaction
-    const response = await fetch(
-      `/updateReactions/dec/${entryWithoutPrefix}/${reaction}`,
-      {
-        method: "POST",
-      }
-    );
-    if (response.ok) {
-      console.log("Decremented reaction count: ", reaction);
-      fetchInfo();
-    } else {
-      console.error("Failed to decrement reaction count");
+    // Update the respective checkbox state variable
+    switch (reaction) {
+      case "hahaCount":
+        setIsCheckedHaha({ ...isCheckedHaha, [entry]: e.target.checked });
+        break;
+      case "smileCount":
+        setIsCheckedSmile({ ...isCheckedSmile, [entry]: e.target.checked });
+        break;
+      case "wowCount":
+        setIsCheckedWow({ ...isCheckedWow, [entry]: e.target.checked });
+        break;
+      case "sadCount":
+        setIsCheckedSad({ ...isCheckedSad, [entry]: e.target.checked });
+        break;
+      case "angryCount":
+        setIsCheckedAngry({ ...isCheckedAngry, [entry]: e.target.checked });
+        break;
+      default:
+        console.error("Not a valid reaction");
+        break;
     }
-  }
-};
+
+    const entryWithoutPrefix = entry.replace("http:/uploads/", "");
+
+    if (e.target.checked) {
+      setSelectedCheckbox(reaction);
+
+      // Increment logic
+      const incrementResponse = await fetch(
+        `/updateReactions/inc/${entryWithoutPrefix}/${reaction}`,
+        {
+          method: "POST",
+        }
+      );
+
+      if (incrementResponse.ok) {
+        console.log("Incremented reaction count: ", reaction);
+        await fetchInfo();
+      } else {
+        console.error("Failed to increment reaction count");
+      }
+    }
+  };
+
 
   // checks the deadline time/date. Change this so it only does it once per page load
   useEffect(() => {
