@@ -63,14 +63,8 @@ app.use(passport.authenticate('session'));
 
 // Create a GET route
 app.get('/server/express_backend', (req, res) => {
-  dbPool.query(`SELECT entryNames FROM challenges WHERE id=1`, function (error, results, fields) {
-    if (error) {
-      res.send(error);
-      console.log(error);
-    } else {
-      res.send("Beep beep");
-    }
-  });
+  if (req.user) { res.send(req.user); }
+  else { res.send("Nothin'") }
 });
 
 app.get('/server/challenges', (req, res) => {
@@ -81,6 +75,16 @@ app.get('/server/challenges', (req, res) => {
     } else {
       res.json(results);
     }
+  });
+});
+
+app.post('/server/logOut', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      console.log("Error logging out?");
+      return;
+    }
+    res.redirect("/");
   });
 });
 

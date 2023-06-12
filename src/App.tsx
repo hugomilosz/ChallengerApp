@@ -10,7 +10,8 @@ import NavBar from './NavBar'
 import ViewChallenge from './pages/ViewChallenge';
 import ViewSubmissions from './pages/ViewSubmissions';
 import UploadSubmission from './pages/UploadSubmission';
-import Search from './pages/Search'
+import Search from './pages/Search';
+import Logout from './pages/Logout';
 
 function App() {
   return (
@@ -20,8 +21,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/setChallengeChoice" element={<SetChallengeChoice />} />
         <Route path="/setChallengeCheckout" element={<SetChallengeCheckout />} />
-        <Route path="/setChallengeTemplate" element={<SetChallengeTemplate />} /> 
+        <Route path="/setChallengeTemplate" element={<SetChallengeTemplate />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
         <Route path="/viewChallenge" element={<ViewChallenge />} />
         <Route path="/viewSubmissions" element={<ViewSubmissions />} />
         <Route path="/uploadSubmission" element={<UploadSubmission />} />
