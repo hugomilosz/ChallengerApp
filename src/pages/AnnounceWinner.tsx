@@ -138,7 +138,23 @@ const AnnounceWinner = () => {
             <>
             {challengeInfo.winner.length > 0 ? (
                 <>
-                <h1>Winner of challenge {state.id}!</h1>
+
+                <h1>Challenge Prompt:</h1>
+                    <h2>Name</h2>
+                    <body>{challengeInfo.name}</body>
+
+                    <h2>Category</h2>
+                    <body>{challengeInfo.category}</body>
+
+                    <h2>Description</h2>
+                    <body>{challengeInfo.description}</body>
+
+                    <h2>Initial Inspiration</h2>
+                    <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
+
+                <hr/>
+
+                <h1 style={{color: "#42a642"}}>Winner of challenge {state.id}!</h1>
                 <body>
                     <img src={challengeInfo.winner[0].url} className="insImage" alt="" />
                     <body>
@@ -164,8 +180,9 @@ const AnnounceWinner = () => {
                         </div>
                     </body>
                 </body>
+                <hr/>
                 
-                <h2>Runners-up</h2>
+                <h2 style={{color: "#42a642"}}>Runners-up</h2>
                 <div>
                     {challengeInfo.runnersUp.map((entry, index) => (
                         <div key={index}>
@@ -196,19 +213,7 @@ const AnnounceWinner = () => {
                         
                     ))}
                 </div>
-                <h1>Challenge Prompt:</h1>
-                    <h2>Name</h2>
-                    <body>{challengeInfo.name}</body>
-
-                    <h2>Category</h2>
-                    <body>{challengeInfo.category}</body>
-
-                    <h2>Description</h2>
-                    <body>{challengeInfo.description}</body>
-
-                    <h2>Initial Inspiration</h2>
-                    <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
-                    </>
+            </>
           ) : (
             <h1>Loading...</h1>
           )}
