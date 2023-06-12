@@ -68,8 +68,6 @@ const ViewChallenge = () => {
     const [isCheckedSad, setIsCheckedSad] = useState<{ [key: string]: boolean }>({});
     const [isCheckedAngry, setIsCheckedAngry] = useState<{ [key: string]: boolean }>({});
 
-    const [selectedCheckbox, setSelectedCheckbox] = useState("");
-    const [, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
     const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
     const [deadlineDate, setDeadlineDate] = useState<Date | null>(null);
 
@@ -178,7 +176,6 @@ const ViewChallenge = () => {
     const entryWithoutPrefix = entry.replace("http:/uploads/", "");
 
     if (e.target.checked) {
-      setSelectedCheckbox(reaction);
 
       // Increment logic
       const incrementResponse = await fetch(
