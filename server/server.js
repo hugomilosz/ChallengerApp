@@ -2,6 +2,9 @@ const express = require('express')
 const path = require('path')
 const mysql = require('mysql')
 const multer = require('multer')
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const crypto = require('crypto')
 const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3')
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
@@ -19,6 +22,30 @@ const dbPool = mysql.createPool({
   password: process.env.DBPASS || 'dev',
   database: process.env.DBNAME || 'challenger_db'
 });
+
+passport.use(new LocalStrategy(function verify(username, password, cb) {
+  dbPool.query(`SELECT * FROM users WHERE username = ${username}`, function (error, results, field) {
+    if (error) {
+      console.log(error);
+      return cb(error);
+    }
+    if (!results) {
+      return cb(null, false, { message: "Incorrect Username or Password" });
+    }
+
+    // Hashes the password and queries
+    const row = results[0];
+    crypto.pbkdf2(password, row.salt, 310000, 64, 'sha256', (err, derivedKey) => {
+      if (err) {
+        return cb(err);
+      }
+      if (!crypto.timingSafeEqual(row.hashed_password, derivedKey)) {
+        return cb(null, false, { message: "Incorrect Username or Password" });
+      }
+      return cb(null, row);
+    });
+  });
+}));
 
 // Create a GET route
 app.get('/server/express_backend', (req, res) => {
