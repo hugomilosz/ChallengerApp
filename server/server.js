@@ -259,7 +259,7 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
       uploadFile(fileName, req.file.buffer);
 
       // insert fileName into submissions table
-      dbPool.query(`INSERT INTO submissions (\`likeCount\`, \`hahaCount\`, \`smileCount\`, \`wowCount\`, \`sadCount\`, \`angryCount\`, \`username\`, \`filename\`) VALUES (0, 0, 0, 0, 0, 0, "NULL", '${fileName}');`, function (error, results, fields) {
+      dbPool.query(`INSERT INTO submissions (\`likeCount\`, \`hahaCount\`, \`smileCount\`, \`wowCount\`, \`sadCount\`, \`angryCount\`, \`username\`, \`filename\`) VALUES (0, 0, 0, 0, 0, 0, '${req.user.username}', '${fileName}');`, function (error, results, fields) {
         if (error) {
           console.log(error);
           res.status(500);
