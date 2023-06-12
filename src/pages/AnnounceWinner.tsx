@@ -37,9 +37,10 @@ const AnnounceWinner = () => {
                     sadCount: number, 
                     angryCount: number 
                 }>,
+                deadline: Date | null,
                 category: string
             }>
-        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], winner: [], runnersUp: [], category: ""});
+        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], winner: [], runnersUp: [], deadline: null, category: ""});
 
     const { state } = useLocation();
     const navigate = useNavigate();
@@ -66,6 +67,8 @@ const AnnounceWinner = () => {
             const body = await responseDBInfo.text();
             const chs = JSON.parse(body);
             const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",");
+            const deadlineDate = new Date(chs.date);
+            setDeadlineDate(deadlineDate);
     
             const entries = splitArray.map(async (entryName: string) => {
                 const url = await (await fetch(`/uploadsURL/${entryName}`)).text();
@@ -120,11 +123,14 @@ const AnnounceWinner = () => {
                 runnersUp: fetchedEntryNames.filter(function (entry) {
                     return entry.url !== winningEntry;
                 }), 
+                deadline: deadlineDate,
                 category: (await (await fetch(`/category/${state.id}`)).json()).subject,
             });
         };
         fetchInfo();
     }, [state.id]);
+
+    const [, setDeadlineDate] = useState<Date | null>(null);
 
     const navigateToHomeScreen = () => {
         navigate('/')
@@ -148,6 +154,9 @@ const AnnounceWinner = () => {
 
                     <h2>Description</h2>
                     <body>{challengeInfo.description}</body>
+
+                    <h2 style={{color: "#FF0000"}}>Challenge ended at:</h2>
+                    <body style={{color: "#FF0000"}}>{challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body>
 
                     <h2>Initial Inspiration</h2>
                     <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>

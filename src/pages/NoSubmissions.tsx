@@ -119,6 +119,9 @@ const NoSubmissions = () => {
 
                     <h2>Description</h2>
                     <body>{challengeInfo.description}</body>
+                    
+                    <h2 style={{color: "#FF0000"}}>Challenge ended at:</h2>
+                    <body style={{color: "#FF0000"}}>{challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body>
 
                     <h2>Initial Inspiration</h2>
                     <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body> <br/>
