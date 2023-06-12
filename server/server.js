@@ -67,6 +67,11 @@ app.get('/server/express_backend', (req, res) => {
   else { res.send("Nothin'") }
 });
 
+app.get('/server/isLoggedIn', (req, res) => {
+  if (req.user) { res.status(200).send(req.user); }
+  else { res.status(204).send("Not logged in"); }
+});
+
 app.get('/server/challenges', (req, res) => {
   dbPool.query('SELECT * FROM challenges LIMIT 15', function (error, results, fields) {
     if (error) {
