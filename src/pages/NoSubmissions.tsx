@@ -137,6 +137,8 @@ const NoSubmissions = () => {
                     </div>< br/>
                     <div>
                         <button onClick={archiveChallenge}>Archive the Challenge</button>
+                        <p>Archiving a challenge means it will be accessible from the Home page and in Search results.</p>
+                        <p>Along with the challenge information it will have a message to say the challenge ended with no submissions.</p>
                     </div>
                 </>
             ) : (
