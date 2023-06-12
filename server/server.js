@@ -7,6 +7,9 @@ const LocalStrategy = require('passport-local');
 const crypto = require('crypto')
 const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3')
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const session = require('express-session');
+
+const SQLiteStore = require('connect-sqlite3')(session);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -49,6 +52,14 @@ passport.use(new LocalStrategy(function verify(username, password, cb) {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use(session({
+  secret: process.env.SESSIONSECRET || 'hello gordon!',
+  resave: false,
+  saveUninitialized: false,
+  store: new SQLiteStore({ db: 'sessions.db', dir: '.' })
+}));
+app.use(passport.authenticate('session'));
 
 // Create a GET route
 app.get('/server/express_backend', (req, res) => {
@@ -334,7 +345,6 @@ app.post("/login/password", passport.authenticate("local", {
 }));
 
 app.post("/signup", (req, res, next) => {
-  console.log(req.body);
   dbPool.query(`SELECT * FROM users WHERE username='${req.body.username}'`, (error, results) => {
     if (error) {
       console.log(error);
@@ -363,21 +373,32 @@ app.post("/signup", (req, res, next) => {
           res.end("Error updating DB!");
           return;
         }
-        res.redirect("/");
-        // const user = {
-        //   id: this.lastID,
-        //   username: req.body.username
-        // };
-        // req.login(user, (err) => {
-        //   if (err) {
-        //     console.log(error);
-        //     res.status(500);
-        //     res.end("Failed to login!");
-        //     return;
-        //   }
-        //   res.redirect("/");
-        // })
+        const user = {
+          id: this.lastID,
+          username: req.body.username
+        };
+        req.login(user, (err) => {
+          if (err) {
+            console.log(error);
+            res.status(500);
+            res.end("Failed to login!");
+            return;
+          }
+          res.redirect("/");
+        })
       });
     });
+  });
+});
+
+passport.serializeUser((user, cb) => {
+  process.nextTick(() => {
+    cb(null, { id: user.id, username: user.username });
+  });
+});
+
+passport.deserializeUser((user, cb) => {
+  process.nextTick(() => {
+    return cb(null, user);
   });
 });
