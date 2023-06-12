@@ -69,7 +69,7 @@ const ViewChallenge = () => {
     const [isCheckedAngry, setIsCheckedAngry] = useState<{ [key: string]: boolean }>({});
 
     const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
-    const [deadlineDate, setDeadlineDate] = useState<Date | null>(null);
+    const [, setDeadlineDate] = useState<Date | null>(null);
 
     const [isCheckedLike, setIsCheckedLike] = useState<{ [entry: string]: boolean }>({});
 
@@ -102,11 +102,7 @@ const ViewChallenge = () => {
         }
       };
 
-
-
-
   const [checkboxStates, setCheckboxStates] = useState<Map<string, string>>(new Map());
-
 
   function handleCheckboxChange(entry: string, reaction: string) {
     const updatedCheckboxStates = new Map(checkboxStates);
@@ -194,12 +190,14 @@ const ViewChallenge = () => {
     }
   };
 
-
   // checks the deadline time/date. Change this so it only does it once per page load
   useEffect(() => {
     const fetchChallengeInfo = async () => {
       await fetchInfo();
       console.log("deadline ", challengeInfo.deadline);
+    };
+
+    const checkDeadlinePass = async () => {
       const currentDate = new Date();
       if (challengeInfo.deadline && currentDate > challengeInfo.deadline) {
         const response = await (await fetch(`/checkArchived/${state.id}`)).json();
@@ -246,125 +244,129 @@ const ViewChallenge = () => {
           }
         }
       }
+    }
+
+    if (challengeInfo.deadline === null) {
+      fetchChallengeInfo();
+    } else {
+      console.log("Checking if deadline has passed...");
+      checkDeadlinePass();
+    }
+  }, [challengeInfo.deadline]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSubmitSubmission = async (event: React.SyntheticEvent) => {
+    event.preventDefault();
+
+    const target = event.target as typeof event.target & {
+        file: { files: FileList }
     };
-  
-    fetchChallengeInfo();
-  }, [deadlineDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleSubmitSubmission = async (event: React.SyntheticEvent) => {
-        event.preventDefault();
+    const formData = new FormData();
+    formData.append("chId", state.id);
+    formData.append("file", target.file.files[0], target.file.files[0].name);
 
-        const target = event.target as typeof event.target & {
-            file: { files: FileList }
-        };
-
-        const formData = new FormData();
-        formData.append("chId", state.id);
-        formData.append("file", target.file.files[0], target.file.files[0].name);
-
-        const response = await fetch('./server/uploadImg', {
-            method: 'POST',
-            body: formData,
-        })
-        if (response.status === 200) {
-            fetchInfo();
-        } else {
-            alert("Error creating submission!");
-        }
+    const response = await fetch('./server/uploadImg', {
+        method: 'POST',
+        body: formData,
+    })
+    if (response.status === 200) {
+        fetchInfo();
+    } else {
+        alert("Error creating submission!");
     }
+  }
 
-    const navigateToHomeScreen = () => {
-        navigate('/')
-    }
+  const navigateToHomeScreen = () => {
+    navigate('/')
+  }
 
-    return (
-        <div className="viewChallenge">
-            {state?.id ? (
-                <>
-                    <h1>View Challenge {state.id}</h1>
-                    <h2>Name</h2>
-                    <body>{challengeInfo.name}</body>
+  return (
+      <div className="viewChallenge">
+          {state?.id ? (
+              <>
+                  <h1>View Challenge {state.id}</h1>
+                  <h2>Name</h2>
+                  <body>{challengeInfo.name}</body>
 
-                    <h2>Category</h2>
-                    <body>{challengeInfo.category}</body>
+                  <h2>Category</h2>
+                  <body>{challengeInfo.category}</body>
 
-                    <h2>Description</h2>
-                    <body>{challengeInfo.description}</body>
+                  <h2>Description</h2>
+                  <body>{challengeInfo.description}</body>
 
-                    <h2>Initial Inspiration</h2>
-                    <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
+                  <h2>Initial Inspiration</h2>
+                  <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
 
-                    <h2 style={{color: "#FF0000"}}>Deadline</h2>
-                    {/* <body style={{color: "#FF0000"}}>Challenge ends at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body> */}
-                    <body style={{color: "#FF0000"}}>Challenge ends at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body>
+                  <h2 style={{color: "#FF0000"}}>Deadline</h2>
+                  {/* <body style={{color: "#FF0000"}}>Challenge ends at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body> */}
+                  <body style={{color: "#FF0000"}}>Challenge ends at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body>
 
-                    <h1>Add a Submission!</h1>
-                    <form onSubmit={handleSubmitSubmission} id="form" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <input type="file" id="myFiles" accept="image/*" multiple style={{ marginBottom: 10 }} name="file" />
-                        <input type="submit" style={{ marginBottom: 10 }} />
-                    </form>
+                  <h1>Add a Submission!</h1>
+                  <form onSubmit={handleSubmitSubmission} id="form" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                      <input type="file" id="myFiles" accept="image/*" multiple style={{ marginBottom: 10 }} name="file" />
+                      <input type="submit" style={{ marginBottom: 10 }} />
+                  </form>
 
-                    <h1>Existing Submissions!</h1>
-                    <h3 style={{color: "#42a642"}}>Use ❤️ to vote for your favourites!</h3>
-                    {challengeInfo.entryNamesUrls.map((entry) => (
-                        <body>
-                            <img src={entry.url} className="insImage" alt="" />
-                            <div style={{ display: 'flex', justifyContent: "center" }}>
-                                <div style={{ marginRight: '10px', backgroundColor: "#bff0a1" }}>
-                                <Checkbox
-                                    handleChange={handleChangeLike(entry.entryName)}
-                                    isChecked={isCheckedLike[entry.entryName] || false}
-                                    label={`${entry.likeCount}❤️`}
-                                />
-                                </div>
-                                <div style={{ marginRight: '10px' }}>
-                                    <Checkbox
-                                        handleChange={handleChangeReaction(entry.entryName, "hahaCount")}
-                                        isChecked={selectedReaction[entry.entryName] === "hahaCount"}
-                                        label={`${entry.hahaCount}😂`}
-                                      />
-                                </div>
-                                <div style={{ marginRight: '10px' }}>
-                                    <Checkbox
-                                        handleChange={handleChangeReaction(entry.entryName, "smileCount")}
-                                        isChecked={selectedReaction[entry.entryName] === "smileCount"}
-                                        label={`${entry.smileCount}😃`}
+                  <h1>Existing Submissions!</h1>
+                  <h3 style={{color: "#42a642"}}>Use ❤️ to vote for your favourites!</h3>
+                  {challengeInfo.entryNamesUrls.map((entry) => (
+                      <body>
+                          <img src={entry.url} className="insImage" alt="" />
+                          <div style={{ display: 'flex', justifyContent: "center" }}>
+                              <div style={{ marginRight: '10px', backgroundColor: "#bff0a1" }}>
+                              <Checkbox
+                                  handleChange={handleChangeLike(entry.entryName)}
+                                  isChecked={isCheckedLike[entry.entryName] || false}
+                                  label={`${entry.likeCount}❤️`}
+                              />
+                              </div>
+                              <div style={{ marginRight: '10px' }}>
+                                  <Checkbox
+                                      handleChange={handleChangeReaction(entry.entryName, "hahaCount")}
+                                      isChecked={selectedReaction[entry.entryName] === "hahaCount"}
+                                      label={`${entry.hahaCount}😂`}
                                     />
-                                </div>
-                                <div style={{ marginRight: '10px' }}>
-                                    <Checkbox
-                                        handleChange={handleChangeReaction(entry.entryName, "wowCount")}
-                                        isChecked={selectedReaction[entry.entryName] === "wowCount"}
-                                        label={`${entry.wowCount}😯`}
-                                    />
-                                </div>
-                                <div style={{ marginRight: '10px' }}>
-                                    <Checkbox
-                                        handleChange={handleChangeReaction(entry.entryName, "sadCount")}
-                                        isChecked={selectedReaction[entry.entryName] === "sadCount"}
-                                        label={`${entry.sadCount}😢`}
-                                    />
-                                </div>
-                                <div style={{ marginRight: '10px' }}>
-                                    <Checkbox
-                                        handleChange={handleChangeReaction(entry.entryName, "angryCount")}
-                                        isChecked={selectedReaction[entry.entryName] === "angryCount"}
-                                        label={`${entry.angryCount}🤩`}
-                                    />
-                                </div>
-                            </div>
-                        </body>
-                    ))}
-                </>
-                 ) : (
-                <>
-                    <h1>Invalid Challenge ID</h1>
-                    <button onClick={navigateToHomeScreen}>Click here to go back to the Home Screen</button>
-                </>
-            )}
-
-        </div>
-    )
+                              </div>
+                              <div style={{ marginRight: '10px' }}>
+                                  <Checkbox
+                                      handleChange={handleChangeReaction(entry.entryName, "smileCount")}
+                                      isChecked={selectedReaction[entry.entryName] === "smileCount"}
+                                      label={`${entry.smileCount}😃`}
+                                  />
+                              </div>
+                              <div style={{ marginRight: '10px' }}>
+                                  <Checkbox
+                                      handleChange={handleChangeReaction(entry.entryName, "wowCount")}
+                                      isChecked={selectedReaction[entry.entryName] === "wowCount"}
+                                      label={`${entry.wowCount}😯`}
+                                  />
+                              </div>
+                              <div style={{ marginRight: '10px' }}>
+                                  <Checkbox
+                                      handleChange={handleChangeReaction(entry.entryName, "sadCount")}
+                                      isChecked={selectedReaction[entry.entryName] === "sadCount"}
+                                      label={`${entry.sadCount}😢`}
+                                  />
+                              </div>
+                              <div style={{ marginRight: '10px' }}>
+                                  <Checkbox
+                                      handleChange={handleChangeReaction(entry.entryName, "angryCount")}
+                                      isChecked={selectedReaction[entry.entryName] === "angryCount"}
+                                      label={`${entry.angryCount}🤩`}
+                                  />
+                              </div>
+                          </div>
+                      </body>
+                  ))}
+              </>
+               ) : (
+              <>
+                  <h1>Invalid Challenge ID</h1>
+                  <button onClick={navigateToHomeScreen}>Click here to go back to the Home Screen</button>
+              </>
+          )}
+      </div>
+  )
 }
 
 export default ViewChallenge
