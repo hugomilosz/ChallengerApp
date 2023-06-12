@@ -86,7 +86,7 @@ app.post('/server/createChallenge', multer().single('file'), (req, res) => {
       const fileName = `${newId}_0.` + req.file.originalname.split(".").pop();
       uploadFile(fileName, req.file.buffer);
 
-      dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`subject\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`, \`tags\`, \`date\`) VALUES ('${newId}', '${req.body.name}', '${req.body.ctgr}', '${req.body.desc}', '${fileName}', '', 'Image', '${req.body.tags}', '${req.body.date}');`, function (error, results, fields) {
+      dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`subject\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`, \`tags\`, \`date\`, \`archived\`) VALUES ('${newId}', '${req.body.name}', '${req.body.ctgr}', '${req.body.desc}', '${fileName}', '', 'Image', '${req.body.tags}', '${req.body.date}', FALSE);`, function (error, results, fields) {
         if (error) {
           console.log(error);
 
@@ -373,6 +373,32 @@ app.post('/deleteChallenge/:challengeId/', (req, res) => {
       res.send("Successfully deleted the challenge!");
     }
   });
+});
+
+// Mark a challenge as archived
+app.post('/setArchived/:challengeId', (req, res) => {
+  const chId = req.params.challengeId;
+  dbPool.query(`UPDATE challenges SET archived=TRUE WHERE id=${chId}`, function (error, results, fields) {
+    if (error) {
+      res.send(error);
+      console.log(error);
+    } else {
+      res.json(results);
+    }
+  })
+});
+
+// Check if a challenge is archived
+app.get('/checkArchived/:challengeId', (req, res) => {
+  const chId = req.params.challengeId;
+  dbPool.query(`SELECT archived FROM challenges WHERE id=${chId}`, function (error, results, fields) {
+    if (error) {
+      res.send(error);
+      console.log(error);
+    } else {
+      res.json(results[0]);
+    }
+  })
 });
 
 const root = path.join(__dirname, '../build')

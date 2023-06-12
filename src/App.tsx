@@ -15,6 +15,7 @@ import ChooseWinner from './pages/ChooseWinner'
 import AnnounceWinner from './pages/AnnounceWinner';
 import WinnerPending from './pages/WinnerPending'
 import NoSubmissions from './pages/NoSubmissions';
+import NoWinner from './pages/NoWinner';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route path="/announceWinner" element={<AnnounceWinner />} />
         <Route path="/winnerPending" element={<WinnerPending />} />
         <Route path="/noSubmissions" element={<NoSubmissions />} />
+        <Route path="/noWinner" element={<NoWinner />} />
         <Route path='*' element={<Navigate to="/" />} />
       </Routes>
     </div >

@@ -107,16 +107,19 @@ const AnnounceWinner = () => {
                 return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
             });
     
+            const fetchedEntryNames = await Promise.all(entryNameList);
+
             setChallenge({
                 name: chs.name as string,
                 description: chs.description as string,
                 imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
                 entryNamesUrls: await Promise.all(urls),
-                winner: await Promise.all(entryNameList.filter(async function (entry) {
-                    const entryData = await entry;
-                    return entryData.url === winningEntry;
-                })),      
-                runnersUp: await Promise.all(entryNameList.slice(1)), 
+                winner: fetchedEntryNames.filter(function (entry) {
+                    return entry.url === winningEntry;
+                }),
+                runnersUp: fetchedEntryNames.filter(function (entry) {
+                    return entry.url !== winningEntry;
+                }), 
                 category: (await (await fetch(`/category/${state.id}`)).json()).subject,
             });
         };

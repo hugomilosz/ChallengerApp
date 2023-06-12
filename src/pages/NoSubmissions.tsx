@@ -95,8 +95,14 @@ const NoSubmissions = () => {
         }
     }
 
-    const archiveChallenge = () => {
-        return
+    const archiveChallenge = async () => {
+        await fetch(`./setArchived/${state.id}`, {
+            method: 'POST'
+        });
+
+        alert("Challenge archived!");
+        let path = '../noWinner';
+        navigate(path, { state: { id: state.id } });
     }
 
     return (

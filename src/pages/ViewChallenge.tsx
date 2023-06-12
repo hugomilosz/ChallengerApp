@@ -200,15 +200,25 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
       console.log("deadline ", challengeInfo.deadline);
       const currentDate = new Date();
       if (challengeInfo.deadline && currentDate > challengeInfo.deadline) {
+        const response = await (await fetch(`/checkArchived/${state.id}`)).json();
+
         try {
           const winningEntry = await (await fetch(`/getWinner/${state.id}`)).json();
           console.log("winningentry: ", winningEntry.filename);
-          // if user, go to winnerPending
+
           if (submissionsArray.length === 0) {
-            let path = '../noSubmissions';
-            navigate(path, { state: { id: state.id } });
+            console.log("Reponse from archived: ", response.archived);
+
+            if (response.archived === 1) {
+              let path = '../noWinner';
+              navigate(path, { state: { id: state.id } });
+            } else {
+              let path = '../noSubmissions';
+              navigate(path, { state: { id: state.id } });
+            }
           }
           else if (!winningEntry || winningEntry.length === 0) {
+            // if user, go to winnerPending
             let path = '../chooseWinner';
             navigate(path, { state: { id: state.id } });
           } else {
@@ -216,13 +226,19 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
             navigate(path, { state: { id: state.id } });
           }
         }
-        //if user, go to winnerPending
         catch (error) {
           if (submissionsArray.length === 0) {
-            let path = '../noSubmissions';
-            navigate(path, { state: { id: state.id } });
+            console.log("Reponse from archived in catch: ", response.archived);
+            if (response.archived === 1) {
+              let path = '../noWinner';
+              navigate(path, { state: { id: state.id } });
+            } else {
+              let path = '../noSubmissions';
+              navigate(path, { state: { id: state.id } });
+            }
           } else {
           let path = '../chooseWinner';
+          //if user, go to winnerPending
           // let path = '../winnerPending';
           navigate(path, { state: { id: state.id } });
           }
