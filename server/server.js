@@ -359,6 +359,22 @@ app.post('/extendDeadline/:challengeId/:newDeadline', (req, res) => {
   });
 });
 
+app.post('/deleteChallenge/:challengeId/', (req, res) => {
+  const challengeId = req.params.challengeId;
+
+  dbPool.query(`UPDATE challenges SET name=NULL, subject=NULL, description=NULL, topic=NULL, entryNames=NULL, entryType=NULL, tags=NULL, date=NULL WHERE id=${challengeId}`, 
+  function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500);
+      res.end("Error deleting the challenge");
+    } else {
+      res.status(200);
+      res.send("Successfully deleted the challenge!");
+    }
+  });
+});
+
 const root = path.join(__dirname, '../build')
 app.use(express.static(root));
 

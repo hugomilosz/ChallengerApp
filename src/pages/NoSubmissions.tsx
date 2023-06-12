@@ -82,8 +82,17 @@ const NoSubmissions = () => {
         }
     }
 
-    const deleteChallenge = () => {
-        return
+    const deleteChallenge = async () => {
+        const response = await fetch(`./deleteChallenge/${state.id}`, {
+            method: 'POST'
+        })
+        if (response.status === 200) {
+            alert("Challenge successfully deleted!");
+            navigateToHomeScreen();
+            // naviagte to view challenge if successful
+        } else {
+            alert("Error deleting the challenge!");
+        }
     }
 
     const archiveChallenge = () => {

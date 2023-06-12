@@ -338,7 +338,7 @@ const handleChangeReaction = (entry: string, reaction: string) => async (e: Reac
                         </body>
                     ))}
                 </>
-            ) : (
+                 ) : (
                 <>
                     <h1>Invalid Challenge ID</h1>
                     <button onClick={navigateToHomeScreen}>Click here to go back to the Home Screen</button>
