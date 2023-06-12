@@ -24,28 +24,31 @@ const dbPool = mysql.createPool({
 });
 
 passport.use(new LocalStrategy(function verify(username, password, cb) {
-  dbPool.query(`SELECT * FROM users WHERE username = ${username}`, function (error, results, field) {
+  dbPool.query(`SELECT * FROM users WHERE username = '${username}'`, function (error, results, field) {
     if (error) {
       console.log(error);
       return cb(error);
     }
-    if (!results) {
+    if (results.length === 0) {
       return cb(null, false, { message: "Incorrect Username or Password" });
     }
 
     // Hashes the password and queries
     const row = results[0];
-    crypto.pbkdf2(password, row.salt, 310000, 64, 'sha256', (err, derivedKey) => {
+    crypto.pbkdf2(password, Buffer.from(row.salt, "hex"), 310000, 32, 'sha256', (err, derivedKey) => {
       if (err) {
         return cb(err);
       }
-      if (!crypto.timingSafeEqual(row.hashed_password, derivedKey)) {
+      if (!crypto.timingSafeEqual(Buffer.from(row.hashed_password, "hex"), derivedKey)) {
         return cb(null, false, { message: "Incorrect Username or Password" });
       }
       return cb(null, row);
     });
   });
 }));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // Create a GET route
 app.get('/server/express_backend', (req, res) => {
@@ -169,8 +172,6 @@ app.get('/uploadsURL/*', async (req, res) => {
   if (!(process.env.NODE_ENV === "production")) {
     // Local
     const uploadPath = path.join("http://localhost:5000", "../uploads", filename)
-
-    console.log(filename);
     res.send(uploadPath);
   } else {
     // Heroku / S3
@@ -325,4 +326,58 @@ app.get("*", (req, res) => {
 
 app.get('*', (req, res) => {
   res.send(404);
+});
+
+app.post("/login/password", passport.authenticate("local", {
+  successRedirect: "/",
+  failureRedirect: "/login"
+}));
+
+app.post("/signup", (req, res, next) => {
+  console.log(req.body);
+  dbPool.query(`SELECT * FROM users WHERE username='${req.body.username}'`, (error, results) => {
+    if (error) {
+      console.log(error);
+      res.status(500);
+      res.end("Error accessing user table");
+      return;
+    }
+    if (results.length !== 0) {
+      res.status(500);
+      res.end("Username already taken!");
+      return;
+    }
+
+    const salt = crypto.randomBytes(16);
+    crypto.pbkdf2(req.body.password, salt, 310000, 32, "sha256", (error, hashed_password) => {
+      if (error) {
+        console.log(error);
+        res.status(500);
+        res.end("Error in Crypto function");
+        return;
+      }
+      dbPool.query(`INSERT INTO users (username, hashed_password, salt) VALUES (?, ?, ?)`, [req.body.username, hashed_password.toString("hex"), salt.toString("hex")], (error, results) => {
+        if (error) {
+          console.log(error);
+          res.status(500);
+          res.end("Error updating DB!");
+          return;
+        }
+        res.redirect("/");
+        // const user = {
+        //   id: this.lastID,
+        //   username: req.body.username
+        // };
+        // req.login(user, (err) => {
+        //   if (err) {
+        //     console.log(error);
+        //     res.status(500);
+        //     res.end("Failed to login!");
+        //     return;
+        //   }
+        //   res.redirect("/");
+        // })
+      });
+    });
+  });
 });
