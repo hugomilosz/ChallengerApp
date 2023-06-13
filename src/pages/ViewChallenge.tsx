@@ -211,13 +211,14 @@ const ViewChallenge = () => {
               let path = '../noWinner';
               navigate(path, { state: { id: state.id } });
             } else {
-              let path = '../noSubmissions';
+              //let path = '../noSubmissions';
+              const path = await (await fetch(`/server/isOwner/${state.id}/empty`)).text();
               navigate(path, { state: { id: state.id } });
             }
           }
           else if (!winningEntry || winningEntry.length === 0) {
-            // if user, go to winnerPending
-            let path = '../chooseWinner';
+            // if the challenge-setter, go to chooseWinner. Otherwise, go to winnerPending 
+            let path = await (await fetch(`/server/isOwner/${state.id}`)).text();
             navigate(path, { state: { id: state.id } });
           } else {
             let path = '../announceWinner';
@@ -231,13 +232,13 @@ const ViewChallenge = () => {
               let path = '../noWinner';
               navigate(path, { state: { id: state.id } });
             } else {
-              let path = '../noSubmissions';
+              //let path = '../noSubmissions';
+              const path = await (await fetch(`/server/isOwner/${state.id}/empty`)).text();
               navigate(path, { state: { id: state.id } });
             }
           } else {
-            let path = '../chooseWinner';
-            //if user, go to winnerPending
-            // let path = '../winnerPending';
+            // if the challenge-setter, go to chooseWinner. Otherwise, go to winnerPending 
+            let path = await (await fetch(`/server/isOwner/${state.id}`)).text();
             navigate(path, { state: { id: state.id } });
           }
         }

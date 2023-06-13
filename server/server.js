@@ -466,6 +466,26 @@ app.post('/selectWinner/:fileName', (req, res) => {
   });
 });
 
+app.get('/server/isOwner/:challengeId', (req, res) => {
+  dbPool.query(`SELECT username FROM challenges WHERE id = '${req.params.challengeId}'`, (error, results, fields) => {
+    if (error || !req.user || req.user.username !== results[0].username) {
+      res.send('../winnerPending');
+    } else {
+      res.send('../chooseWinner')
+    }
+  });
+});
+
+app.get('/server/isOwner/:challengeId/empty', (req, res) => {
+  dbPool.query(`SELECT username FROM challenges WHERE id = '${req.params.challengeId}'`, (error, results, fields) => {
+    if (error || !req.user || req.user.username !== results[0].username) {
+      res.send('../winnerPending');
+    } else {
+      res.send('../noSubmissions')
+    }
+  });
+});
+
 // Get the winner of a challenge
 app.get('/getWinner/:challengeId', (req, res) => {
   const challengeId = req.params.challengeId;
