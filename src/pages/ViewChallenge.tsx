@@ -103,6 +103,9 @@ const ViewChallenge = () => {
   const [isCheckedLike, setIsCheckedLike] = useState<{ [entry: string]: boolean }>({});
 
   const handleChangeLike = (entry: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Disable the fieldset
+    e.target.closest("fieldset")!.disabled = true;
+
     const updatedIsCheckedLike = { ...isCheckedLike };
     updatedIsCheckedLike[entry] = e.target.checked;
     setIsCheckedLike(updatedIsCheckedLike);
@@ -129,10 +132,16 @@ const ViewChallenge = () => {
         console.error("Failed to update like count");
       }
     }
+
+    // Re-enable the fieldset
+    e.target.closest("fieldset")!.disabled = false;
   };
 
 
   const handleChangeReaction = (entry: string, reaction: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Disable the fieldset
+    e.target.closest("fieldset")!.disabled = true;
+
     let previouslyChecked = selectedReaction[entry];
     if (!previouslyChecked) {
       previouslyChecked = "";
@@ -186,6 +195,9 @@ const ViewChallenge = () => {
         console.error("Failed to increment reaction count");
       }
     }
+
+    // Re-enable the fieldset
+    e.target.closest("fieldset")!.disabled = false;
   };
 
   // checks the deadline time/date. Change this so it only does it once per page load
@@ -312,48 +324,50 @@ const ViewChallenge = () => {
             <body>
               <img src={entry.url} className="insImage" alt="" />
               {isLoggedIn && <div style={{ display: 'flex', justifyContent: "center" }}>
-                <div style={{ marginRight: '10px', backgroundColor: "#bff0a1" }}>
-                  <Checkbox
-                    handleChange={handleChangeLike(entry.entryName)}
-                    isChecked={isCheckedLike[entry.entryName] || false}
-                    label={`${entry.likeCount}❤️`}
-                  />
-                </div>
-                <div style={{ marginRight: '10px' }}>
-                  <Checkbox
-                    handleChange={handleChangeReaction(entry.entryName, "hahaCount")}
-                    isChecked={selectedReaction[entry.entryName] === "hahaCount"}
-                    label={`${entry.hahaCount}😂`}
-                  />
-                </div>
-                <div style={{ marginRight: '10px' }}>
-                  <Checkbox
-                    handleChange={handleChangeReaction(entry.entryName, "smileCount")}
-                    isChecked={selectedReaction[entry.entryName] === "smileCount"}
-                    label={`${entry.smileCount}😃`}
-                  />
-                </div>
-                <div style={{ marginRight: '10px' }}>
-                  <Checkbox
-                    handleChange={handleChangeReaction(entry.entryName, "wowCount")}
-                    isChecked={selectedReaction[entry.entryName] === "wowCount"}
-                    label={`${entry.wowCount}😯`}
-                  />
-                </div>
-                <div style={{ marginRight: '10px' }}>
-                  <Checkbox
-                    handleChange={handleChangeReaction(entry.entryName, "sadCount")}
-                    isChecked={selectedReaction[entry.entryName] === "sadCount"}
-                    label={`${entry.sadCount}😢`}
-                  />
-                </div>
-                <div style={{ marginRight: '10px' }}>
-                  <Checkbox
-                    handleChange={handleChangeReaction(entry.entryName, "angryCount")}
-                    isChecked={selectedReaction[entry.entryName] === "angryCount"}
-                    label={`${entry.angryCount}🤩`}
-                  />
-                </div>
+                <fieldset id={`fs${entry.entryName}`} style={{ border: "0" }}>
+                  <div style={{ marginRight: '10px', backgroundColor: "#bff0a1", display: "inline-block" }}>
+                    <Checkbox
+                      handleChange={handleChangeLike(entry.entryName)}
+                      isChecked={isCheckedLike[entry.entryName] || false}
+                      label={`${entry.likeCount}❤️`}
+                    />
+                  </div>
+                  <div style={{ marginRight: '10px', display: "inline-block" }}>
+                    <Checkbox
+                      handleChange={handleChangeReaction(entry.entryName, "hahaCount")}
+                      isChecked={selectedReaction[entry.entryName] === "hahaCount"}
+                      label={`${entry.hahaCount}😂`}
+                    />
+                  </div>
+                  <div style={{ marginRight: '10px', display: "inline-block" }}>
+                    <Checkbox
+                      handleChange={handleChangeReaction(entry.entryName, "smileCount")}
+                      isChecked={selectedReaction[entry.entryName] === "smileCount"}
+                      label={`${entry.smileCount}😃`}
+                    />
+                  </div>
+                  <div style={{ marginRight: '10px', display: "inline-block" }}>
+                    <Checkbox
+                      handleChange={handleChangeReaction(entry.entryName, "wowCount")}
+                      isChecked={selectedReaction[entry.entryName] === "wowCount"}
+                      label={`${entry.wowCount}😯`}
+                    />
+                  </div>
+                  <div style={{ marginRight: '10px', display: "inline-block" }}>
+                    <Checkbox
+                      handleChange={handleChangeReaction(entry.entryName, "sadCount")}
+                      isChecked={selectedReaction[entry.entryName] === "sadCount"}
+                      label={`${entry.sadCount}😢`}
+                    />
+                  </div>
+                  <div style={{ marginRight: '10px', display: "inline-block" }}>
+                    <Checkbox
+                      handleChange={handleChangeReaction(entry.entryName, "angryCount")}
+                      isChecked={selectedReaction[entry.entryName] === "angryCount"}
+                      label={`${entry.angryCount}🤩`}
+                    />
+                  </div>
+                </fieldset>
               </div>}
             </body>
           ))}
