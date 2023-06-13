@@ -8,6 +8,8 @@ const ViewChallenge = () => {
 
   const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
 
+  const { state } = useLocation();
+
   useEffect(() => {
     fetch("/server/isLoggedIn").then((response) => {
       if (response.status === 204) {
@@ -18,12 +20,21 @@ const ViewChallenge = () => {
       }
     }
     );
-  }, []);
+
+    // Get the challenges this user has liked, and then set the checkboxes
+    fetch(`/server/getLikes/${state.id}`).then(async (liked) => {
+      if (liked.status === 200) {
+        const likedPosts = JSON.parse(await liked.text()) as Array<string>;
+        likedPosts.forEach((filename) => {
+          console.log(filename);
+          setIsCheckedLike((isChecked) => ({ ...isChecked, [filename]: true }));
+        });
+      }
+    });
+  }, [state.id]);
 
   const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, deadline: Date | null, category: string }>
     ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], deadline: null, category: "" });
-
-  const { state } = useLocation();
 
   const [submissionsArray, setSubmissionsArray] = useState<string[]>([]);
 
@@ -65,13 +76,6 @@ const ViewChallenge = () => {
 
       return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
     });
-
-    // Get the challenges this user has liked, and then set the checkboxes
-    const liked = await fetch(`/server/getLikes/${state.id}`);
-    if (liked.status === 200) {
-      console.log(liked);
-      console.log(JSON.parse(await liked.text()));
-    }
 
     setChallenge({
       name: chs.name as string,

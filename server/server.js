@@ -345,22 +345,6 @@ app.get('/server/getLikes/:challengeId', (req, res) => {
           res.status(200).json(results.map((row) => { return row.filename }));
         });
     }
-
-    // const entries = results[0].entryNames.length === 0 ? [] : results[0].entryNames.split(",");
-    // var liked = [];
-    // for (entry in entries) {
-    //   console.log(`Checking ${req.user.username}, ${entries[entry]}`);
-    //   dbPool.query(`SELECT * FROM likes WHERE username = '${req.user.username}' AND filename = '${entries[entry]}'`, (error, results) => {
-    //     if (error) {
-    //       console.log(error);
-    //     } else {
-    //       if (results.length !== 0) { console.log("Found one!"); console.log(results[0].filename); liked.push(results[0].filename); }
-    //     }
-    //   });
-    // }
-    // console.log("Sending!");
-    // console.log(liked);
-    // res.status(200).json(liked);
   });
 });
 
