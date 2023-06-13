@@ -317,6 +317,53 @@ app.get('/viewReactions/:fileName/:reactionName', (req, res) => {
   });
 });
 
+// For a certain challenge, get the list of submissions that the logged-in user has liked
+app.get('/server/getLikes/:challengeId', (req, res) => {
+  const id = req.params.challengeId;
+  if (!req.user) {
+    res.status(500).end("Must be logged in to view likes");
+    return;
+  }
+
+  dbPool.query(`SELECT entryNames FROM challenges WHERE id = '${id}'`, (error, results) => {
+    if (error) {
+      console.log(error);
+      res.status(500).end("Boogly moogly, what an error!");
+      return;
+    }
+
+    if (results[0].entryNames.length === 0) {
+      console.log("Sending empty list");
+      res.status(200).json([]);
+    } else {
+      dbPool.query(`SELECT filename FROM likes WHERE username = '${req.user.username}' AND filename IN (${dbPool.escape(results[0].entryNames.split(','))})`,
+        (error, results) => {
+          if (error) {
+            console.log(error);
+            res.status(500).end("Errar");
+          }
+          res.status(200).json(results.map((row) => { return row.filename }));
+        });
+    }
+
+    // const entries = results[0].entryNames.length === 0 ? [] : results[0].entryNames.split(",");
+    // var liked = [];
+    // for (entry in entries) {
+    //   console.log(`Checking ${req.user.username}, ${entries[entry]}`);
+    //   dbPool.query(`SELECT * FROM likes WHERE username = '${req.user.username}' AND filename = '${entries[entry]}'`, (error, results) => {
+    //     if (error) {
+    //       console.log(error);
+    //     } else {
+    //       if (results.length !== 0) { console.log("Found one!"); console.log(results[0].filename); liked.push(results[0].filename); }
+    //     }
+    //   });
+    // }
+    // console.log("Sending!");
+    // console.log(liked);
+    // res.status(200).json(liked);
+  });
+});
+
 // TO INCREMENT THE NUMBER OF THE REACTION
 app.post('/updateReactions/inc/:fileName/:reactionName', (req, res) => {
   const fileName = req.params.fileName;

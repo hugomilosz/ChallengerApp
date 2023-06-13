@@ -65,6 +65,14 @@ const ViewChallenge = () => {
 
       return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
     });
+
+    // Get the challenges this user has liked, and then set the checkboxes
+    const liked = await fetch(`/server/getLikes/${state.id}`);
+    if (liked.status === 200) {
+      console.log(liked);
+      console.log(JSON.parse(await liked.text()));
+    }
+
     setChallenge({
       name: chs.name as string,
       description: chs.description as string,
