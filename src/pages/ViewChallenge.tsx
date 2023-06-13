@@ -26,11 +26,21 @@ const ViewChallenge = () => {
       if (liked.status === 200) {
         const likedPosts = JSON.parse(await liked.text()) as Array<string>;
         likedPosts.forEach((filename) => {
-          console.log(filename);
           setIsCheckedLike((isChecked) => ({ ...isChecked, [filename]: true }));
         });
       }
     });
+
+    // Same as above but for reactions
+    fetch(`server/getReacts/${state.id}`).then(async (reacts) => {
+      if (reacts.status === 200) {
+        const postReacts = JSON.parse(await reacts.text()) as Array<{ filename: string, reaction: string }>;
+        postReacts.forEach((reaction) => {
+          setSelectedReaction((savedReactions) => ({ ...savedReactions, [reaction.filename]: reaction.reaction }));
+        })
+      }
+    });
+
   }, [state.id]);
 
   const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, deadline: Date | null, category: string }>
@@ -87,13 +97,6 @@ const ViewChallenge = () => {
     });
   };
 
-  // const [isCheckedLike, setIsCheckedLike] = useState<{ [key: string]: boolean }>({});
-  const [isCheckedHaha, setIsCheckedHaha] = useState<{ [key: string]: boolean }>({});
-  const [isCheckedSmile, setIsCheckedSmile] = useState<{ [key: string]: boolean }>({});
-  const [isCheckedWow, setIsCheckedWow] = useState<{ [key: string]: boolean }>({});
-  const [isCheckedSad, setIsCheckedSad] = useState<{ [key: string]: boolean }>({});
-  const [isCheckedAngry, setIsCheckedAngry] = useState<{ [key: string]: boolean }>({});
-
   const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
   const [, setDeadlineDate] = useState<Date | null>(null);
 
@@ -128,16 +131,9 @@ const ViewChallenge = () => {
     }
   };
 
-  const [checkboxStates, setCheckboxStates] = useState<Map<string, string>>(new Map());
-
-  function handleCheckboxChange(entry: string, reaction: string) {
-    const updatedCheckboxStates = new Map(checkboxStates);
-    updatedCheckboxStates.set(entry, reaction);
-    setCheckboxStates(updatedCheckboxStates);
-  }
 
   const handleChangeReaction = (entry: string, reaction: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
-    let previouslyChecked = checkboxStates.get(entry);
+    let previouslyChecked = selectedReaction[entry];
     if (!previouslyChecked) {
       previouslyChecked = "";
     }
@@ -145,11 +141,9 @@ const ViewChallenge = () => {
 
     if (updatedSelectedReaction[entry] === reaction) {
       // If the same reaction is already selected, deselect it
-      handleCheckboxChange(entry, "");
       delete updatedSelectedReaction[entry];
     } else {
       // Select the new reaction
-      handleCheckboxChange(entry, reaction);
       updatedSelectedReaction[entry] = reaction;
     }
     console.log("previously: ", previouslyChecked);
@@ -171,28 +165,6 @@ const ViewChallenge = () => {
       } else {
         console.error("Failed to decrement previous reaction count");
       }
-    }
-
-    // Update the respective checkbox state variable
-    switch (reaction) {
-      case "hahaCount":
-        setIsCheckedHaha({ ...isCheckedHaha, [entry]: e.target.checked });
-        break;
-      case "smileCount":
-        setIsCheckedSmile({ ...isCheckedSmile, [entry]: e.target.checked });
-        break;
-      case "wowCount":
-        setIsCheckedWow({ ...isCheckedWow, [entry]: e.target.checked });
-        break;
-      case "sadCount":
-        setIsCheckedSad({ ...isCheckedSad, [entry]: e.target.checked });
-        break;
-      case "angryCount":
-        setIsCheckedAngry({ ...isCheckedAngry, [entry]: e.target.checked });
-        break;
-      default:
-        console.error("Not a valid reaction");
-        break;
     }
 
     const entryWithoutPrefix = entry.replace("http:/uploads/", "");

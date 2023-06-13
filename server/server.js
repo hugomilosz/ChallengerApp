@@ -348,6 +348,37 @@ app.get('/server/getLikes/:challengeId', (req, res) => {
   });
 });
 
+// For a certain challenge, get the list of reactions for each post the logged-in user has reacted to
+app.get('/server/getReacts/:challengeId', (req, res) => {
+  const id = req.params.challengeId;
+  if (!req.user) {
+    res.status(500).end("Must be logged in to view likes");
+    return;
+  }
+
+  dbPool.query(`SELECT entryNames FROM challenges WHERE id = '${id}'`, (error, results) => {
+    if (error) {
+      console.log(error);
+      res.status(500).end("Holy Moly, what an error!");
+      return;
+    }
+
+    if (results[0].entryNames.length === 0) {
+      console.log("Sending empty list");
+      res.status(200).json([]);
+    } else {
+      dbPool.query(`SELECT * FROM reactions WHERE username = '${req.user.username}' AND filename IN (${dbPool.escape(results[0].entryNames.split(','))})`,
+        (error, results) => {
+          if (error) {
+            console.log(error);
+            res.status(500).end("Errarier");
+          }
+          res.status(200).json(results);
+        });
+    }
+  });
+});
+
 // TO INCREMENT THE NUMBER OF THE REACTION
 app.post('/updateReactions/inc/:fileName/:reactionName', (req, res) => {
   const fileName = req.params.fileName;
