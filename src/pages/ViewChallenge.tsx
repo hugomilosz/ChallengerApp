@@ -326,7 +326,7 @@ const ViewChallenge = () => {
           {challengeInfo.entryNamesUrls.map((entry) => (
             <body>
               <img src={entry.url} className="insImage" alt="" />
-              <div style={{ display: 'flex', justifyContent: "center" }}>
+              {isLoggedIn && <div style={{ display: 'flex', justifyContent: "center" }}>
                 <div style={{ marginRight: '10px', backgroundColor: "#bff0a1" }}>
                   <Checkbox
                     handleChange={handleChangeLike(entry.entryName)}
@@ -369,7 +369,7 @@ const ViewChallenge = () => {
                     label={`${entry.angryCount}🤩`}
                   />
                 </div>
-              </div>
+              </div>}
             </body>
           ))}
         </>
