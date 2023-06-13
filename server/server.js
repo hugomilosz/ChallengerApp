@@ -112,8 +112,11 @@ app.get('/server/search/:terms', (req, res) => {
   dbPool.query(`
     SELECT * 
     FROM challenges 
-    WHERE MATCH(name, description, tags)
-    AGAINST ('${terms}' IN NATURAL LANGUAGE MODE);
+    WHERE (MATCH(name, description, tags)
+    AGAINST ('${terms}' IN NATURAL LANGUAGE MODE))
+    OR (name LIKE '%${terms}%') 
+    OR (description LIKE '%${terms}%') 
+    OR (tags LIKE '${terms}');
   `, function (error, results, fields) {
     if (error) {
       res.send(error);
