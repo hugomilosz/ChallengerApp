@@ -20,10 +20,12 @@ const ViewChallenge = () => {
     );
   }, []);
 
-  const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }> }>
-    ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [] });
+  const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, deadline: Date | null, category: string }>
+    ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], deadline: null, category: "" });
 
   const { state } = useLocation();
+
+  const [submissionsArray, setSubmissionsArray] = useState<string[]>([]);
 
   async function getReactionCount(entryWithoutPrefix: string, reactionName: string) {
     const reactionCountResponse = await fetch(`/viewReactions/${entryWithoutPrefix}/${reactionName}`);
@@ -46,6 +48,10 @@ const ViewChallenge = () => {
     const body = await responseDBInfo.text();
     const chs = JSON.parse(body);
     const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",")
+    setSubmissionsArray(splitArray);
+    const deadlineDate = new Date(chs.date);
+    console.log("deadlineDate ", deadlineDate);
+    setDeadlineDate(deadlineDate);
     const urls = splitArray.map(async (entryName: string) => {
 
       const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
@@ -63,7 +69,9 @@ const ViewChallenge = () => {
       name: chs.name as string,
       description: chs.description as string,
       imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
-      entryNamesUrls: await Promise.all(urls)
+      entryNamesUrls: await Promise.all(urls),
+      deadline: deadlineDate,
+      category: (await (await fetch(`/category/${state.id}`)).json()).subject,
     });
   };
 
@@ -74,9 +82,8 @@ const ViewChallenge = () => {
   const [isCheckedSad, setIsCheckedSad] = useState<{ [key: string]: boolean }>({});
   const [isCheckedAngry, setIsCheckedAngry] = useState<{ [key: string]: boolean }>({});
 
-  const [selectedCheckbox, setSelectedCheckbox] = useState("");
-  const [, setIsChecked] = useState<{ [entry: string]: { [reaction: string]: boolean } }>({});
   const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
+  const [, setDeadlineDate] = useState<Date | null>(null);
 
   const [isCheckedLike, setIsCheckedLike] = useState<{ [entry: string]: boolean }>({});
 
@@ -109,98 +116,157 @@ const ViewChallenge = () => {
     }
   };
 
+  const [checkboxStates, setCheckboxStates] = useState<Map<string, string>>(new Map());
 
+  function handleCheckboxChange(entry: string, reaction: string) {
+    const updatedCheckboxStates = new Map(checkboxStates);
+    updatedCheckboxStates.set(entry, reaction);
+    setCheckboxStates(updatedCheckboxStates);
+  }
 
   const handleChangeReaction = (entry: string, reaction: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
+    let previouslyChecked = checkboxStates.get(entry);
+    if (!previouslyChecked) {
+      previouslyChecked = "";
+    }
     const updatedSelectedReaction = { ...selectedReaction };
 
     if (updatedSelectedReaction[entry] === reaction) {
       // If the same reaction is already selected, deselect it
+      handleCheckboxChange(entry, "");
       delete updatedSelectedReaction[entry];
     } else {
       // Select the new reaction
+      handleCheckboxChange(entry, reaction);
       updatedSelectedReaction[entry] = reaction;
     }
-
+    console.log("previously: ", previouslyChecked);
     setSelectedReaction(updatedSelectedReaction);
 
-    if (reaction === "likeCount") {
-      setIsChecked({ [entry]: { [reaction]: e.target.checked } });
-    } else {
-      setIsChecked((prevState) => ({
-        ...prevState,
-        [entry]: { [reaction]: e.target.checked },
-      }));
-    }
-
-    // Update the respective checkbox state variable
-    switch (reaction) {
-      case "hahaCount": setIsCheckedHaha({ ...isCheckedHaha, [entry]: e.target.checked }); break;
-      case "smileCount": setIsCheckedSmile({ ...isCheckedSmile, [entry]: e.target.checked }); break;
-      case "wowCount": setIsCheckedWow({ ...isCheckedWow, [entry]: e.target.checked }); break;
-      case "sadCount": setIsCheckedSad({ ...isCheckedSad, [entry]: e.target.checked }); break;
-      case "angryCount": setIsCheckedAngry({ ...isCheckedAngry, [entry]: e.target.checked }); break;
-      default: console.error("Not a valid reaction"); break;
-    }
-
-    const entryWithoutPrefix = entry.replace("http:/uploads/", "");
-
-    if (selectedCheckbox && selectedCheckbox !== reaction) {
-      const previousEntryWithoutPrefix = entry.replace("http:/uploads/", "");
-      const response = await fetch(
-        `/updateReactions/dec/${previousEntryWithoutPrefix}/${selectedCheckbox}`,
+    // Decrement logic for previous reaction
+    if (previouslyChecked !== "") {
+      const entryWithoutPrefix = entry.replace("http:/uploads/", "");
+      const decrementResponse = await fetch(
+        `/updateReactions/dec/${entryWithoutPrefix}/${previouslyChecked}`,
         {
           method: "POST",
         }
       );
-      if (response.ok) {
-        console.log("Decremented previous reaction count", selectedCheckbox);
-        fetchInfo();
+
+      if (decrementResponse.ok) {
+        console.log("Decremented previous reaction count: ", previouslyChecked);
+        await fetchInfo();
       } else {
         console.error("Failed to decrement previous reaction count");
       }
     }
 
+    // Update the respective checkbox state variable
+    switch (reaction) {
+      case "hahaCount":
+        setIsCheckedHaha({ ...isCheckedHaha, [entry]: e.target.checked });
+        break;
+      case "smileCount":
+        setIsCheckedSmile({ ...isCheckedSmile, [entry]: e.target.checked });
+        break;
+      case "wowCount":
+        setIsCheckedWow({ ...isCheckedWow, [entry]: e.target.checked });
+        break;
+      case "sadCount":
+        setIsCheckedSad({ ...isCheckedSad, [entry]: e.target.checked });
+        break;
+      case "angryCount":
+        setIsCheckedAngry({ ...isCheckedAngry, [entry]: e.target.checked });
+        break;
+      default:
+        console.error("Not a valid reaction");
+        break;
+    }
+
+    const entryWithoutPrefix = entry.replace("http:/uploads/", "");
+
     if (e.target.checked) {
-      setSelectedCheckbox(reaction);
 
       // Increment logic
-      const response = await fetch(
+      const incrementResponse = await fetch(
         `/updateReactions/inc/${entryWithoutPrefix}/${reaction}`,
         {
           method: "POST",
         }
       );
-      if (response.ok) {
+
+      if (incrementResponse.ok) {
         console.log("Incremented reaction count: ", reaction);
-        fetchInfo();
+        await fetchInfo();
       } else {
         console.error("Failed to increment reaction count");
-      }
-    } else {
-      if (reaction !== "likeCount") {
-        setSelectedCheckbox("");
-      }
-
-      // Decrement logic for current reaction
-      const response = await fetch(
-        `/updateReactions/dec/${entryWithoutPrefix}/${reaction}`,
-        {
-          method: "POST",
-        }
-      );
-      if (response.ok) {
-        console.log("Decremented reaction count: ", reaction);
-        fetchInfo();
-      } else {
-        console.error("Failed to decrement reaction count");
       }
     }
   };
 
+  // checks the deadline time/date. Change this so it only does it once per page load
   useEffect(() => {
-    fetchInfo();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    const fetchChallengeInfo = async () => {
+      await fetchInfo();
+      console.log("deadline ", challengeInfo.deadline);
+    };
+
+    const checkDeadlinePass = async () => {
+      const currentDate = new Date();
+      if (challengeInfo.deadline && currentDate > challengeInfo.deadline) {
+        const response = await (await fetch(`/checkArchived/${state.id}`)).json();
+
+        try {
+          const winningEntry = await (await fetch(`/getWinner/${state.id}`)).json();
+          console.log("winningentry: ", winningEntry.filename);
+
+          if (submissionsArray.length === 0) {
+            console.log("Reponse from archived: ", response.archived);
+
+            if (response.archived === 1) {
+              let path = '../noWinner';
+              navigate(path, { state: { id: state.id } });
+            } else {
+              let path = '../noSubmissions';
+              navigate(path, { state: { id: state.id } });
+            }
+          }
+          else if (!winningEntry || winningEntry.length === 0) {
+            // if user, go to winnerPending
+            let path = '../chooseWinner';
+            navigate(path, { state: { id: state.id } });
+          } else {
+            let path = '../announceWinner';
+            navigate(path, { state: { id: state.id } });
+          }
+        }
+        catch (error) {
+          if (submissionsArray.length === 0) {
+            console.log("Reponse from archived in catch: ", response.archived);
+            if (response.archived === 1) {
+              let path = '../noWinner';
+              navigate(path, { state: { id: state.id } });
+            } else {
+              let path = '../noSubmissions';
+              navigate(path, { state: { id: state.id } });
+            }
+          } else {
+            let path = '../chooseWinner';
+            //if user, go to winnerPending
+            // let path = '../winnerPending';
+            navigate(path, { state: { id: state.id } });
+          }
+        }
+      }
+    }
+
+    if (challengeInfo.deadline === null) {
+      fetchChallengeInfo();
+    } else {
+      console.log("Checking if deadline has passed...");
+      checkDeadlinePass();
+    }
+  }, [challengeInfo.deadline]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmitSubmission = async (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -236,11 +302,18 @@ const ViewChallenge = () => {
           <h2>Name</h2>
           <body>{challengeInfo.name}</body>
 
+          <h2>Category</h2>
+          <body>{challengeInfo.category}</body>
+
           <h2>Description</h2>
           <body>{challengeInfo.description}</body>
 
           <h2>Initial Inspiration</h2>
           <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
+
+          <h2 style={{ color: "#FF0000" }}>Deadline</h2>
+          {/* <body style={{color: "#FF0000"}}>Challenge ends at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body> */}
+          <body style={{ color: "#FF0000" }}>Challenge ends at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body>
 
           <h1>Add a Submission!</h1>
           {isLoggedIn ? <form onSubmit={handleSubmitSubmission} id="form" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -249,11 +322,11 @@ const ViewChallenge = () => {
           </form> : <p>You must be logged in to submit to this Challenge</p>}
 
           <h1>Existing Submissions!</h1>
-          <h3>Use ❤️ to vote for your favourites!</h3>
+          <h3 style={{ color: "#42a642" }}>Use ❤️ to vote for your favourites!</h3>
           {challengeInfo.entryNamesUrls.map((entry) => (
             <body>
               <img src={entry.url} className="insImage" alt="" />
-              {isLoggedIn && <div style={{ display: 'flex', justifyContent: "center" }}>
+              <div style={{ display: 'flex', justifyContent: "center" }}>
                 <div style={{ marginRight: '10px', backgroundColor: "#bff0a1" }}>
                   <Checkbox
                     handleChange={handleChangeLike(entry.entryName)}
@@ -296,7 +369,7 @@ const ViewChallenge = () => {
                     label={`${entry.angryCount}🤩`}
                   />
                 </div>
-              </div>}
+              </div>
             </body>
           ))}
         </>
@@ -306,7 +379,6 @@ const ViewChallenge = () => {
           <button onClick={navigateToHomeScreen}>Click here to go back to the Home Screen</button>
         </>
       )}
-
     </div>
   )
 }

@@ -83,6 +83,7 @@ const SetChallengeCheckout = () => {
                 </div>
                 <h4>Upload an example submission:</h4>
                 <input required type="file" id="myFiles" accept="image/jpg" multiple style={{ marginBottom: 30 }} name="chFile" />
+                <p>Set Deadline:</p>
                 <input required type="datetime-local" style={{ marginBottom: 20 }} name="chDate" />
                 <input required type="submit" style={{ marginBottom: 10 }} />
             </form>

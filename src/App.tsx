@@ -10,7 +10,12 @@ import NavBar from './NavBar'
 import ViewChallenge from './pages/ViewChallenge';
 import ViewSubmissions from './pages/ViewSubmissions';
 import UploadSubmission from './pages/UploadSubmission';
-import Search from './pages/Search';
+import Search from './pages/Search'
+import ChooseWinner from './pages/ChooseWinner'
+import AnnounceWinner from './pages/AnnounceWinner';
+import WinnerPending from './pages/WinnerPending'
+import NoSubmissions from './pages/NoSubmissions';
+import NoWinner from './pages/NoWinner';
 import Logout from './pages/Logout';
 
 function App() {
@@ -28,6 +33,11 @@ function App() {
         <Route path="/viewSubmissions" element={<ViewSubmissions />} />
         <Route path="/uploadSubmission" element={<UploadSubmission />} />
         <Route path="/search/:query" element={<Search />} />;
+        <Route path="/chooseWinner" element={<ChooseWinner />} />
+        <Route path="/announceWinner" element={<AnnounceWinner />} />
+        <Route path="/winnerPending" element={<WinnerPending />} />
+        <Route path="/noSubmissions" element={<NoSubmissions />} />
+        <Route path="/noWinner" element={<NoWinner />} />
         <Route path='*' element={<Navigate to="/" />} />
       </Routes>
     </div >

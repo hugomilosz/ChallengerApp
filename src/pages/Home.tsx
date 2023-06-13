@@ -31,12 +31,15 @@ const Home = () => {
         }
     };
 
+    // Filter out challenges with a name of null
+    const filteredChallenges = challenges.filter(challenge => challenge.name !== null);
+
     return (
         <div className="home">
             <SearchBar />
             <h1>Home Page</h1>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                {challenges.map((challenge) => (
+                {filteredChallenges.map((challenge) => (
                     <div key={challenge.id}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
                             <span style={{ marginRight: 10 }}>{challenge.name}</span>

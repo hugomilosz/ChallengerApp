@@ -73,7 +73,7 @@ app.get('/server/isLoggedIn', (req, res) => {
 });
 
 app.get('/server/challenges', (req, res) => {
-  dbPool.query('SELECT * FROM challenges LIMIT 15', function (error, results, fields) {
+  dbPool.query('SELECT * FROM challenges LIMIT 20', function (error, results, fields) {
     if (error) {
       console.log(error);
       res.status(500).send('Error fetching challenges');
@@ -136,7 +136,7 @@ app.post('/server/createChallenge', multer().single('file'), (req, res) => {
       const fileName = `${newId}_0.` + req.file.originalname.split(".").pop();
       uploadFile(fileName, req.file.buffer);
 
-      dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`subject\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`, \`tags\`, \`date\`, \`username\`) VALUES ('${newId}', '${req.body.name}', '${req.body.ctgr}', '${req.body.desc}', '${fileName}', '', 'Image', '${req.body.tags}', '${req.body.date}', '${req.user.username}');`, function (error, results, fields) {
+      dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`subject\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`, \`tags\`, \`date\`, \`username\`, \`archived\`) VALUES ('${newId}', '${req.body.name}', '${req.body.ctgr}', '${req.body.desc}', '${fileName}', '', 'Image', '${req.body.tags}', '${req.body.date}', '${req.user.username}', FALSE);`, function (error, results, fields) {
         if (error) {
           console.log(error);
 
@@ -259,7 +259,7 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
       uploadFile(fileName, req.file.buffer);
 
       // insert fileName into submissions table
-      dbPool.query(`INSERT INTO submissions (\`likeCount\`, \`hahaCount\`, \`smileCount\`, \`wowCount\`, \`sadCount\`, \`angryCount\`, \`username\`, \`filename\`) VALUES (0, 0, 0, 0, 0, 0, '${req.user.username}', '${fileName}');`, function (error, results, fields) {
+      dbPool.query(`INSERT INTO submissions (\`likeCount\`, \`hahaCount\`, \`smileCount\`, \`wowCount\`, \`sadCount\`, \`angryCount\`, \`username\`, \`filename\`, \`winner\`) VALUES (0, 0, 0, 0, 0, 0, '${req.user.username}', '${fileName}', FALSE);`, function (error, results, fields) {
         if (error) {
           console.log(error);
           res.status(500);
@@ -282,6 +282,21 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
           res.send();
         }
       });
+    }
+  });
+});
+
+// Get category for a challenge (with ID chId)
+app.get('/category/:chId', (req, res) => {
+  const challId = req.params.chId;
+  dbPool.query(`SELECT subject FROM challenges WHERE id=${challId}`, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500);
+      res.end("Error getting category from database");
+    } else {
+      res.status(200);
+      res.send(results[0]);
     }
   });
 });
@@ -332,6 +347,106 @@ app.post('/updateReactions/dec/:fileName/:reactionName', (req, res) => {
       res.send("Like count incremented successfully");
     }
   });
+});
+
+// Setting the winner of the challenge
+app.post('/selectWinner/:fileName', (req, res) => {
+  const fileName = req.params.fileName;
+  dbPool.query(`UPDATE submissions SET winner = TRUE WHERE filename = '${fileName}'`, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500);
+      res.end("Error updating database (setting winner)");
+    } else {
+      res.status(200);
+      res.send("Successfully chosen winner!");
+    }
+  });
+});
+
+// Get the winner of a challenge
+app.get('/getWinner/:challengeId', (req, res) => {
+  const challengeId = req.params.challengeId;
+
+  dbPool.query(`
+    SELECT * 
+    FROM submissions 
+    WHERE 
+      winner = 1 
+      AND 
+      FIND_IN_SET(filename, (SELECT entryNames
+                             FROM challenges
+                             WHERE id = ${challengeId}))
+    `, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500);
+      res.end("Error getting winner from database");
+    } else {
+      res.status(200);
+      console.log("This is the DB result: " + results[0]);
+      res.send(results[0]);
+    }
+  });
+});
+
+app.post('/extendDeadline/:challengeId/:newDeadline', (req, res) => {
+  const challengeId = req.params.challengeId;
+  const newDeadline = req.params.newDeadline;
+
+  dbPool.query(`UPDATE challenges SET date="${newDeadline}" WHERE id=${challengeId}`,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.status(500);
+        res.end("Error updating database (extending the deadline)");
+      } else {
+        res.status(200);
+        res.send("Successfully extended the deadline!");
+      }
+    });
+});
+
+app.post('/deleteChallenge/:challengeId/', (req, res) => {
+  const challengeId = req.params.challengeId;
+
+  dbPool.query(`UPDATE challenges SET name=NULL, subject=NULL, description=NULL, topic=NULL, entryNames=NULL, entryType=NULL, tags=NULL, date=NULL WHERE id=${challengeId}`,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.status(500);
+        res.end("Error deleting the challenge");
+      } else {
+        res.status(200);
+        res.send("Successfully deleted the challenge!");
+      }
+    });
+});
+
+// Mark a challenge as archived
+app.post('/setArchived/:challengeId', (req, res) => {
+  const chId = req.params.challengeId;
+  dbPool.query(`UPDATE challenges SET archived=TRUE WHERE id=${chId}`, function (error, results, fields) {
+    if (error) {
+      res.send(error);
+      console.log(error);
+    } else {
+      res.json(results);
+    }
+  })
+});
+
+// Check if a challenge is archived
+app.get('/checkArchived/:challengeId', (req, res) => {
+  const chId = req.params.challengeId;
+  dbPool.query(`SELECT archived FROM challenges WHERE id=${chId}`, function (error, results, fields) {
+    if (error) {
+      res.send(error);
+      console.log(error);
+    } else {
+      res.json(results[0]);
+    }
+  })
 });
 
 const root = path.join(__dirname, '../build')
