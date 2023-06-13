@@ -327,8 +327,28 @@ app.post('/updateReactions/inc/:fileName/:reactionName', (req, res) => {
       res.status(500);
       res.end("Error updating database (reaction numbers)");
     } else {
-      res.status(200);
-      res.send("Like count incremented successfully");
+      if (req.params.reactionName === 'likeCount') {
+        // Then add to the Likes DB
+        dbPool.query(`INSERT INTO likes (\`username\`, \`filename\`) VALUES ('${req.user.username}', '${fileName}')`, function (error, results,) {
+          if (error) {
+            console.log(error);
+            res.status(500);
+          }
+          res.status(200);
+          res.send("Like count incremented successfully");
+        });
+      }
+      else {
+        // Add to the reactions DB
+        dbPool.query(`INSERT INTO reactions (\`username\`, \`filename\`, \`reaction\`) VALUES ('${req.user.username}', '${fileName}', '${reactionName}')`, function (error, results,) {
+          if (error) {
+            console.log(error);
+            res.status(500);
+          }
+          res.status(200);
+          res.send(`${reactionName} count incremented successfully`);
+        });
+      }
     }
   });
 });
@@ -343,8 +363,28 @@ app.post('/updateReactions/dec/:fileName/:reactionName', (req, res) => {
       res.status(500);
       res.end("Error updating database (reaction numbers)");
     } else {
-      res.status(200);
-      res.send("Like count incremented successfully");
+      if (req.params.reactionName === 'likeCount') {
+        // Then remove from the Likes DB
+        dbPool.query(`DELETE FROM likes WHERE username = '${req.user.username}' AND filename = '${fileName}'`, function (error, results,) {
+          if (error) {
+            console.log(error);
+            res.status(500);
+          }
+          res.status(200);
+          res.send("Like count decremented successfully");
+        });
+      }
+      else {
+        // Remove from the reactions DB
+        dbPool.query(`DELETE FROM reactions WHERE username = '${req.user.username}' AND filename = '${fileName}'`, function (error, results,) {
+          if (error) {
+            console.log(error);
+            res.status(500);
+          }
+          res.status(200);
+          res.send(`${reactionName} count decremented successfully`);
+        });
+      }
     }
   });
 });
