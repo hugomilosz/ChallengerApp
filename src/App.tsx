@@ -17,6 +17,7 @@ import WinnerPending from './pages/WinnerPending'
 import NoSubmissions from './pages/NoSubmissions';
 import NoWinner from './pages/NoWinner';
 import Logout from './pages/Logout';
+import NoSubsPending from './pages/NoSubsPending';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route path="/winnerPending" element={<WinnerPending />} />
         <Route path="/noSubmissions" element={<NoSubmissions />} />
         <Route path="/noWinner" element={<NoWinner />} />
+        <Route path="/noSubsPending" element={<NoSubsPending />} />
         <Route path='*' element={<Navigate to="/" />} />
       </Routes>
     </div >
