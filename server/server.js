@@ -20,6 +20,9 @@ const server = app.listen(port, () => console.log(`Listening on port ${port}`));
 
 const database = process.env.DBNAME || 'challenger_db';
 
+const clients = new Map(); // At index ChallengeID, keeps all clients tracking that challenge
+const indexToId = {};
+
 const dbPool = mysql.createPool({
   connectionLimit: 10,
   host: process.env.DBHOST || 'localhost',
@@ -293,6 +296,11 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
         }
       });
     }
+  });
+
+  // Then, summon the clients to update them
+  indexToId[req.body.chId].forEach((client) => {
+    clients.get(client).send('update');
   });
 });
 
@@ -659,35 +667,33 @@ passport.deserializeUser((user, cb) => {
   });
 });
 
-const clients = {}; // At index ChallengeID, keeps all clients tracking that challenge
-
 // Websocket stuff!
 const wsServer = new WebSocket.Server({ noServer: true });
 wsServer.on('connection', (socket) => {
   console.log("Bitconneeeect");
 
   socket.id = nanoid();
-  let id = null;
+  clients.set(socket.id, socket);
 
   socket.on('message', (msg) => {
     // Sockets will inform the server of the challenge ID they watch
     let id = parseInt(msg);
-    if (!clients[id]) {
-      clients[id] = new Set();
-      clients[id].add(socket.id)
+    if (!indexToId[id]) {
+      indexToId[id] = new Set();
+      indexToId[id].add(socket.id)
     } else {
-      clients[id].add(socket.id);
+      indexToId[id].add(socket.id);
     }
-    console.log(clients);
+    console.log(indexToId);
   });
 
   socket.on('close', () => {
     console.log("Closed");
-    for (cId in clients) {
+    for (cId in indexToId) {
       // Remove this socket wherever it may be
-      clients[cId].delete(socket.id);
+      indexToId[cId].delete(socket.id);
     }
-    console.log(clients);
+    console.log(indexToId);
   });
 });
 
