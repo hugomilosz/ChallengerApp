@@ -24,6 +24,11 @@ const Login = () => {
                 const data = await response.json();
                 if (data.success) {
                     // If success, go back to the previous page
+                    // const previousPageUrl = window.location.ancestorOrigins[0];
+                    // const previousPageUrl = prev.item(1);
+                    // const previousPageUrl = window.origin;
+                    // console.log(`Previously visited page URL: ${previousPageUrl}`);
+                    // breaks it more: window.history.pushState({ prevUrl: window.location.href }, "");
                     navigate(-1);
                 }
                 else {
@@ -63,6 +68,11 @@ const Login = () => {
     
             if (response.ok) {
                 // Signup successful
+                // const previousPageUrl = window.location.ancestorOrigins[0];
+                // const previousPageUrl = prev.item(1);
+                // const previousPageUrl = window.origin;
+                // console.log(`Previously visited page URL: ${previousPageUrl}`);
+                // breaks it more: window.history.pushState({ prevUrl: window.location.href }, "");
                 navigate(-1);
             } else {
                 // Signup unsuccessful
