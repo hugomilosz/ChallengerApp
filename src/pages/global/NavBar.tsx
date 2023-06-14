@@ -37,11 +37,12 @@ const NavBar = () => {
             onChange={handleChange}
             sx={{ 
                 width: "100%", 
-                position: "absolute", 
+                position: "fixed !important", 
                 bottom: 0,
                 boxShadow: "0px 10px 20px black",
                 backgroundColor: colours.primary[500],
                 p: 3,
+                zIndex: 9999,
             }}
             showLabels
         >
