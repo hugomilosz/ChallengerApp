@@ -97,6 +97,31 @@ const ViewChallenge = () => {
     });
   };
 
+  // Socket setup
+  useEffect(() => {
+    if (state.id) {
+      const socketProtocol = (window.location.protocol === 'https:' ? 'wss:' : 'ws:');
+      const socketUrl = socketProtocol + '//' + window.location.hostname + ':' + (process.env.PORT || 5000) + '/watchChallenge';
+      const socket = new WebSocket(socketUrl);
+
+      socket.onopen = () => {
+        console.log("Socket opened");
+        socket.send(state.id);
+      }
+
+      socket.onmessage = (msg) => {
+        console.log(msg.data);
+        if (msg.data === 'update') {
+          fetchInfo();
+        }
+        if (msg.data === 'deadline') {
+          window.location.reload();
+        }
+      }
+    }
+
+  }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
   const [, setDeadlineDate] = useState<Date | null>(null);
 

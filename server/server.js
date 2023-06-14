@@ -8,15 +8,20 @@ const crypto = require('crypto')
 const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3')
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const session = require('express-session');
+const WebSocket = require('ws');
+const { nanoid } = require('nanoid');
 
 const SQLiteStore = require('connect-sqlite3')(session);
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+const server = app.listen(port, () => console.log(`Listening on port ${port}`));
 
 const database = process.env.DBNAME || 'challenger_db';
+
+const clients = new Map(); // At index ChallengeID, keeps all clients tracking that challenge
+const indexToId = {};
 
 const dbPool = mysql.createPool({
   connectionLimit: 10,
@@ -291,6 +296,11 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
         }
       });
     }
+  });
+
+  // Then, summon the clients to update them
+  indexToId[req.body.chId].forEach((client) => {
+    clients.get(client).send('update');
   });
 });
 
@@ -652,3 +662,69 @@ passport.deserializeUser((user, cb) => {
     return cb(null, user);
   });
 });
+
+// Websocket stuff!
+const wsServer = new WebSocket.Server({ noServer: true });
+wsServer.on('connection', (socket) => {
+  console.log("Bitconneeeect");
+
+  socket.id = nanoid();
+  clients.set(socket.id, socket);
+
+  socket.on('message', (msg) => {
+    // Sockets will inform the server of the challenge ID they watch
+    let id = parseInt(msg);
+    if (!indexToId[id]) {
+      indexToId[id] = new Set();
+      indexToId[id].add(socket.id)
+    } else {
+      indexToId[id].add(socket.id);
+    }
+    console.log(indexToId);
+  });
+
+  socket.on('close', () => {
+    console.log("Closed");
+    for (cId in indexToId) {
+      // Remove this socket wherever it may be
+      indexToId[cId].delete(socket.id);
+      if (indexToId[cId].size === 0) {
+        delete indexToId[cId];
+      }
+    }
+    console.log(indexToId);
+  });
+});
+
+server.on('upgrade', (req, socket, head) => {
+  wsServer.handleUpgrade(req, socket, head, (socket) => {
+    wsServer.emit('connection', socket, req);
+  });
+});
+
+// Every 10 seconds, update everyone's like count
+// setInterval(() => {
+//   for (index in indexToId) {
+//     indexToId[index].forEach((client) => {
+//       clients.get(client).send('update');
+//     });
+//   }
+// }, 10000);
+
+// Every minute, check deadlines
+setInterval(() => {
+  const currentTime = new Date();
+  for (index in indexToId) {
+    dbPool.query(`SELECT date FROM challenges WHERE id = ${index}`, (error, results) => {
+      if (error) {
+        console.log(error);
+      } else {
+        if (new Date(results[0].date) < currentTime) {
+          indexToId[index].forEach((client) => {
+            clients.get(client).send('deadline');
+          })
+        }
+      }
+    });
+  }
+}, 60000);
