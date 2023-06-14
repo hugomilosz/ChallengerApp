@@ -574,9 +574,6 @@ app.get('/checkArchived/:challengeId', (req, res) => {
 const root = path.join(__dirname, '../build')
 app.use(express.static(root));
 
-// app.get('/login', (req, res) => {
-//   res.sendFile(__dirname + '../src/index.html');
-// });
 app.get("*", (req, res) => {
   res.sendFile('index.html', { root });
 });
@@ -585,10 +582,9 @@ app.get('*', (req, res) => {
   res.send(404);
 });
 
-app.post("/login/password", passport.authenticate("local", {
-  successRedirect: "/",
-  failureRedirect: "/login"
-}));
+app.post("/login/password", passport.authenticate("local"), (req, res) => {
+  res.json({ success: true });
+});
 
 app.post("/signup", (req, res, next) => {
   dbPool.query(`SELECT * FROM users WHERE username='${req.body.username}'`, (error, results) => {
@@ -630,7 +626,7 @@ app.post("/signup", (req, res, next) => {
             res.end("Failed to login!");
             return;
           }
-          res.redirect("/");
+          res.json({ success: true });
         })
       });
     });
