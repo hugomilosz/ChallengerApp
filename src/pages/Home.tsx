@@ -2,28 +2,19 @@ import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import SearchBar from "./SearchBar";
 import Button from '@mui/material/Button';
-import { Box } from "@mui/material";
-// import { tokens } from "../theme";
-// import { useTheme } from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
+import { tokens } from "../theme";
+import { useTheme } from "@mui/material";
 
 interface chObj {
     id: number,
     name: string,
 }
 
-interface chInfoObj {
-    id: number,
-    name: string,
-    description: string,
-    imgURL: string,
-    deadline: Date | null,
-    category: string
-}
-
 const Home = () => {
 
-    // const theme = useTheme();
-    // const colours = tokens(theme.palette.mode);
+    const theme = useTheme();
+    const colours = tokens(theme.palette.mode);
 
     const [challenges, setChallenges] = useState<{ id: number, name: string, description: string, imgURL: string, deadline: Date | null, category: string }[]>([]);
 
@@ -53,9 +44,9 @@ const Home = () => {
                     category: (await (await fetch(`/category/${ch.id}`)).json()).subject,
                 })
             })
-
+            
             const finishedList = await Promise.all(chInfoList)
-
+            console.log(finishedList);
             if (Array.isArray(finishedList)) {
                 setChallenges(finishedList);
             } else {
@@ -87,10 +78,114 @@ const Home = () => {
                 {filteredChallenges.map((challenge) => (
                     <div key={challenge.id}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
-                            <span style={{ marginRight: 10 }}>{challenge.name}</span>
-                            <button onClick={() => viewChallengeButton(challenge.id)}>
-                                Button
-                            </button>
+                            <Button onClick={() => viewChallengeButton(challenge.id)}>
+                                <Card 
+                                    sx={{
+                                        width: 400,
+                                        maxWidth: 400,
+                                        height: 500,
+                                        maxHeight: 500,
+                                        borderRadius: 5,
+                                        border: `1px ${colours.primary[500]} solid`,
+                                        backgroundImage: `url(${challenge.imgURL})`,
+                                        backgroundSize: "cover",
+                                        backgroundRepeat: "no-repeat",
+                                        backgroundPosition: "center center",
+                                        boxShadow: `inset 0px 100px 60px -80px ${colours.yellow[900]}, inset 0px -100px 60px -80px ${colours.yellow[900]}`
+                                    }}
+                                > 
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            justifyContent:"space-between",
+                                            margin: 3,
+                                            top: 0,
+                                        }}
+                                    >
+                                        <Typography
+                                            variant="h3"
+                                            sx={{
+                                                left: 0,
+                                                bottom: 0,
+                                                position: "relative",
+                                                color: colours.primary[900],
+                                                textTransform: 'none',
+                                                fontWeight: 800
+                                            }}
+                                        >
+                                            {challenge.category}
+                                        </Typography>
+
+                                        <Typography 
+                                            variant="body2"
+                                            sx={{
+                                                right: 0,
+                                                bottom: 0,
+                                                position: "relative",
+                                                color: colours.primary[900],
+                                                textTransform: 'none',
+                                                fontWeight: 500
+                                            }}
+                                        >
+                                            {challenge.deadline?.toLocaleString()}
+                                        </Typography>
+                                    </Box>
+                                    <Box
+                                        sx={{
+                                            display: "grid",
+                                            position: "absolute",
+                                            justifyContent: "left",
+                                            alignContent: "baseline",
+                                            margin: 3,
+                                            width: '300px',
+                                            maxWidth: '300px',
+                                            bottom: 0,
+                                        }}
+                                    >   
+                                        <Box 
+                                            sx={{
+                                                overflow: "hidden", 
+                                                textOverflow: "ellipsis",
+                                            }}
+                                        >
+                                            <Typography
+                                                noWrap
+                                                variant="h4"
+                                                sx={{
+                                                    left: 0,
+                                                    color: colours.primary[900],
+                                                    textTransform: 'none',
+                                                    textAlign: "left",
+                                                    fontWeight: 600
+                                                }}
+                                            >
+                                                {challenge.name}
+                                            </Typography>
+                                        </Box>
+                                        
+                                        <Box 
+                                            sx={{
+                                                overflow: "hidden", 
+                                                textOverflow: "ellipsis",
+                                            }}
+                                        >
+                                            <Typography 
+                                                noWrap
+                                                sx={{
+                                                    left: 0,
+                                                    color: colours.primary[900],
+                                                    textTransform: 'none',
+                                                    textAlign: "left",
+                                                    fontSize: 12,
+                                                    fontWeight: 300,
+                                                }}
+                                            >
+                                                {challenge.description}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </Card>
+                            </Button>
                         </div>
                     </div>
                 ))}

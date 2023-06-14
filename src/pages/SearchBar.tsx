@@ -56,7 +56,7 @@ export default function SearchBar() {
                 
             />
             <IconButton type="submit" aria-label="search">
-                <SearchRoundedIcon style={{ fill: colours.yellow[500] }} />
+                <SearchRoundedIcon style={{ fill: colours.primary[900] }} />
             </IconButton>
         </form>
     )

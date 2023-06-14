@@ -17,15 +17,15 @@ export const tokens = (mode: string) => ({
             900: "#302707",
         },
         primary: {
-            100: "#d3d3d2",
-            200: "#a7a7a6",
-            300: "#7c7b79",
-            400: "#504f4d",
+            100: "#070706",
+            200: "#0e0e0d",
+            300: "#161513",
+            400: "#1d1c1a",
             500: "#242320",
-            600: "#1d1c1a",
-            700: "#161513",
-            800: "#0e0e0d",
-            900: "#070706",
+            600: "#504f4d",
+            700: "#7c7b79",
+            800: "#a7a7a6",
+            900: "#f4f4f9",
         },
         blueComp: {
             100: "#f1f8fc",
@@ -83,7 +83,7 @@ export const tokens = (mode: string) => ({
             600: "#c3c3c7",
             700: "#929295",
             800: "#626264",
-            900: "#313132",
+            900: "#242320",
         },
         blueComp: {
             100: "#252c30",
@@ -196,30 +196,30 @@ export const themeSettings = (mode: string): any => {
         },
 
         typography: {
-            fontFamily: ["Poppins", "sans-serif"].join(","),
+            fontFamily: ["poppins", "sans-serif"].join(","),
             fontSize: 12,
             h1: {
-                fontFamily: ["Poppins", "sans-serif"].join(","),
+                fontFamily: ["poppins", "sans-serif"].join(","),
                 fontSize: 40,
             },
             h2: {
-                fontFamily: ["Poppins", "sans-serif"].join(","),
+                fontFamily: ["poppins", "sans-serif"].join(","),
                 fontSize: 32,
             },
             h3: {
-                fontFamily: ["Poppins", "sans-serif"].join(","),
+                fontFamily: ["poppins", "sans-serif"].join(","),
                 fontSize: 24,
             },
             h4: {
-                fontFamily: ["Poppins", "sans-serif"].join(","),
+                fontFamily: ["poppins", "sans-serif"].join(","),
                 fontSize: 20,
             },
             h5: {
-                fontFamily: ["Poppins", "sans-serif"].join(","),
+                fontFamily: ["poppins", "sans-serif"].join(","),
                 fontSize: 16,
             },
             h6: {
-                fontFamily: ["Poppins", "sans-serif"].join(","),
+                fontFamily: ["poppins", "sans-serif"].join(","),
                 fontSize: 14,
             },
             
