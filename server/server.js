@@ -109,7 +109,15 @@ app.get('/server/challenge/:chId', (req, res) => {
 // Return search queries for challenges
 app.get('/server/search/:terms', (req, res) => {
   const terms = decodeURI(req.params.terms);
-  dbPool.query(`SELECT * FROM challenges WHERE (name LIKE '%${terms}%') OR (description LIKE '%${terms}%') OR (tags LIKE '${terms}') LIMIT 10`, function (error, results, fields) {
+  dbPool.query(`
+    SELECT * 
+    FROM challenges 
+    WHERE (MATCH(name, description, tags)
+    AGAINST ('${terms}' IN NATURAL LANGUAGE MODE))
+    OR (name LIKE '%${terms}%') 
+    OR (description LIKE '%${terms}%') 
+    OR (tags LIKE '${terms}');
+  `, function (error, results, fields) {
     if (error) {
       res.send(error);
       console.log(error);
