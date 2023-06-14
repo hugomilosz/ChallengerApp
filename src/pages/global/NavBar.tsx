@@ -1,6 +1,6 @@
-import { BottomNavigation, BottomNavigationAction, Icon, useTheme } from "@mui/material"
-import { useContext, useState } from "react"
-import { ColourModeContext, tokens } from "../../theme"
+import { BottomNavigation, useTheme } from "@mui/material"
+import { useState } from "react"
+import { tokens } from "../../theme"
 import MuiBottomNavigationAction from "@mui/material/BottomNavigationAction";
 import { styled } from "@mui/material/styles";
 
