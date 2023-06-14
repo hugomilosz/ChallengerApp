@@ -13,20 +13,23 @@ const ViewChallenge = () => {
 
   // Socket setup
   useEffect(() => {
-    const socketProtocol = (window.location.protocol === 'https:' ? 'wss:' : 'ws:');
-    const socketUrl = socketProtocol + '//' + window.location.hostname + ':' + (process.env.PORT || 5000) + '/watchChallenge';
-    const socket = new WebSocket(socketUrl);
+    if (state.id) {
+      const socketProtocol = (window.location.protocol === 'https:' ? 'wss:' : 'ws:');
+      const socketUrl = socketProtocol + '//' + window.location.hostname + ':' + (process.env.PORT || 5000) + '/watchChallenge';
+      const socket = new WebSocket(socketUrl);
 
-    socket.onopen = () => {
-      console.log("Socket opened");
-      socket.send("Hai!");
+      socket.onopen = () => {
+        console.log("Socket opened");
+        socket.send(state.id);
+      }
+
+      socket.onmessage = (msg) => {
+        console.log(msg.data);
+      }
+
+      setSocket(socket);
     }
 
-    socket.onmessage = (msg) => {
-      console.log(msg.data);
-    }
-
-    setSocket(socket);
   }, []);
 
   useEffect(() => {

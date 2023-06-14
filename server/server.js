@@ -9,6 +9,7 @@ const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/clien
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const session = require('express-session');
 const WebSocket = require('ws');
+const { nanoid } = require('nanoid');
 
 const SQLiteStore = require('connect-sqlite3')(session);
 
@@ -658,16 +659,35 @@ passport.deserializeUser((user, cb) => {
   });
 });
 
+const clients = {}; // At index ChallengeID, keeps all clients tracking that challenge
+
 // Websocket stuff!
 const wsServer = new WebSocket.Server({ noServer: true });
 wsServer.on('connection', (socket) => {
   console.log("Bitconneeeect");
+
+  socket.id = nanoid();
+  let id = null;
+
   socket.on('message', (msg) => {
-    console.log(msg);
+    // Sockets will inform the server of the challenge ID they watch
+    let id = parseInt(msg);
+    if (!clients[id]) {
+      clients[id] = new Set();
+      clients[id].add(socket.id)
+    } else {
+      clients[id].add(socket.id);
+    }
+    console.log(clients);
   });
 
   socket.on('close', () => {
     console.log("Closed");
+    for (cId in clients) {
+      // Remove this socket wherever it may be
+      clients[cId].delete(socket.id);
+    }
+    console.log(clients);
   });
 });
 
