@@ -114,6 +114,9 @@ const ViewChallenge = () => {
         if (msg.data === 'update') {
           fetchInfo();
         }
+        if (msg.data === 'deadline') {
+          window.location.reload();
+        }
       }
     }
 

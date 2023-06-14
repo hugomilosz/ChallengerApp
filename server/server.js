@@ -692,6 +692,9 @@ wsServer.on('connection', (socket) => {
     for (cId in indexToId) {
       // Remove this socket wherever it may be
       indexToId[cId].delete(socket.id);
+      if (indexToId[cId].size === 0) {
+        delete indexToId[cId];
+      }
     }
     console.log(indexToId);
   });
@@ -702,3 +705,30 @@ server.on('upgrade', (req, socket, head) => {
     wsServer.emit('connection', socket, req);
   });
 });
+
+// Every 10 seconds, update everyone's like count
+// setInterval(() => {
+//   for (index in indexToId) {
+//     indexToId[index].forEach((client) => {
+//       clients.get(client).send('update');
+//     });
+//   }
+// }, 10000);
+
+// Every minute, check deadlines
+setInterval(() => {
+  const currentTime = new Date();
+  for (index in indexToId) {
+    dbPool.query(`SELECT date FROM challenges WHERE id = ${index}`, (error, results) => {
+      if (error) {
+        console.log(error);
+      } else {
+        if (new Date(results[0].date) < currentTime) {
+          indexToId[index].forEach((client) => {
+            clients.get(client).send('deadline');
+          })
+        }
+      }
+    });
+  }
+}, 60000);
