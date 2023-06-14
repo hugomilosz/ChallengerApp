@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import SearchBar from "./SearchBar";
+import { tokens } from "../theme";
+import { useTheme } from "@mui/material";
 
 const Home = () => {
     const [challenges, setChallenges] = useState<{ id: number; name: string }[]>([]);
+
+    const theme = useTheme();
+    const colours = tokens(theme.palette.mode);
 
     useEffect(() => {
         fetchChallenges();
