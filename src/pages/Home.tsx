@@ -91,7 +91,7 @@ const Home = () => {
                                         backgroundSize: "cover",
                                         backgroundRepeat: "no-repeat",
                                         backgroundPosition: "center center",
-                                        boxShadow: `inset 0px 150px 60px -80px ${colours.primary[500]}, inset 0px -150px 60px -80px ${colours.primary[500]}`
+                                        boxShadow: `inset 0px 150px 60px -80px ${colours.primary[100]}, inset 0px -150px 60px -80px ${colours.primary[100]}`
                                     }}
                                 > 
                                     <Box
