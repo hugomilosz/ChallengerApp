@@ -101,7 +101,7 @@ const ViewChallenge = () => {
   useEffect(() => {
     if (state.id) {
       const socketProtocol = (window.location.protocol === 'https:' ? 'wss:' : 'ws:');
-      const socketUrl = socketProtocol + '//' + window.location.hostname + ':' + (process.env.PORT || 5000) + '/watchChallenge';
+      const socketUrl = socketProtocol + '//' + window.location.hostname + (window.location.hostname === "localhost" ? 5000 : "") + '/watchChallenge';
       const socket = new WebSocket(socketUrl);
 
       socket.onopen = () => {
