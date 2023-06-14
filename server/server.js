@@ -8,13 +8,14 @@ const crypto = require('crypto')
 const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3')
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const session = require('express-session');
+const WebSocket = require('ws');
 
 const SQLiteStore = require('connect-sqlite3')(session);
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+const server = app.listen(port, () => console.log(`Listening on port ${port}`));
 
 const database = process.env.DBNAME || 'challenger_db';
 
@@ -654,5 +655,24 @@ passport.serializeUser((user, cb) => {
 passport.deserializeUser((user, cb) => {
   process.nextTick(() => {
     return cb(null, user);
+  });
+});
+
+// Websocket stuff!
+const wsServer = new WebSocket.Server({ noServer: true });
+wsServer.on('connection', (socket) => {
+  console.log("Bitconneeeect");
+  socket.on('message', (msg) => {
+    console.log(msg);
+  });
+
+  socket.on('close', () => {
+    console.log("Closed");
+  });
+});
+
+server.on('upgrade', (req, socket, head) => {
+  wsServer.handleUpgrade(req, socket, head, (socket) => {
+    wsServer.emit('connection', socket, req);
   });
 });

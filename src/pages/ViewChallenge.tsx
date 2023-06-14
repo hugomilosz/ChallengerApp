@@ -7,8 +7,27 @@ const ViewChallenge = () => {
   const navigate = useNavigate();
 
   const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
+  const [socket, setSocket] = useState<WebSocket>();
 
   const { state } = useLocation();
+
+  // Socket setup
+  useEffect(() => {
+    const socketProtocol = (window.location.protocol === 'https:' ? 'wss:' : 'ws:');
+    const socketUrl = socketProtocol + '//' + window.location.hostname + ':' + (process.env.PORT || 5000) + '/watchChallenge';
+    const socket = new WebSocket(socketUrl);
+
+    socket.onopen = () => {
+      console.log("Socket opened");
+      socket.send("Hai!");
+    }
+
+    socket.onmessage = (msg) => {
+      console.log(msg.data);
+    }
+
+    setSocket(socket);
+  }, []);
 
   useEffect(() => {
     fetch("/server/isLoggedIn").then((response) => {
