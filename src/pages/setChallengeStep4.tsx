@@ -59,7 +59,7 @@ const SetChallengeCheckout = ({ category, type, style, twist, tags, date, name, 
                 </Tooltip>
             </div>
             <h4>Upload an example submission:</h4>
-            <input required type="file" id="myFiles" accept="image/jpg" multiple style={{ marginBottom: 30 }} name="chFile" />
+            <input required type="file" id="myFiles" accept="image/*" multiple style={{ marginBottom: 30 }} name="chFile" />
             <input required type="datetime-local" style={{ marginBottom: 20 }} name="chDate" value={date} onChange={e => updateFields({ date: e.target.value })} />
         </div >
     )
