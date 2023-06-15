@@ -149,7 +149,7 @@ app.post('/server/createChallenge', multer().single('file'), (req, res) => {
       const fileName = `${newId}_0.` + req.file.originalname.split(".").pop();
       uploadFile(fileName, req.file.buffer);
 
-      dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`subject\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`, \`tags\`, \`date\`, \`username\`, \`archived\`) VALUES ('${newId}', '${req.body.name}', '${req.body.ctgr}', '${req.body.desc}', '${fileName}', '', 'Image', '${req.body.tags}', '${req.body.date}', '${req.user.username}', FALSE);`, function (error, results, fields) {
+      dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`subject\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`, \`tags\`, \`date\`, \`username\`, \`archived\`) VALUES (\`${newId}\`, \`${req.body.name}\`, \`${req.body.ctgr}\`, \`${req.body.desc}\`, \`${fileName}\`, '', 'Image', \`${req.body.tags}\`, \`${req.body.date}\`, \`${req.user.username}\`, FALSE);`, function (error, results, fields) {
         if (error) {
           console.log(error);
 
@@ -272,7 +272,7 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
       uploadFile(fileName, req.file.buffer);
 
       // insert fileName into submissions table
-      dbPool.query(`INSERT INTO submissions (\`likeCount\`, \`hahaCount\`, \`smileCount\`, \`wowCount\`, \`sadCount\`, \`angryCount\`, \`username\`, \`filename\`, \`winner\`) VALUES (0, 0, 0, 0, 0, 0, '${req.user.username}', '${fileName}', FALSE);`, function (error, results, fields) {
+      dbPool.query(`INSERT INTO submissions (\`likeCount\`, \`hahaCount\`, \`smileCount\`, \`wowCount\`, \`sadCount\`, \`angryCount\`, \`username\`, \`filename\`, \`winner\`) VALUES (0, 0, 0, 0, 0, 0, \`${req.user.username}\`, \`${fileName}\`, FALSE);`, function (error, results, fields) {
         if (error) {
           console.log(error);
           res.status(500);
@@ -409,7 +409,7 @@ app.post('/updateReactions/inc/:fileName/:reactionName', (req, res) => {
     } else {
       if (req.params.reactionName === 'likeCount') {
         // Then add to the Likes DB
-        dbPool.query(`INSERT INTO likes (\`username\`, \`filename\`) VALUES ('${req.user.username}', '${fileName}')`, function (error, results,) {
+        dbPool.query(`INSERT INTO likes (\`username\`, \`filename\`) VALUES (\`${req.user.username}\`, \`${fileName}\`)`, function (error, results,) {
           if (error) {
             console.log(error);
             res.status(500);
@@ -420,7 +420,7 @@ app.post('/updateReactions/inc/:fileName/:reactionName', (req, res) => {
       }
       else {
         // Add to the reactions DB
-        dbPool.query(`INSERT INTO reactions (\`username\`, \`filename\`, \`reaction\`) VALUES ('${req.user.username}', '${fileName}', '${reactionName}')`, function (error, results,) {
+        dbPool.query(`INSERT INTO reactions (\`username\`, \`filename\`, \`reaction\`) VALUES (\`${req.user.username}\`, \`${fileName}\`, '${reactionName}')`, function (error, results,) {
           if (error) {
             console.log(error);
             res.status(500);
