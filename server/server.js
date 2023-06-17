@@ -114,15 +114,16 @@ app.get('/server/challenge/:chId', (req, res) => {
 // Return search queries for challenges
 app.get('/server/search/:terms', (req, res) => {
   const terms = decodeURI(req.params.terms);
+  const safeTerms = dbPool.escape(terms).slice(1, -1);
   dbPool.query(`
     SELECT * 
     FROM challenges 
     WHERE (MATCH(name, description, tags)
-    AGAINST (? IN NATURAL LANGUAGE MODE))
-    OR (name LIKE '%${terms}%') 
-    OR (description LIKE '%${terms}%') 
-    OR (tags LIKE '${terms}');
-  `, [terms, terms, terms, term], function (error, results, fields) {
+    AGAINST ('${safeTerms}' IN NATURAL LANGUAGE MODE))
+    OR (name LIKE '%${safeTerms}%') 
+    OR (description LIKE '%${safeTerms}%') 
+    OR (tags LIKE '${safeTerms}');
+  `, function (error, results, fields) {
     if (error) {
       res.send(error);
       console.log(error);
