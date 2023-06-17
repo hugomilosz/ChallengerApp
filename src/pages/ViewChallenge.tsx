@@ -14,10 +14,12 @@ const ViewChallenge = () => {
 
   const [isCheckedLike, setIsCheckedLike] = useState<{ [entry: string]: boolean }>({});
 
-  const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, category: string }>
-    ({ name: "none", description: "none", imgURL: "", category: "" });
+  const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, category: string, setter: string }>
+    ({ name: "none", description: "none", imgURL: "", category: "", setter: "" });
 
   const [entryNamesUrls, setEntryNamesUrls] = useState<Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>>([]);
+
+  const [requestingReload, setRequestingReload] = useState<boolean>(false);
 
   const { state } = useLocation();
 
@@ -106,6 +108,7 @@ const ViewChallenge = () => {
       description: chs.description as string,
       imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
       category: (await (await fetch(`/category/${state.id}`)).json()).subject,
+      setter: chs.username,
     });
   }
 
@@ -148,13 +151,14 @@ const ViewChallenge = () => {
       socket.onmessage = (msg) => {
         console.log(msg.data);
         if (msg.data === 'update') {
-          fetchSubmissions();
+          if (currentUsername === challengeInfo.setter) {
+            fetchSubmissions();
+          } else {
+            setRequestingReload(true);
+          }
         }
         if (msg.data === 'deadline') {
           window.location.reload();
-        }
-        if (msg.data === 'promptReload') {
-          alert("Reload to get new Challenges and Shuffle!");
         }
       }
     }
@@ -435,6 +439,7 @@ const ViewChallenge = () => {
               </div>}
             </body>
           ))}
+          {requestingReload && <h3 style={{ color: "#42a642" }}>Reload to Reshuffle and Refresh Submissions!</h3>}
         </>
       ) : (
         <>
