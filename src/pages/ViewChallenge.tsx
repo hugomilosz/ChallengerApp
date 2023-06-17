@@ -30,8 +30,8 @@ const ViewChallenge = () => {
         response.text().then((body) => {
           const obj = JSON.parse(body);
           console.log(`Logged in as ${obj.username}`);
-          setLoggedIn(true);
           setCurrentUsername(obj.username);
+          setLoggedIn(true);
         })
       }
     }
@@ -88,6 +88,8 @@ const ViewChallenge = () => {
     const chs = JSON.parse(body);
     const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",")
     const sortedArray = (chs.username === currentUsername) ? splitArray : splitArray.sort((a, b) => 0.5 - Math.random());
+
+    console.log(currentUsername);
 
     console.log("Sorting as if " + (chs.username === currentUsername));
 
