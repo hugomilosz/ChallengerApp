@@ -6,17 +6,21 @@ const ViewChallenge = () => {
 
   const navigate = useNavigate();
 
-  const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
+  const [isLoggedIn, setLoggedIn] = useState<string>();
 
   const { state } = useLocation();
 
   useEffect(() => {
     fetch("/server/isLoggedIn").then((response) => {
       if (response.status === 204) {
-        setLoggedIn(false);
+        setLoggedIn(undefined);
       }
       if (response.status === 200) {
-        setLoggedIn(true);
+        response.text().then((body) => {
+          const obj = JSON.parse(body);
+          console.log(`Logged in as ${obj.username}`);
+          setLoggedIn(obj.username);
+        })
       }
     }
     );
@@ -64,16 +68,32 @@ const ViewChallenge = () => {
     return reactionCount;
   }
 
-  const fetchInfo = async () => {
+  // Runs once if you are not the challenge owner, many times if you are
+  const fetchSubmissions = async () => {
     const responseDBInfo = await fetch(`/server/challenge/${state.id}`);
     const body = await responseDBInfo.text();
     const chs = JSON.parse(body);
     const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",")
-    setSubmissionsArray(splitArray);
+    const sortedArray = (isLoggedIn && chs.username === isLoggedIn) ? splitArray : splitArray.sort((a, b) => 0.5 - Math.random());
+    setSubmissionsArray(sortedArray);
+
     const deadlineDate = new Date(chs.date);
     console.log("deadlineDate ", deadlineDate);
     setDeadlineDate(deadlineDate);
-    const urls = splitArray.map(async (entryName: string) => {
+
+    setChallenge({
+      name: chs.name as string,
+      description: chs.description as string,
+      imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
+      entryNamesUrls: [],
+      deadline: deadlineDate,
+      category: (await (await fetch(`/category/${state.id}`)).json()).subject,
+    });
+  }
+
+  // Fetches vote and URL data for each challenge
+  const fetchInfo = async () => {
+    const newInfo = submissionsArray.map(async (entryName: string) => {
 
       const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
 
@@ -86,14 +106,8 @@ const ViewChallenge = () => {
 
       return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
     });
-
-    setChallenge({
-      name: chs.name as string,
-      description: chs.description as string,
-      imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
-      entryNamesUrls: await Promise.all(urls),
-      deadline: deadlineDate,
-      category: (await (await fetch(`/category/${state.id}`)).json()).subject,
+    Promise.all(newInfo).then((urls) => {
+      setChallenge({ ...challengeInfo, entryNamesUrls: urls })
     });
   };
 
@@ -101,7 +115,7 @@ const ViewChallenge = () => {
   useEffect(() => {
     if (state.id) {
       const socketProtocol = (window.location.protocol === 'https:' ? 'wss:' : 'ws:');
-      const socketUrl = socketProtocol + '//' + window.location.hostname + (window.location.hostname === "localhost" ? 5000 : "") + '/watchChallenge';
+      const socketUrl = socketProtocol + '//' + window.location.hostname + (window.location.hostname === "localhost" ? ":5000" : "") + '/watchChallenge';
       const socket = new WebSocket(socketUrl);
 
       socket.onopen = () => {
@@ -116,6 +130,9 @@ const ViewChallenge = () => {
         }
         if (msg.data === 'deadline') {
           window.location.reload();
+        }
+        if (msg.data === 'promptReload') {
+          alert("Reload to get new Challenges and Shuffle!");
         }
       }
     }
@@ -348,7 +365,7 @@ const ViewChallenge = () => {
           {challengeInfo.entryNamesUrls.map((entry) => (
             <body>
               <img src={entry.url} className="insImage" alt="" />
-              {isLoggedIn && <div style={{ display: 'flex', justifyContent: "center" }}>
+              {isLoggedIn !== undefined && <div style={{ display: 'flex', justifyContent: "center" }}>
                 <fieldset id={`fs${entry.entryName}`} style={{ border: "0" }}>
                   <div style={{ marginRight: '10px', backgroundColor: "#bff0a1", display: "inline-block" }}>
                     <Checkbox
