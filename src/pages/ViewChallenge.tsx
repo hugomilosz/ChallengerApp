@@ -291,20 +291,20 @@ const ViewChallenge = () => {
 
             if (response.archived === 1) {
               let path = '../noWinner';
-              navigate(path, { state: { id: state.id } });
+              navigate(path, { state: { id: state.id }, replace: true });
             } else {
               //let path = '../noSubmissions';
               const path = await (await fetch(`/server/isOwner/${state.id}/empty`)).text();
-              navigate(path, { state: { id: state.id } });
+              navigate(path, { state: { id: state.id }, replace: true });
             }
           }
           else if (!winningEntry || winningEntry.length === 0) {
             // if the challenge-setter, go to chooseWinner. Otherwise, go to winnerPending 
             let path = await (await fetch(`/server/isOwner/${state.id}`)).text();
-            navigate(path, { state: { id: state.id } });
+            navigate(path, { state: { id: state.id }, replace: true });
           } else {
             let path = '../announceWinner';
-            navigate(path, { state: { id: state.id } });
+            navigate(path, { state: { id: state.id }, replace: true });
           }
         }
         catch (error) {
