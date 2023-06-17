@@ -409,7 +409,7 @@ app.post('/updateReactions/inc/:fileName/:reactionName', (req, res) => {
     } else {
       if (req.params.reactionName === 'likeCount') {
         // Then add to the Likes DB
-        dbPool.query(`INSERT INTO likes (\`username\`, \`filename\`) VALUES (\`${req.user.username}\`, \`${fileName}\`)`, function (error, results,) {
+        dbPool.query(`INSERT INTO likes (\`username\`, \`filename\`) VALUES ('${req.user.username}', '${fileName}')`, function (error, results,) {
           if (error) {
             console.log(error);
             res.status(500);
@@ -420,7 +420,7 @@ app.post('/updateReactions/inc/:fileName/:reactionName', (req, res) => {
       }
       else {
         // Add to the reactions DB
-        dbPool.query(`INSERT INTO reactions (\`username\`, \`filename\`, \`reaction\`) VALUES (\`${req.user.username}\`, \`${fileName}\`, '${reactionName}')`, function (error, results,) {
+        dbPool.query(`INSERT INTO reactions (\`username\`, \`filename\`, \`reaction\`) VALUES ('${req.user.username}', '${fileName}', '${reactionName}')`, function (error, results,) {
           if (error) {
             console.log(error);
             res.status(500);

@@ -6,26 +6,40 @@ const ViewChallenge = () => {
 
   const navigate = useNavigate();
 
-  const [isLoggedIn, setLoggedIn] = useState<string>();
+  const [currentUsername, setCurrentUsername] = useState<string>();
+  const [isLoggedIn, setLoggedIn] = useState<boolean>();
+
+  const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
+  const [deadline, setDeadlineDate] = useState<Date | null>(null);
+
+  const [isCheckedLike, setIsCheckedLike] = useState<{ [entry: string]: boolean }>({});
+
+  const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, category: string }>
+    ({ name: "none", description: "none", imgURL: "", category: "" });
+
+  const [entryNamesUrls, setEntryNamesUrls] = useState<Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>>([]);
 
   const { state } = useLocation();
 
   useEffect(() => {
     fetch("/server/isLoggedIn").then((response) => {
       if (response.status === 204) {
-        setLoggedIn(undefined);
+        setLoggedIn(false);
       }
       if (response.status === 200) {
         response.text().then((body) => {
           const obj = JSON.parse(body);
           console.log(`Logged in as ${obj.username}`);
-          setLoggedIn(obj.username);
+          setLoggedIn(true);
+          setCurrentUsername(obj.username);
         })
       }
     }
     );
 
     // Get the challenges this user has liked, and then set the checkboxes
+    if (!state) { return; }
+
     fetch(`/server/getLikes/${state.id}`).then(async (liked) => {
       if (liked.status === 200) {
         const likedPosts = JSON.parse(await liked.text()) as Array<string>;
@@ -45,10 +59,7 @@ const ViewChallenge = () => {
       }
     });
 
-  }, [state.id]);
-
-  const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, deadline: Date | null, category: string }>
-    ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], deadline: null, category: "" });
+  }, [state]);
 
   const [submissionsArray, setSubmissionsArray] = useState<string[]>([]);
 
@@ -70,11 +81,16 @@ const ViewChallenge = () => {
 
   // Runs once if you are not the challenge owner, many times if you are
   const fetchSubmissions = async () => {
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAA");
+
     const responseDBInfo = await fetch(`/server/challenge/${state.id}`);
     const body = await responseDBInfo.text();
     const chs = JSON.parse(body);
     const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",")
-    const sortedArray = (isLoggedIn && chs.username === isLoggedIn) ? splitArray : splitArray.sort((a, b) => 0.5 - Math.random());
+    const sortedArray = (chs.username === currentUsername) ? splitArray : splitArray.sort((a, b) => 0.5 - Math.random());
+
+    console.log("Sorting as if " + (chs.username === currentUsername));
+
     setSubmissionsArray(sortedArray);
 
     const deadlineDate = new Date(chs.date);
@@ -85,15 +101,18 @@ const ViewChallenge = () => {
       name: chs.name as string,
       description: chs.description as string,
       imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
-      entryNamesUrls: [],
-      deadline: deadlineDate,
       category: (await (await fetch(`/category/${state.id}`)).json()).subject,
     });
+
+    await fetchInfo();
   }
 
   // Fetches vote and URL data for each challenge
   const fetchInfo = async () => {
+    console.log(submissionsArray);
+
     const newInfo = submissionsArray.map(async (entryName: string) => {
+      console.log("Fetching " + entryName);
 
       const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
 
@@ -106,8 +125,9 @@ const ViewChallenge = () => {
 
       return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
     });
+
     Promise.all(newInfo).then((urls) => {
-      setChallenge({ ...challengeInfo, entryNamesUrls: urls })
+      setEntryNamesUrls(urls);
     });
   };
 
@@ -126,7 +146,7 @@ const ViewChallenge = () => {
       socket.onmessage = (msg) => {
         console.log(msg.data);
         if (msg.data === 'update') {
-          fetchInfo();
+          fetchSubmissions();
         }
         if (msg.data === 'deadline') {
           window.location.reload();
@@ -138,11 +158,6 @@ const ViewChallenge = () => {
     }
 
   }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
-  const [, setDeadlineDate] = useState<Date | null>(null);
-
-  const [isCheckedLike, setIsCheckedLike] = useState<{ [entry: string]: boolean }>({});
 
   const handleChangeLike = (entry: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
     // Disable the fieldset
@@ -242,16 +257,23 @@ const ViewChallenge = () => {
     e.target.closest("fieldset")!.disabled = false;
   };
 
-  // checks the deadline time/date. Change this so it only does it once per page load
   useEffect(() => {
     const fetchChallengeInfo = async () => {
-      await fetchInfo();
-      console.log("deadline ", challengeInfo.deadline);
+      if (submissionsArray.length === 0 && isLoggedIn !== undefined) {
+        console.log("Bigfetch");
+
+        await fetchSubmissions();
+      } else {
+        console.log("Smallfetch");
+
+        await fetchInfo();
+      }
+      console.log("deadline ", deadline);
     };
 
     const checkDeadlinePass = async () => {
       const currentDate = new Date();
-      if (challengeInfo.deadline && currentDate > challengeInfo.deadline) {
+      if (deadline && currentDate > deadline) {
         const response = await (await fetch(`/checkArchived/${state.id}`)).json();
 
         try {
@@ -299,13 +321,13 @@ const ViewChallenge = () => {
       }
     }
 
-    if (challengeInfo.deadline === null) {
+    if (deadline === null) {
       fetchChallengeInfo();
     } else {
       console.log("Checking if deadline has passed...");
       checkDeadlinePass();
     }
-  }, [challengeInfo.deadline]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [deadline, submissionsArray, isLoggedIn]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmitSubmission = async (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -323,7 +345,7 @@ const ViewChallenge = () => {
       body: formData,
     })
     if (response.status === 200) {
-      fetchInfo();
+      fetchSubmissions();
     } else {
       alert("Error creating submission!");
     }
@@ -352,7 +374,7 @@ const ViewChallenge = () => {
 
           <h2 style={{ color: "#FF0000" }}>Deadline</h2>
           {/* <body style={{color: "#FF0000"}}>Challenge ends at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body> */}
-          <body style={{ color: "#FF0000" }}>Challenge ends at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body>
+          <body style={{ color: "#FF0000" }}>Challenge ends at: {deadline?.toLocaleTimeString()} on {deadline?.toDateString()}</body>
 
           <h1>Add a Submission!</h1>
           {isLoggedIn ? <form onSubmit={handleSubmitSubmission} id="form" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -362,10 +384,10 @@ const ViewChallenge = () => {
 
           <h1>Existing Submissions!</h1>
           <h3 style={{ color: "#42a642" }}>Use ❤️ to vote for your favourites!</h3>
-          {challengeInfo.entryNamesUrls.map((entry) => (
+          {entryNamesUrls.map((entry) => (
             <body>
               <img src={entry.url} className="insImage" alt="" />
-              {isLoggedIn !== undefined && <div style={{ display: 'flex', justifyContent: "center" }}>
+              {isLoggedIn && <div style={{ display: 'flex', justifyContent: "center" }}>
                 <fieldset id={`fs${entry.entryName}`} style={{ border: "0" }}>
                   <div style={{ marginRight: '10px', backgroundColor: "#bff0a1", display: "inline-block" }}>
                     <Checkbox
