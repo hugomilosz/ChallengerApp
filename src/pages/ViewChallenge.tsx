@@ -93,6 +93,8 @@ const ViewChallenge = () => {
 
     console.log("Sorting as if " + (chs.username === currentUsername));
 
+    console.log(sortedArray);
+
     setSubmissionsArray(sortedArray);
 
     const deadlineDate = new Date(chs.date);
@@ -105,8 +107,6 @@ const ViewChallenge = () => {
       imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
       category: (await (await fetch(`/category/${state.id}`)).json()).subject,
     });
-
-    await fetchInfo();
   }
 
   // Fetches vote and URL data for each challenge
@@ -323,10 +323,8 @@ const ViewChallenge = () => {
       }
     }
 
-    if (deadline === null) {
-      fetchChallengeInfo();
-    } else {
-      console.log("Checking if deadline has passed...");
+    fetchChallengeInfo();
+    if (deadline) {
       checkDeadlinePass();
     }
   }, [deadline, submissionsArray, isLoggedIn]); // eslint-disable-line react-hooks/exhaustive-deps
