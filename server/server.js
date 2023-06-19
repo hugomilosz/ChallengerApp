@@ -145,7 +145,7 @@ app.post('/server/createChallenge', multer().single('file'), (req, res) => {
       const fileName = `${newId}_0.` + req.file.originalname.split(".").pop();
       uploadFile(fileName, req.file.buffer);
 
-      dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`subject\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`, \`tags\`, \`date\`, \`username\`, \`archived\`) VALUES (?, ?, ?, ?, ?, '', 'Image', ?, ?, ?, FALSE);`, [newId, req.body.name, req.body.ctgr, req.body.desc, fileName, req.body.tags, req.body.date, req.body.username], function (error, results, fields) {
+      dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`subject\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`, \`tags\`, \`date\`, \`username\`, \`archived\`) VALUES (?, ?, ?, ?, ?, '', 'Image', ?, ?, ?, FALSE);`, [newId, req.body.name, req.body.ctgr, req.body.desc, fileName, req.body.tags, req.body.date, req.user.username], function (error, results, fields) {
         if (error) {
           console.log(error);
 

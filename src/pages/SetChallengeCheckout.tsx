@@ -227,7 +227,7 @@ const SetChallengeCheckout = () => {
                     </ClickAwayListener>
                 </div>
 
-
+                <h3>Example Submission:</h3>
                 <input required type="file" id="myFiles" accept="image/*" multiple style={{ marginBottom: 30, marginTop: 20 }} name="chFile" />
 
                 <LocalizationProvider dateAdapter={AdapterDayjs} >
