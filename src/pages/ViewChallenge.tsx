@@ -156,6 +156,8 @@ const ViewChallenge = () => {
       socket.onmessage = (msg) => {
         console.log(msg.data);
         if (msg.data === 'update') {
+          console.log(`username ${currentUsername} setter ${challengeInfo.setter}`);
+
           if (currentUsername === challengeInfo.setter) {
             fetchSubmissions();
           } else {
