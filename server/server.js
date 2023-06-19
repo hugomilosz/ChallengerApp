@@ -321,10 +321,9 @@ app.get('/category/:chId', (req, res) => {
 });
 
 // TO GET THE NUMBER OF THE CERTAIN REACTION
-app.get('/viewReactions/:fileName/:reactionName', (req, res) => {
+app.get('/viewReactions/:fileName', (req, res) => {
   const fileName = req.params.fileName;
-  const reactionName = req.params.reactionName;
-  dbPool.query(`SELECT ${reactionName} FROM submissions WHERE filename='${fileName}'`, function (error, results, fields) {
+  dbPool.query(`SELECT * FROM submissions WHERE filename='${fileName}'`, function (error, results, fields) {
     if (error) {
       console.log(error);
       res.status(500);

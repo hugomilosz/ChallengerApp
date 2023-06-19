@@ -70,20 +70,17 @@ const ViewChallenge = () => {
 
   const [submissionsArray, setSubmissionsArray] = useState<string[]>([]);
 
-  async function getReactionCount(entryWithoutPrefix: string, reactionName: string) {
-    const reactionCountResponse = await fetch(`/viewReactions/${entryWithoutPrefix}/${reactionName}`);
+  async function getReactionCount(entryWithoutPrefix: string) {
+    const reactionCountResponse = await fetch(`/viewReactions/${entryWithoutPrefix}`);
     const reactionCountData = await reactionCountResponse.json();
-    switch (reactionName) {
-      case "likeCount": return reactionCountData.length > 0 ? reactionCountData[0].likeCount : 0;
-      case "hahaCount": return reactionCountData.length > 0 ? reactionCountData[0].hahaCount : 0;
-      case "smileCount": return reactionCountData.length > 0 ? reactionCountData[0].smileCount : 0;
-      case "wowCount": return reactionCountData.length > 0 ? reactionCountData[0].wowCount : 0;
-      case "sadCount": return reactionCountData.length > 0 ? reactionCountData[0].sadCount : 0;
-      case "angryCount": return reactionCountData.length > 0 ? reactionCountData[0].angryCount : 0;
-      default: console.error("not a valid reaction"); break;
+    return {
+      likeCount: reactionCountData.length > 0 ? reactionCountData[0].likeCount : 0,
+      hahaCount: reactionCountData.length > 0 ? reactionCountData[0].hahaCount : 0,
+      smileCount: reactionCountData.length > 0 ? reactionCountData[0].smileCount : 0,
+      wowCount: reactionCountData.length > 0 ? reactionCountData[0].wowCount : 0,
+      sadCount: reactionCountData.length > 0 ? reactionCountData[0].sadCount : 0,
+      angryCount: reactionCountData.length > 0 ? reactionCountData[0].angryCount : 0,
     }
-    const reactionCount = reactionCountData.length > 0 ? reactionCountData[0].likeCount : 0;
-    return reactionCount;
   }
 
   // Runs once if you are not the challenge owner, many times if you are
@@ -127,13 +124,14 @@ const ViewChallenge = () => {
       console.log("Fetching " + entryName);
 
       const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
+      const reactionCounts = await getReactionCount(entryName);
 
-      const likeCount = await getReactionCount(entryName, "likeCount");
-      const hahaCount = await getReactionCount(entryName, "hahaCount");
-      const smileCount = await getReactionCount(entryName, "smileCount");
-      const wowCount = await getReactionCount(entryName, "wowCount");
-      const sadCount = await getReactionCount(entryName, "sadCount");
-      const angryCount = await getReactionCount(entryName, "angryCount");
+      const likeCount = reactionCounts.likeCount;
+      const hahaCount = reactionCounts.hahaCount;
+      const smileCount = reactionCounts.smileCount;
+      const wowCount = reactionCounts.wowCount;
+      const sadCount = reactionCounts.sadCount;
+      const angryCount = reactionCounts.angryCount;
 
       return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
     });
