@@ -20,7 +20,7 @@ type ChDataProps = ChData & {
     updateFields: (fields: Partial<ChData>) => void
 }
 
-const CustomTextField = styled(TextField)(({ theme }: any) => {   
+const CustomTextField = styled(TextField)(({ theme }: any) => {
     return {
         'label.Mui-focused': {
             color: tokens(theme.palette.mode).yellow[500]
@@ -54,37 +54,37 @@ const SetChallengeCheckout = ({ category, type, style, twist, tags, date, name, 
     }
 
     return (
-        <div 
-            className="setChallengeStep4" 
-            style={{ 
-                display: "flex", 
-                flexDirection: "column", 
-                alignItems: "center" 
+        <div
+            className="setChallengeStep4"
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center"
             }}
         >
 
             <h1>Set the Challenge</h1>
-            
-            <div 
-                style={{ 
-                    display: "flex" 
+
+            <div
+                style={{
+                    display: "flex"
                 }}
             >
 
-                <CustomTextField 
+                <CustomTextField
                     required
                     label="Title"
                     variant="standard"
-                    type="text" 
-                    placeholder='Title' 
-                    style={{ 
+                    type="text"
+                    placeholder='Title'
+                    style={{
                         marginBottom: 20,
                         width: 300,
                         maxWidth: 300
-                    }} 
-                    name="chName" 
-                    value={name} 
-                    onChange={e => updateFields({ name: e.target.value })} 
+                    }}
+                    name="chName"
+                    value={name}
+                    onChange={e => updateFields({ name: e.target.value })}
                 />
                 <ClickAwayListener onClickAway={() => setOpen1(false)}>
                     <div>
@@ -99,57 +99,57 @@ const SetChallengeCheckout = ({ category, type, style, twist, tags, date, name, 
                             disableTouchListener
                             title={`Come up with a cathcy and descriptive title for your challenge. Example: "The hottest sauce ever", "Unbelivable macro shot", etc.`}
                         >
-                            <Button sx={{color: colours.yellow[500]}} onClick={() => setOpen1(true)}>?</Button>
+                            <Button sx={{ color: colours.yellow[500] }} onClick={() => setOpen1(true)}>?</Button>
                         </Tooltip>
                     </div>
                 </ClickAwayListener>
             </div>
-                            
+
             <FormControl>
-            <InputLabel sx={{
-                "&.Mui-focused": {
-                    color: colours.yellow[500],
-                  }
-            }}>Category</InputLabel>
-            <Select
-                required
-                name='chCtgr'
-                label="Category"
-                value={ctgr}
-                onChange={onChange}
-                sx={{
-                    width: 200,
-                    maxWidth: 200,
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: `${tokens(theme.palette.mode).yellow[500]} !important`,
-                        color: tokens(theme.palette.mode).yellow[500]
-                    },
-                    '& .MuiOutlinedInput-root': {
-                        '&.Mui-focused fieldset': {
-                            borderColor: colours.yellow[500],
+                <InputLabel sx={{
+                    "&.Mui-focused": {
+                        color: colours.yellow[500],
+                    }
+                }}>Category</InputLabel>
+                <Select
+                    required
+                    name='chCtgr'
+                    label="Category"
+                    value={ctgr}
+                    onChange={onChange}
+                    sx={{
+                        width: 200,
+                        maxWidth: 200,
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            borderColor: `${tokens(theme.palette.mode).yellow[500]} !important`,
+                            color: tokens(theme.palette.mode).yellow[500]
                         },
-                    },
-                    ' & label.Mui-focused': {
-                        color: colours.yellow[500]
-                    },
+                        '& .MuiOutlinedInput-root': {
+                            '&.Mui-focused fieldset': {
+                                borderColor: colours.yellow[500],
+                            },
+                        },
+                        ' & label.Mui-focused': {
+                            color: colours.yellow[500]
+                        },
+                    }}
+                >
+                    <MenuItem value={"Art & Craft"}>Art & Craft</MenuItem>
+                    <MenuItem value={"Culinary"}>Culinary</MenuItem>
+                    <MenuItem value={"Videography"}>Videography</MenuItem>
+                    <MenuItem value={"Gardening"}>Gardening</MenuItem>
+                    <MenuItem value={"Music"}>Music</MenuItem>
+                    <MenuItem value={"Photography"}>Photography</MenuItem>
+                    <MenuItem value={"Writing"}>Writing</MenuItem>
+                    <MenuItem value={"Other"}>Other</MenuItem>
+                </Select>
+            </FormControl>
+
+            <div
+                style={{
+                    display: "flex"
                 }}
             >
-                <MenuItem value={"Art & Craft"}>Art & Craft</MenuItem>
-                <MenuItem value={"Culinary"}>Culinary</MenuItem>
-                <MenuItem value={"Videography"}>Videography</MenuItem>
-                <MenuItem value={"Gardening"}>Gardening</MenuItem>
-                <MenuItem value={"Music"}>Music</MenuItem>
-                <MenuItem value={"Photography"}>Photography</MenuItem>
-                <MenuItem value={"Writing"}>Writing</MenuItem>
-                <MenuItem value={"Other"}>Other</MenuItem>
-            </Select>
-            </FormControl>
-            
-            <div 
-                style={{ 
-                    display: "flex" 
-                }}
-            > 
                 <CustomTextField
                     required
                     variant="standard"
@@ -158,35 +158,37 @@ const SetChallengeCheckout = ({ category, type, style, twist, tags, date, name, 
                     maxRows={5}
                     label="Description"
                     placeholder='Description'
-                    style={{ marginTop: 20, 
-                            marginBottom: 10,
-                            width: 300,
-                            maxWidth: 300 }} 
-                    name="chDesc" 
+                    style={{
+                        marginTop: 20,
+                        marginBottom: 10,
+                        width: 300,
+                        maxWidth: 300
+                    }}
+                    name="chDesc"
                     defaultValue={getDescription(type, style, twist)}
                 />
                 <ClickAwayListener onClickAway={() => setOpen2(false)}>
                     <div>
                         <Tooltip
-                                PopperProps={{
-                                    disablePortal: true,
-                                }}
-                                onClose={() => setOpen2(false)}
-                                open={open2}
-                                disableFocusListener
-                                disableHoverListener
-                                disableTouchListener 
-                                title={`Describe your challenge and dont forget to mention your expectations and and inspiring twist`}
+                            PopperProps={{
+                                disablePortal: true,
+                            }}
+                            onClose={() => setOpen2(false)}
+                            open={open2}
+                            disableFocusListener
+                            disableHoverListener
+                            disableTouchListener
+                            title={`Describe your challenge and dont forget to mention your expectations and and inspiring twist`}
                         >
-                                <Button sx={{color: colours.yellow[500]}} onClick={() => setOpen2(true)}>?</Button>
+                            <Button sx={{ color: colours.yellow[500] }} onClick={() => setOpen2(true)}>?</Button>
                         </Tooltip>
                     </div>
                 </ClickAwayListener>
             </div>
 
-            <div 
-                style={{ 
-                    display: "flex" 
+            <div
+                style={{
+                    display: "flex"
                 }}
             >
                 <CustomTextField
@@ -195,9 +197,11 @@ const SetChallengeCheckout = ({ category, type, style, twist, tags, date, name, 
                     type="text"
                     label="Tags"
                     placeholder='Tags'
-                    style={{ marginBottom: 10,
-                             width: 300,
-                             maxWidth: 300 }}
+                    style={{
+                        marginBottom: 10,
+                        width: 300,
+                        maxWidth: 300
+                    }}
                     name="chTags"
                     value={tags}
                     onChange={e => updateFields({ tags: e.target.value })}
@@ -212,32 +216,33 @@ const SetChallengeCheckout = ({ category, type, style, twist, tags, date, name, 
                             open={open3}
                             disableFocusListener
                             disableHoverListener
-                            disableTouchListener 
+                            disableTouchListener
                             title={`Add the tags (separated by ',') that could help find your challenge.
                                     Format: "tag1, tag2, tag3, etc".`}
                         >
-                            <Button sx={{color: colours.yellow[500]}} onClick={() => setOpen3(true)}>?</Button>
+                            <Button sx={{ color: colours.yellow[500] }} onClick={() => setOpen3(true)}>?</Button>
                         </Tooltip>
                     </div>
                 </ClickAwayListener>
             </div>
 
-                            
+            <h3>Example Submission:</h3>
             <input required type="file" id="myFiles" accept="image/*" style={{ marginBottom: 30, marginTop: 20 }} name="chFile" />
-            
-            <LocalizationProvider dateAdapter={AdapterDayjs} > 
+
+            <LocalizationProvider dateAdapter={AdapterDayjs} >
                 <DateTimePicker
-                    
-                    sx={{ paddingBottom:20, marginBottom: 30, width: 200, maxWidth: 200 }} 
-                    label="Deadline" 
-                    onChange={(newValue: string | null) => {updateFields({ date: (newValue === null) ? "" : newValue }); console.log(date)}}
+
+                    sx={{ paddingBottom: 20, marginBottom: 30, width: 200, maxWidth: 200 }}
+                    label="Deadline"
+                    onChange={(newValue: string | null) => { updateFields({ date: (newValue === null) ? "" : newValue }); console.log(date) }}
                     slotProps={{
                         textField: {
                             name: "chDate",
                             required: true,
                             value: date,
                             defaultValue: date,
-                            sx: { '& .MuiOutlinedInput-root': {
+                            sx: {
+                                '& .MuiOutlinedInput-root': {
                                     '&.Mui-focused fieldset': {
                                         borderColor: colours.yellow[500],
                                     },
@@ -253,7 +258,7 @@ const SetChallengeCheckout = ({ category, type, style, twist, tags, date, name, 
                     format="YYYY-MM-DD HH:mm:ss"
                     disablePast
                 />
-            </LocalizationProvider> 
+            </LocalizationProvider>
         </div >
     )
 }
