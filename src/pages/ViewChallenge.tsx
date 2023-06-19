@@ -358,8 +358,9 @@ const ViewChallenge = () => {
       body: formData,
     })
     if (response.status === 200) {
-      alert("Successfully submit!");
-      fetchSubmissions();
+      setTimeout(() => {
+        fetchSubmissions();
+      }, 3000);
     } else {
       alert("Error creating submission!");
     }
