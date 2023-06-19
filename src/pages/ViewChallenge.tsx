@@ -19,6 +19,8 @@ const ViewChallenge = () => {
   const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, category: string, setter: string }>
     ({ name: "none", description: "none", imgURL: "", category: "", setter: "" });
 
+  const [hasFetchedUrls, setHasFetchedUrls] = useState<boolean>(false);
+
   const [entryNamesUrls, setEntryNamesUrls] = useState<Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>>([]);
 
   const [requestingReload, setRequestingReload] = useState<boolean>(false);
@@ -100,6 +102,7 @@ const ViewChallenge = () => {
     console.log(sortedArray);
 
     setSubmissionsArray(sortedArray);
+    setHasFetchedUrls(true);
 
     const deadlineDate = new Date(chs.date);
     console.log("deadlineDate ", deadlineDate);
@@ -267,11 +270,13 @@ const ViewChallenge = () => {
 
   useEffect(() => {
     const fetchChallengeInfo = async () => {
-      if (submissionsArray.length === 0 && isLoggedIn !== undefined) {
+      if (hasFetchedUrls === false && isLoggedIn !== undefined) {
         console.log("Bigfetch");
 
         await fetchSubmissions();
       } else {
+        console.log(submissionsArray);
+
         console.log("Smallfetch");
 
         await fetchInfo();
@@ -530,7 +535,7 @@ const ViewChallenge = () => {
               marginRight: 3,
             }}
           >Use ❤️ to vote for your favourite</Typography>
-          {entryNamesUrls.map((entry) => (
+          {(entryNamesUrls !== undefined) && entryNamesUrls.map((entry) => (
             <body>
               <Box
                 component="img"
