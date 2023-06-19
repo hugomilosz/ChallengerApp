@@ -21,8 +21,8 @@ const database = process.env.DBNAME || 'challenger_db';
 const dbPool = mysql.createPool({
   connectionLimit: 10,
   host: process.env.DBHOST || 'localhost',
-  user: process.env.DBUSER || 'root',
-  password: process.env.DBPASS || 'MySql139115Mb_',
+  user: process.env.DBUSER || 'dev',
+  password: process.env.DBPASS || 'dev',
   database: process.env.DBNAME || 'challenger_db'
 });
 
