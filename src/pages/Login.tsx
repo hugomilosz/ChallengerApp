@@ -35,8 +35,7 @@ const Login = () => {
             });
 
             if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
+                if (response.ok) {
                     // If success, go back to the previous page
                     navigate(-1);
                 }
