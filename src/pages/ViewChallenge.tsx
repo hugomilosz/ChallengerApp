@@ -552,6 +552,7 @@ const ViewChallenge = () => {
                       handleChange={handleChangeLike(entry.entryName)}
                       isChecked={isCheckedLike[entry.entryName] || false}
                       label={` ❤️ ${entry.likeCount} `}
+                      isLike={true}
                     />
                   </div>
                   <div style={{ width: 40, maxWidth: 40, marginRight: '20px', display: "inline-block" }}>
