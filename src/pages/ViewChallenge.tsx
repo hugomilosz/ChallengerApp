@@ -529,7 +529,7 @@ const ViewChallenge = () => {
               marginLeft: 3,
               marginRight: 3,
             }}
-          >*use ❤️ to vote for your favourite</Typography>
+          >Use ❤️ to vote for your favourite</Typography>
           {entryNamesUrls.map((entry) => (
             <body>
               <Box
