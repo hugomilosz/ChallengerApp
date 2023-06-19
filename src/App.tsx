@@ -17,9 +17,6 @@ import SetChallengeChoice from './pages/SetChallengeChoice';
 import SetChallengeTemplate from './pages/SetChallengeTemplate'
 import SetChallengeCheckout from './pages/SetChallengeCheckout';
 
-import ViewSubmissions from './pages/ViewSubmissions';
-import UploadSubmission from './pages/UploadSubmission';
-
 import Search from './pages/Search'
 
 import ChooseWinner from './pages/ChooseWinner'
@@ -43,7 +40,7 @@ function App() {
                     <main className='content'>
                         <TopBar />
                         <NavBar />
-                        <div style={{  paddingTop: "50px" }}>
+                        <div style={{  paddingTop: "60px", paddingBottom: "60px" }}>
                             <Routes>
                                 <Route path="/" element={<Home />} />
                                 <Route path="/setChallengeChoice" element={<SetChallengeChoice />} />
@@ -52,8 +49,6 @@ function App() {
                                 <Route path="/login" element={<Login />} />
                                 <Route path="/logout" element={<Logout />} />
                                 <Route path="/viewChallenge" element={<ViewChallenge />} />
-                                <Route path="/viewSubmissions" element={<ViewSubmissions />} />
-                                <Route path="/uploadSubmission" element={<UploadSubmission />} />
                                 <Route path="/search/:query" element={<Search />} />;
                                 <Route path="/chooseWinner" element={<ChooseWinner />} />
                                 <Route path="/announceWinner" element={<AnnounceWinner />} />

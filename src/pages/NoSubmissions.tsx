@@ -1,5 +1,10 @@
+import { Box, Button, Typography, useTheme } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { tokens } from "../theme";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateTimePicker } from '@mui/x-date-pickers-pro';
 
 const NoSubmissions = () => {
 
@@ -67,7 +72,6 @@ const NoSubmissions = () => {
 
     const extendDeadline = async (date: string) => {
         date = date.replace("T", " ");
-        date = date + ":00";
         console.log("New deadline: ", date);
         const response = await fetch(`./extendDeadline/${state.id}/${date}`, {
             method: 'POST'
@@ -105,40 +109,207 @@ const NoSubmissions = () => {
         navigate(path, { state: { id: state.id } });
     }
 
+    const theme = useTheme();
+    const colours = tokens(theme.palette.mode);
+
     return (
-        <div className="noSubmissions">
+        <div className="noSubmissions" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingBottom: 20 }}>
             {state?.id ? (
                 <>
-                    <h1 style={{color: "#FF0000"}}>No Submissions for Challenge {state.id}</h1>
+                    <Typography 
+                        variant="h2"
+                        sx={{
+                            color: colours.redAcc[500],
+                            textTransform: 'none',
+                            fontWeight: 800,
+                            marginTop: 5,
+                        }}
+                    >
+                        No Submissions
+                    </Typography>
 
-                    <h2>Name</h2>
-                    <body>{challengeInfo.name}</body>
+                    <Box 
+                        component="img"
+                        alt="Example"
+                        src={challengeInfo.imgURL}
+                        sx={{
+                        height: "auto",
+                        width: 500,
+                        maxWidth: 500,
+                        borderRadius: 3,
+                        marginTop: 5
+                        }}
+                    />
 
-                    <h2>Category</h2>
-                    <body>{challengeInfo.category}</body>
+                    <Box
+                        sx={{
+                        width: 500,
+                        maxWidth: 500,
+                        alignItems: "center",
+                        }}
+                    >
+                        <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent:"space-between",
+                            margin: 3,
+                            top: 0,
+                        }}
+                        >
+                        <Typography
+                            variant="h5"
+                            sx={{
+                                left: 0,
+                                bottom: 0,
+                                position: "relative",
+                                color: colours.yellow[500],
+                                textTransform: 'none',
+                                fontWeight: 500
+                            }}
+                        >
+                            {challengeInfo.category}
+                        </Typography>
+                        <Typography 
+                            variant="h6"
+                            sx={{
+                                right: 0,
+                                bottom: 0,
+                                position: "relative",
+                                color: colours.redAcc[500],
+                                textTransform: 'none',
+                                fontWeight: 500
+                            }}
+                        >
+                            {challengeInfo.deadline?.toLocaleString()}
+                        </Typography>
+                    </Box>
 
-                    <h2>Description</h2>
-                    <body>{challengeInfo.description}</body>
-                    
-                    <h2 style={{color: "#FF0000"}}>Challenge ended at:</h2>
-                    <body style={{color: "#FF0000"}}>{challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body>
+                    <Typography 
+                        variant="h3"
+                        sx={{
+                        position: "relative",
+                        left: 0,
+                        color: colours.primary[900],
+                        textTransform: 'none',
+                        textAlign: "left",
+                        fontWeight: 800,
+                        marginLeft: 3,
+                        marginRight:3,
+                        marginBottom: 1,
+                        }}
+                    >
+                        {challengeInfo.name}
+                    </Typography>
 
-                    <h2>Initial Inspiration</h2>
-                    <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body> <br/>
+                    <Typography 
+                        variant="h5"
+                        sx={{
+                        position: "relative",
+                        left: 0,
+                        color: colours.primary[900],
+                        textTransform: 'none',
+                        textAlign: "left",
+                        marginLeft: 3,
+                        marginRight:3,
+                        }}
+                    >
+                        {challengeInfo.description}
+                    </Typography>
 
-                    <h2 style={{color: "#FF0000"}}>No submissions have been made to this challenge.</h2>
-                    <h3 style={{color: "#FF0000"}}>Choose an option below:</h3>
-                    <div>
-                        <input required type="datetime-local" style={{ marginBottom: 20 }} id="chDate" />
-                        <button onClick={() => extendDeadline((document.getElementById("chDate") as HTMLInputElement).value)}>Extend the Deadline</button>
+                    </Box>
+
+                    <h2 style={{color: colours.redAcc[500]}}>No submissions have been made to this challenge.</h2>
+                    <h3 style={{color: colours.primary[900]}}>Choose an option below:</h3>
+                    <div 
+                        style={{ 
+                            marginBottom: 20,
+                            display: "flex"
+                        }}
+                    >
+                        <LocalizationProvider dateAdapter={AdapterDayjs} > 
+                            <DateTimePicker
+                                sx={{ paddingBottom:20, marginBottom: 30, marginRight: 5, width: 200, maxWidth: 200 }} 
+                                label="Deadline" 
+                                slotProps={{
+                                    textField: {
+                                        name: "chDate",
+                                        required: true,
+                                        id: "chDate",
+                                        sx: { '& .MuiOutlinedInput-root': {
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: colours.yellow[500],
+                                                },
+                                            },
+                                            ' & label.Mui-focused': {
+                                                color: colours.yellow[500]
+                                            },
+                                            width: 300,
+                                            maxWidth: 300,
+                                        }
+                                    },
+                                }}
+                                format="YYYY-MM-DD HH:mm:ss"
+                                disablePast
+                            />
+                        </LocalizationProvider>
+                        <Button 
+                            variant="contained"
+                            color="secondary" 
+                            onClick={() => extendDeadline((document.getElementById("chDate") as HTMLInputElement).value)}
+                        >
+                            Extend the Deadline
+                        </Button>
                     </div>
                     <div>
-                        <button onClick={deleteChallenge}>Delete the Challenge</button>
+                        <Button 
+                            variant="contained"
+                            color="error"
+                            style={{ 
+                                width: 300,
+                                maxWidth: 300
+                            }}
+                            onClick={deleteChallenge}
+                        >
+                                Delete the Challenge
+                        </Button>
                     </div>< br/>
                     <div>
-                        <button onClick={archiveChallenge}>Archive the Challenge</button>
-                        <p>Archiving a challenge means it will be accessible from the Home page and in Search results.</p>
-                        <p>Along with the challenge information it will have a message to say the challenge ended with no submissions.</p>
+                        <Button 
+                            variant="contained"
+                            color="success"
+                            style={{ 
+                                marginBottom: 5,
+                                width: 300,
+                                maxWidth: 300
+                            }}
+                            onClick={archiveChallenge}
+                        >
+                                Archive the Challenge
+                        </Button>
+                        <Box
+                            sx={{
+                                width: 500,
+                                maxWidth: 500,
+                            }}
+                        >
+                        <Typography
+                            variant="h6"
+                            sx={{
+                            position: "relative",
+                            left: 0,
+                            color: colours.primary[700],
+                            textTransform: 'none',
+                            textAlign: "center",
+                            marginLeft: 3,
+                            marginRight:3,
+                            marginTop: 3,
+                            fontWeight: 400,
+                            }}
+                        >
+                            Archiving a challenge means it will be accessible from the Home page and in Search results.
+                            Along with the challenge information it will mention that no submissions were provided.
+                        </Typography>
+                        </Box>
                     </div>
                 </>
             ) : (

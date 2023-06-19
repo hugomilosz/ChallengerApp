@@ -27,7 +27,7 @@ export default function SearchBar() {
         }
     }
 
-    const WhiteBorderTextField = styled(TextField)`
+    const CustomTextField = styled(TextField)`
         & label.Mui-focused {
             color: ${colours.yellow[500]};
         }
@@ -41,7 +41,7 @@ export default function SearchBar() {
 
     return (
         <form className="searchForm" onSubmit={handleSubmit}>
-            <WhiteBorderTextField
+            <CustomTextField
                 id="searchBar"
                 className="text"
                 name="searchText"

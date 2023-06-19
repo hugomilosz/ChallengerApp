@@ -1,5 +1,19 @@
+import { Button, TextField, styled } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { tokens } from "../theme";
+
+const CustomTextField = styled(TextField)(({ theme }: any) => {   
+    return {
+        'label.Mui-focused': {
+            color: tokens(theme.palette.mode).yellow[500]
+        },
+        /* focused */
+        '.MuiInput-underline:after': {
+            borderBottom: `2px solid ${tokens(theme.palette.mode).yellow[500]}`
+        }
+    }
+});
 
 const Login = () => {
 
@@ -83,20 +97,98 @@ const Login = () => {
         <div className="auth">
             <h1>Login</h1>
             <form onSubmit={handleLogin}>
-                <input type="text" id="username" name="username" placeholder='username' autoComplete="username" required autoFocus />
+                <CustomTextField
+                    required
+                    type="text"
+                    variant="standard"
+                    id="username"
+                    label="Username"
+                    placeholder='Username'
+                    autoComplete="username"
+                    style={{ marginTop: 20, 
+                            marginBottom: 10,
+                            width: 300,
+                            maxWidth: 300 }} 
+                    name="username"
+                    autoFocus
+                />
                 <br />
-                <input type="password" placeholder="password" id="password" name="password" autoComplete="current-password" required />
+                <CustomTextField
+                    required
+                    type="password"
+                    variant="standard"
+                    id="password"
+                    label="Password"
+                    placeholder='Password'
+                    autoComplete="password"
+                    style={{ marginTop: 20, 
+                            marginBottom: 10,
+                            width: 300,
+                            maxWidth: 300 }} 
+                    name="password"
+                    autoFocus
+                />
                 <br />
-                <button type="submit">Login</button>
+                <Button 
+                    variant="contained"
+                    color='secondary'
+                    style={{ 
+                        marginBottom: 10,
+                        width: 300,
+                        maxWidth: 300
+                    }} 
+                    type="submit"
+                >
+                    Login
+                </Button>
             </form>
             <h1>Don't have an account?</h1>
             <h2>Sign up!</h2>
             <form onSubmit={handleSignup}>
-                <input type="text" id="usernameSignup" name="username" placeholder='username' autoComplete="username" required />
+                <CustomTextField
+                    required
+                    type="text"
+                    variant="standard"
+                    id="usernameSignup"
+                    label="Username"
+                    placeholder='Username'
+                    autoComplete="username"
+                    style={{ marginTop: 20, 
+                            marginBottom: 10,
+                            width: 300,
+                            maxWidth: 300 }} 
+                    name="username"
+                    autoFocus
+                />
                 <br />
-                <input type="password" placeholder="password" id="passwordSignup" name="password" autoComplete="current-password" required />
+                <CustomTextField
+                    required
+                    type="password"
+                    variant="standard"
+                    id="passwordSignup"
+                    label="Password"
+                    placeholder='Password'
+                    autoComplete="current-password"
+                    style={{ marginTop: 20, 
+                            marginBottom: 10,
+                            width: 300,
+                            maxWidth: 300 }} 
+                    name="password"
+                    autoFocus
+                />
                 <br />
-                <button type="submit">Signup</button>
+                <Button 
+                    variant="contained"
+                    color='secondary'
+                    style={{ 
+                        marginBottom: 10,
+                        width: 300,
+                        maxWidth: 300
+                    }} 
+                    type="submit"
+                >
+                    Signup
+                </Button>
             </form>
         </div>
     )

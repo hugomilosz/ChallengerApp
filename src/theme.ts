@@ -224,6 +224,10 @@ export const themeSettings = (mode: string): any => {
             },
             
         },
+
+        action: {
+            disabledBackground: colours.yellow[800],
+        },
     };
 };
 

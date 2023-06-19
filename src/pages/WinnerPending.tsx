@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { tokens } from "../theme";
+import { Box, Typography, useTheme } from "@mui/material";
 
 const WinnerPending = () => {
 
@@ -65,29 +67,136 @@ const WinnerPending = () => {
         navigate('/')
     }
 
+    const theme = useTheme();
+    const colours = tokens(theme.palette.mode);
+
     return (
-        <div className="winnerPending">
+        <div className="winnerPending" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingBottom: 20, }}>
             {state?.id ? (
                 <>
                     <h1 style={{color: "#FF0000"}}>Winner Announcement Pending for Challenge {state.id}</h1>
                     <body style={{color: "#FF0000"}}>Challenge ended at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body>
 
-                    <h2>Name</h2>
-                    <body>{challengeInfo.name}</body>
+                    <Box 
+                        component="img"
+                        alt="Example"
+                        src={challengeInfo.imgURL}
+                        sx={{
+                        height: "auto",
+                        width: 500,
+                        maxWidth: 500,
+                        borderRadius: 3,
+                        marginTop: 5
+                        }}
+                    />
 
-                    <h2>Category</h2>
-                    <body>{challengeInfo.category}</body>
+                    <Box
+                        sx={{
+                        width: 500,
+                        maxWidth: 500,
+                        alignItems: "center",
+                        }}
+                    >
+                        <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent:"space-between",
+                            margin: 3,
+                            top: 0,
+                        }}
+                        >
+                        <Typography
+                            variant="h5"
+                            sx={{
+                                left: 0,
+                                bottom: 0,
+                                position: "relative",
+                                color: colours.yellow[500],
+                                textTransform: 'none',
+                                fontWeight: 500
+                            }}
+                        >
+                            {challengeInfo.category}
+                        </Typography>
+                        <Typography 
+                            variant="h6"
+                            sx={{
+                                right: 0,
+                                bottom: 0,
+                                position: "relative",
+                                color: colours.redAcc[500],
+                                textTransform: 'none',
+                                fontWeight: 500
+                            }}
+                        >
+                            {challengeInfo.deadline?.toLocaleString()}
+                        </Typography>
+                    </Box>
 
-                    <h2>Description</h2>
-                    <body>{challengeInfo.description}</body>
+                    <Typography 
+                        variant="h3"
+                        sx={{
+                        position: "relative",
+                        left: 0,
+                        color: colours.primary[900],
+                        textTransform: 'none',
+                        textAlign: "left",
+                        fontWeight: 800,
+                        marginLeft: 3,
+                        marginRight:3,
+                        marginBottom: 1,
+                        }}
+                    >
+                        {challengeInfo.name}
+                    </Typography>
 
-                    <h2>Initial Inspiration</h2>
-                    <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
+                    <Typography 
+                        variant="h5"
+                        sx={{
+                        position: "relative",
+                        left: 0,
+                        color: colours.primary[900],
+                        textTransform: 'none',
+                        textAlign: "left",
+                        marginLeft: 3,
+                        marginRight:3,
+                        }}
+                    >
+                        {challengeInfo.description}
+                    </Typography>
 
-                    <h1>Challenge Submissions:</h1>
+                    </Box>
+
+                    <Typography 
+                        variant="h2"
+                        sx={{
+                        position: "relative",
+                        left: 0,
+                        color: colours.primary[900],
+                        textTransform: 'none',
+                        textAlign: "left",
+                        fontWeight: 800,
+                        marginLeft: 3,
+                        marginRight:3,
+                        marginTop: 5,
+                        }}
+                    >
+                        Submissions:
+                    </Typography>
                     {challengeInfo.entryNamesUrls.map((entry) => (
                         <body>
-                            <img src={entry.url} className="insImage" alt="" />
+                            <Box 
+                                component="img"
+                                alt="Submission"
+                                src={entry.url}
+                                sx={{
+                                height: "auto",
+                                width: 400,
+                                maxWidth: 400,
+                                borderRadius: 3,
+                                marginTop: 3
+                                }}
+                            />
                             <div style={{ display: 'flex', justifyContent: "center" }}>
                                 <div style={{ marginRight: '10px'}}>
                                 <h3>{entry.likeCount}❤️</h3>

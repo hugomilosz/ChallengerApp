@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import Checkbox from "../checkbox/checkbox";
+import { Box, Button, Typography, useTheme } from "@mui/material";
+import { tokens } from "../theme";
 
 const ViewChallenge = () => {
 
@@ -316,80 +318,232 @@ const ViewChallenge = () => {
     navigate('/')
   }
 
+  const theme = useTheme();
+  const colours = tokens(theme.palette.mode);
+
   return (
-    <div className="viewChallenge">
+    <div className="viewChallenge" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingBottom: 20 }}>
       {state?.id ? (
         <>
-          <h1>View Challenge {state.id}</h1>
-          <h2>Name</h2>
-          <body>{challengeInfo.name}</body>
+          <Box 
+            component="img"
+            alt="Example"
+            src={challengeInfo.imgURL}
+            sx={{
+              height: "auto",
+              width: 500,
+              maxWidth: 500,
+              borderRadius: 3
 
-          <h2>Category</h2>
-          <body>{challengeInfo.category}</body>
+            }}
+          />
 
-          <h2>Description</h2>
-          <body>{challengeInfo.description}</body>
+          <Box
+            sx={{
+              width: 500,
+              maxWidth: 500,
+              alignItems: "center",
+            }}
+          >
+            <Box
+              sx={{
+                  display: "flex",
+                  justifyContent:"space-between",
+                  margin: 3,
+                  top: 0,
+              }}
+            >
+              <Typography
+                  variant="h5"
+                  sx={{
+                      left: 0,
+                      bottom: 0,
+                      position: "relative",
+                      color: colours.yellow[500],
+                      textTransform: 'none',
+                      fontWeight: 500
+                  }}
+              >
+                  {challengeInfo.category}
+              </Typography>
+              <Typography 
+                  variant="h6"
+                  sx={{
+                      right: 0,
+                      bottom: 0,
+                      position: "relative",
+                      color: colours.greenAcc[500],
+                      textTransform: 'none',
+                      fontWeight: 500
+                  }}
+              >
+                  {challengeInfo.deadline?.toLocaleString()}
+              </Typography>
+          </Box>
 
-          <h2>Initial Inspiration</h2>
-          <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
+          <Typography 
+            variant="h3"
+            sx={{
+              position: "relative",
+              left: 0,
+              color: colours.primary[900],
+              textTransform: 'none',
+              textAlign: "left",
+              fontWeight: 800,
+              marginLeft: 3,
+              marginRight:3,
+              marginBottom: 1,
+            }}
+          >
+            {challengeInfo.name}
+          </Typography>
 
-          <h2 style={{ color: "#FF0000" }}>Deadline</h2>
-          {/* <body style={{color: "#FF0000"}}>Challenge ends at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body> */}
-          <body style={{ color: "#FF0000" }}>Challenge ends at: {challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body>
+          <Typography 
+            variant="h5"
+            sx={{
+              position: "relative",
+              left: 0,
+              color: colours.primary[900],
+              textTransform: 'none',
+              textAlign: "left",
+              marginLeft: 3,
+              marginRight:3,
+            }}
+          >
+            {challengeInfo.description}
+          </Typography>
 
-          <h1>Add a Submission!</h1>
+          </Box>
+
+          <Typography 
+            variant="h4"
+            sx={{
+              position: "relative",
+              color: colours.primary[900],
+              textTransform: 'none',
+              marginLeft: 3,
+              marginRight:3,
+              marginTop: 4,
+              marginBottom: 2,
+              fontWeight: 600,
+            }}
+          >
+            Upload submission
+          </Typography>
           {isLoggedIn ? <form onSubmit={handleSubmitSubmission} id="form" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <input type="file" id="myFiles" accept="image/*" multiple style={{ marginBottom: 10 }} name="file" />
-            <input type="submit" style={{ marginBottom: 10 }} />
-          </form> : <p>You must be logged in to submit to this Challenge</p>}
+            <input type="file" id="myFiles" accept="image/*" style={{ marginBottom: 10 }} name="file" />
+            <Button 
+              variant="contained"
+              color='secondary'
+              style={{ 
+                marginBottom: 10,
+                marginTop: 10,
+                width: 150,
+                maxWidth: 150
+              }}
+              type='submit'>  
+              Submit
+            </Button>
+          </form> : 
+          <Typography
+            variant="h5"
+            style={{ 
+              position: "relative",
+              color: colours.redAcc[500],
+              textTransform: 'none',
+              fontWeight: 500,
+              marginBottom: 3,
+            }}
+          >
+            You must be logged in to submit to this Challenge
+          </Typography>}
 
-          <h1>Existing Submissions!</h1>
-          <h3 style={{ color: "#42a642" }}>Use ❤️ to vote for your favourites!</h3>
+          <Typography 
+            variant="h2"
+            sx={{
+              position: "relative",
+              left: 0,
+              color: colours.primary[900],
+              textTransform: 'none',
+              textAlign: "left",
+              fontWeight: 800,
+              marginLeft: 3,
+              marginRight:3,
+              marginTop: 5,
+            }}
+          >
+            Submissions:
+          </Typography>
+          <Typography 
+            variant="h5"
+            sx={{
+              position: "relative",
+              left: 0,
+              color: colours.greenAcc[500],
+              textTransform: 'none',
+              textAlign: "left",
+              fontWeight: 500,
+              marginLeft: 3,
+              marginRight: 3,
+            }}
+          >*use ❤️ to vote for your favourite</Typography>
           {challengeInfo.entryNamesUrls.map((entry) => (
             <body>
-              <img src={entry.url} className="insImage" alt="" />
+              <Box 
+                component="img"
+                alt="Submission"
+                src={entry.url}
+                sx={{
+                  height: "auto",
+                  width: 400,
+                  maxWidth: 400,
+                  borderRadius: 3,
+                  marginTop: 3
+                }}
+              />
+              
               {isLoggedIn && <div style={{ display: 'flex', justifyContent: "center" }}>
                 <fieldset id={`fs${entry.entryName}`} style={{ border: "0" }}>
-                  <div style={{ marginRight: '10px', backgroundColor: "#bff0a1", display: "inline-block" }}>
+                  <div style={{ width: 40, maxWidth: 40, marginRight: '20px', display: "inline-block" }}>
                     <Checkbox
                       handleChange={handleChangeLike(entry.entryName)}
                       isChecked={isCheckedLike[entry.entryName] || false}
-                      label={`${entry.likeCount}❤️`}
+                      label={` ❤️ ${entry.likeCount} `}
                     />
                   </div>
-                  <div style={{ marginRight: '10px', display: "inline-block" }}>
+                  <div style={{ width: 40, maxWidth: 40, marginRight: '20px', display: "inline-block" }}>
                     <Checkbox
                       handleChange={handleChangeReaction(entry.entryName, "hahaCount")}
                       isChecked={selectedReaction[entry.entryName] === "hahaCount"}
-                      label={`${entry.hahaCount}😂`}
+                      label={` 😂 ${entry.hahaCount} `}
                     />
                   </div>
-                  <div style={{ marginRight: '10px', display: "inline-block" }}>
+                  <div style={{ width: 40, maxWidth: 40, marginRight: '20px', display: "inline-block" }}>
                     <Checkbox
                       handleChange={handleChangeReaction(entry.entryName, "smileCount")}
                       isChecked={selectedReaction[entry.entryName] === "smileCount"}
-                      label={`${entry.smileCount}😃`}
+                      label={` 😃 ${entry.smileCount} `}
                     />
                   </div>
-                  <div style={{ marginRight: '10px', display: "inline-block" }}>
+                  <div style={{ width: 40, maxWidth: 40, marginRight: '20px', display: "inline-block" }}>
                     <Checkbox
                       handleChange={handleChangeReaction(entry.entryName, "wowCount")}
                       isChecked={selectedReaction[entry.entryName] === "wowCount"}
-                      label={`${entry.wowCount}😯`}
+                      label={` 😯 ${entry.wowCount} `}
                     />
                   </div>
-                  <div style={{ marginRight: '10px', display: "inline-block" }}>
+                  <div style={{ width: 40, maxWidth: 40, marginRight: '20px', display: "inline-block" }}>
                     <Checkbox
                       handleChange={handleChangeReaction(entry.entryName, "sadCount")}
                       isChecked={selectedReaction[entry.entryName] === "sadCount"}
-                      label={`${entry.sadCount}😢`}
+                      label={` 😢 ${entry.sadCount} `}
                     />
                   </div>
-                  <div style={{ marginRight: '10px', display: "inline-block" }}>
+                  <div style={{ width: 40, maxWidth: 40, marginRight: '20px', display: "inline-block" }}>
                     <Checkbox
                       handleChange={handleChangeReaction(entry.entryName, "angryCount")}
                       isChecked={selectedReaction[entry.entryName] === "angryCount"}
-                      label={`${entry.angryCount}🤩`}
+                      label={` 🤩 ${entry.angryCount} `}
                     />
                   </div>
                 </fieldset>

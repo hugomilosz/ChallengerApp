@@ -1,5 +1,7 @@
+import { Box, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
+import { tokens } from "../theme";
 
 const NoWinner = () => {
 
@@ -40,27 +42,104 @@ const NoWinner = () => {
         navigate('/')
     }
 
+    const theme = useTheme();
+    const colours = tokens(theme.palette.mode);
+
     return (
-        <div className="noWinner">
+        <div className="noWinner" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingBottom: 20 }}>
         {state?.id ? (
             <>
-                    <h1>Challenge Prompt:</h1>
-                    <h2>Name</h2>
-                    <body>{challengeInfo.name}</body>
+                   <Box 
+                        component="img"
+                        alt="Example"
+                        src={challengeInfo.imgURL}
+                        sx={{
+                        height: "auto",
+                        width: 500,
+                        maxWidth: 500,
+                        borderRadius: 3,
+                        marginTop: 5
+                        }}
+                    />
 
-                    <h2>Category</h2>
-                    <body>{challengeInfo.category}</body>
+                    <Box
+                        sx={{
+                        width: 500,
+                        maxWidth: 500,
+                        alignItems: "center",
+                        }}
+                    >
+                        <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent:"space-between",
+                            margin: 3,
+                            top: 0,
+                        }}
+                        >
+                        <Typography
+                            variant="h5"
+                            sx={{
+                                left: 0,
+                                bottom: 0,
+                                position: "relative",
+                                color: colours.yellow[500],
+                                textTransform: 'none',
+                                fontWeight: 500
+                            }}
+                        >
+                            {challengeInfo.category}
+                        </Typography>
+                        <Typography 
+                            variant="h6"
+                            sx={{
+                                right: 0,
+                                bottom: 0,
+                                position: "relative",
+                                color: colours.redAcc[500],
+                                textTransform: 'none',
+                                fontWeight: 500
+                            }}
+                        >
+                            {challengeInfo.deadline?.toLocaleString()}
+                        </Typography>
+                    </Box>
 
-                    <h2>Description</h2>
-                    <body>{challengeInfo.description}</body>
+                    <Typography 
+                        variant="h3"
+                        sx={{
+                        position: "relative",
+                        left: 0,
+                        color: colours.primary[900],
+                        textTransform: 'none',
+                        textAlign: "left",
+                        fontWeight: 800,
+                        marginLeft: 3,
+                        marginRight:3,
+                        marginBottom: 1,
+                        }}
+                    >
+                        {challengeInfo.name}
+                    </Typography>
 
-                    <h2 style={{color: "#FF0000"}}>Challenge ended at:</h2>
-                    <body style={{color: "#FF0000"}}>{challengeInfo.deadline?.toLocaleTimeString()} on {challengeInfo.deadline?.toDateString()}</body>
+                    <Typography 
+                        variant="h5"
+                        sx={{
+                        position: "relative",
+                        left: 0,
+                        color: colours.primary[900],
+                        textTransform: 'none',
+                        textAlign: "left",
+                        marginLeft: 3,
+                        marginRight:3,
+                        }}
+                    >
+                        {challengeInfo.description}
+                    </Typography>
 
-                    <h2>Initial Inspiration</h2>
-                    <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
+                    </Box>
 
-                    <h2 style={{color: "#FF0000"}}>This challenge had no submissions</h2>
+                    <h2 style={{color: colours.redAcc[500]}}>This challenge had no submissions</h2>
             </>
         ) : (
             <>

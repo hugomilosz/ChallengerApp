@@ -1,5 +1,6 @@
-import React from "react";
-import { Tooltip } from 'react-tooltip'
+import { Button, ClickAwayListener, TextField, Tooltip, styled, useTheme } from "@mui/material";
+import React, { useState } from "react";
+import { tokens } from "../theme";
 
 type ChData2 = {
     category: string
@@ -63,7 +64,27 @@ function renderTooltip(category: string, valueType: tooltipValueType): string {
     }
 }
 
+
+const CustomTextField = styled(TextField)(({ theme }: any) => {   
+    return {
+        'label.Mui-focused': {
+            color: tokens(theme.palette.mode).yellow[500]
+        },
+        /* focused */
+        '.MuiInput-underline:after': {
+            borderBottom: `2px solid ${tokens(theme.palette.mode).yellow[500]}`
+        }
+    }
+});
+
 const SetChallengeStep2 = ({ type, style, twist, updateFields, category }: ChDataProps2) => {
+
+    const theme = useTheme();
+    const colours = tokens(theme.palette.mode);
+
+    const [open1, setOpen1] = useState(false);
+    const [open2, setOpen2] = useState(false);
+    const [open3, setOpen3] = useState(false);
 
     return (
         <div className="setChallengeStep2" style={{ display: "grid", gridTemplateColumns: "1fr", justifyItems: "center", alignItems: "center" }}>
@@ -71,30 +92,69 @@ const SetChallengeStep2 = ({ type, style, twist, updateFields, category }: ChDat
             <p>Please describe the expected outcome of your challenge</p>
 
             <div style={{ display: "flex" }}>
-                <input required type="text" placeholder='Type' style={{ marginBottom: 10 }} name="chName" value={type} onChange={e => updateFields({ type: e.target.value })} />
-                <div className="type"><button>?</button></div>
-                <Tooltip anchorSelect=".type" place="top" style={{ width: "300px" }}>
-                    {renderTooltip(category, tooltipValueType.type)}
-                </Tooltip>
+                <CustomTextField theme={theme} label="Type" variant="standard" required type="text" placeholder='Type' style={{ width: 300, maxWidth:300, marginBottom: 10 }} name="chType" value={type} onChange={e => updateFields({ type: e.target.value })} />
+                <ClickAwayListener onClickAway={() => setOpen1(false)}>
+                    <div>
+                        <Tooltip
+                            PopperProps={{
+                            disablePortal: true,
+                            }}
+                            onClose={() => setOpen1(false)}
+                            open={open1}
+                            disableFocusListener
+                            disableHoverListener
+                            disableTouchListener 
+                            title={renderTooltip(category, tooltipValueType.type)}
+                        >
+                            <Button sx={{color: colours.yellow[500]}} onClick={() => setOpen1(true)}>?</Button>
+                        </Tooltip>
+                    </div>
+                </ClickAwayListener>
             </div>
             <div style={{ display: "flex" }}>
-                <input required type="text" placeholder='Style' style={{ marginBottom: 10 }} name="chName" value={style} onChange={e => updateFields({ style: e.target.value })} />
-                <div className="style"><button>?</button></div>
-                <Tooltip anchorSelect=".style" place="top" style={{ width: "300px" }}>
-                {renderTooltip(category, tooltipValueType.style)}
-                </Tooltip>
+                <CustomTextField theme={theme} label="Style" variant="standard" required type="text" placeholder='Style' style={{ width: 300, maxWidth:300, marginBottom: 10 }} name="chStyle" value={style} onChange={e => updateFields({ style: e.target.value }) } />
+                <ClickAwayListener onClickAway={() => setOpen2(false)}>
+                    <div>
+                        <Tooltip
+                            PopperProps={{
+                            disablePortal: true,
+                            }}
+                            onClose={() => setOpen2(false)}
+                            open={open2}
+                            disableFocusListener
+                            disableHoverListener
+                            disableTouchListener 
+                            title={renderTooltip(category, tooltipValueType.style)}
+                        >
+                            <Button sx={{color: colours.yellow[500]}} onClick={() => setOpen2(true)}>?</Button>
+                        </Tooltip>
+                    </div>
+                </ClickAwayListener>
             </div>
             <div style={{ display: "flex" }}>
-                <textarea required placeholder='Twist' style={{ marginBottom: 10 }} name="chName" value={twist} onChange={e => updateFields({ twist: e.target.value })} />
-                <div className="twist"><button>?</button></div>
-                <Tooltip anchorSelect=".twist" place="top" style={{ width: "300px" }}>
-                {renderTooltip(category, tooltipValueType.twist)}
-                </Tooltip>
+                <CustomTextField theme={theme} variant="standard" label="Twist" multiline rows={2} maxRows={5} required placeholder='Twist' style={{ width: 300, maxWidth:300, marginBottom: 10 }} name="chTwist" value={twist} onChange={e => updateFields({ twist: e.target.value })} />
+                <ClickAwayListener onClickAway={() => setOpen3(false)}>
+                    <div>
+                        <Tooltip
+                            PopperProps={{
+                            disablePortal: true,
+                            }}
+                            onClose={() => setOpen3(false)}
+                            open={open3}
+                            disableFocusListener
+                            disableHoverListener
+                            disableTouchListener 
+                            title={renderTooltip(category, tooltipValueType.twist)}
+                        >
+                            <Button sx={{color: colours.yellow[500]}} onClick={() => setOpen3(true)}>?</Button>
+                        </Tooltip>
+                    </div>
+                </ClickAwayListener>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr", justifyItems: "center", alignItems: "center" }}>
                 <h4>Description will be as follows (can be edited later): </h4> 
-                <p style={{ width: "400px" }}>{getDescription(type, style, twist)}</p>
+                <CustomTextField disabled theme={theme} label="Desctiption" variant="outlined" multiline rows={2} maxRows={5} required placeholder='Description' style={{ width: 400, maxWidth:400, marginBottom: 10 }} name="chDesc" value={getDescription(type, style, twist)} />
             </div>
         
         </div >

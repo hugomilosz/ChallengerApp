@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { Button } from '@mui/material';
 
 const SetChallengeChoice = () => {
 
@@ -32,8 +33,32 @@ const SetChallengeChoice = () => {
       <h2>Set up Challange</h2>
       <p style={{ width: 300 }}>Please follow the template to create a new challenge or skip it and go straign to the submission form.</p>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-        <button style={{ marginBottom: 10 }} onClick={navigateToTemplate} disabled={!isLoggedIn}>Get Help</button>
-        <button style={{ marginBottom: 10 }} onClick={navigateToCheckout} disabled={!isLoggedIn}>Skip</button>
+        <Button 
+          variant="contained" 
+          color='secondary'
+          style={{ 
+            marginBottom: 10,
+            width: 300,
+            maxWidth: 300
+          }} 
+          onClick={navigateToTemplate} 
+          disabled={!isLoggedIn}
+        >
+          Get Help
+        </Button>
+        <Button 
+          variant="contained"
+          color='secondary'
+          style={{ 
+            marginBottom: 10,
+            width: 300,
+            maxWidth: 300
+          }} 
+          onClick={navigateToCheckout} 
+          disabled={!isLoggedIn}
+        >
+          Skip
+        </Button>
         {!isLoggedIn && <h2>You must log in to set a challenge!</h2>}
       </div>
     </div>

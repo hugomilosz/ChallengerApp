@@ -5,7 +5,6 @@ import MuiBottomNavigationAction from "@mui/material/BottomNavigationAction";
 import { styled } from "@mui/material/styles";
 
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import { useNavigate } from "react-router-dom";
@@ -50,11 +49,6 @@ const NavBar = () => {
                 label="Home"
                 value="/"
                 icon={<HomeRoundedIcon />} 
-            />
-            <BottomNavigationAction 
-                label="View Submissions"
-                value="/viewSubmissions"
-                icon={<GridViewRoundedIcon />} 
             />
             <BottomNavigationAction 
                 label="Set Challenge"

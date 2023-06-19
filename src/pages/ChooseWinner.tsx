@@ -1,10 +1,12 @@
+import { Box, Button, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
+import { tokens } from "../theme";
 
 const ChooseWinner = () => {
 
-    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>}>
-        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: []});
+    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, deadline: Date | null, category: string }>
+    ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], deadline: null, category: ""});
 
     const { state } = useLocation();
     const navigate = useNavigate();
@@ -25,12 +27,16 @@ const ChooseWinner = () => {
         return reactionCount;
     }
 
+    const [, setDeadlineDate] = useState<Date | null>(null);
+
     useEffect(() => {
         const fetchInfo = async () => {
             const responseDBInfo = await fetch(`/server/challenge/${state.id}`);
             const body = await responseDBInfo.text();
             const chs = JSON.parse(body);
             const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",");
+            const deadlineDate = new Date(chs.date);
+            setDeadlineDate(deadlineDate);
     
             const entries = splitArray.map(async (entryName: string) => {
                 const url = await (await fetch(`/uploadsURL/${entryName}`)).text();
@@ -41,6 +47,7 @@ const ChooseWinner = () => {
             // Sort the entries based on the like count in descending order
             const sortedEntries = await Promise.all(entries);
             sortedEntries.sort((a, b) => b.likeCount - a.likeCount);
+
     
             const urls = sortedEntries.map((entry) => entry.entryName).map(async (entryName: string) => {
     
@@ -60,6 +67,8 @@ const ChooseWinner = () => {
                 description: chs.description as string,
                 imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
                 entryNamesUrls: await Promise.all(urls),
+                deadline: deadlineDate, 
+                category: (await (await fetch(`/category/${state.id}`)).json()).subject,
             });
         };
         fetchInfo();
@@ -68,6 +77,9 @@ const ChooseWinner = () => {
     const navigateToHomeScreen = () => {
         navigate('/')
     }
+
+    const theme = useTheme();
+    const colours = tokens(theme.palette.mode);
 
     const selectAsWinner = async (fileName: string) => {
         // make the post req here to set the "winner" column in submissions
@@ -87,24 +99,131 @@ const ChooseWinner = () => {
     }
 
     return (
-        <div className="chooseWinner">
+        <div className="chooseWinner" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingBottom: 20 }}>
         {state?.id ? (
             <>
                 <h1>Choose the Winner for Challenge {state.id}</h1>
-                <h2>Name</h2>
-                <body>{challengeInfo.name}</body>
+                <Box 
+                        component="img"
+                        alt="Example"
+                        src={challengeInfo.imgURL}
+                        sx={{
+                        height: "auto",
+                        width: 500,
+                        maxWidth: 500,
+                        borderRadius: 3,
+                        marginTop: 5
+                        }}
+                    />
 
-                <h2>Description</h2>
-                <body>{challengeInfo.description}</body>
+                    <Box
+                        sx={{
+                        width: 500,
+                        maxWidth: 500,
+                        alignItems: "center",
+                        }}
+                    >
+                        <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent:"space-between",
+                            margin: 3,
+                            top: 0,
+                        }}
+                        >
+                        <Typography
+                            variant="h5"
+                            sx={{
+                                left: 0,
+                                bottom: 0,
+                                position: "relative",
+                                color: colours.yellow[500],
+                                textTransform: 'none',
+                                fontWeight: 500
+                            }}
+                        >
+                            {challengeInfo.category}
+                        </Typography>
+                        <Typography 
+                            variant="h6"
+                            sx={{
+                                right: 0,
+                                bottom: 0,
+                                position: "relative",
+                                color: colours.redAcc[500],
+                                textTransform: 'none',
+                                fontWeight: 500
+                            }}
+                        >
+                            {challengeInfo.deadline?.toLocaleString()}
+                        </Typography>
+                    </Box>
 
-                <h2>Initial Inspiration</h2>
-                <body><img src={challengeInfo.imgURL} className="insImage" alt="" /></body>
+                    <Typography 
+                        variant="h3"
+                        sx={{
+                        position: "relative",
+                        left: 0,
+                        color: colours.primary[900],
+                        textTransform: 'none',
+                        textAlign: "left",
+                        fontWeight: 800,
+                        marginLeft: 3,
+                        marginRight:3,
+                        marginBottom: 1,
+                        }}
+                    >
+                        {challengeInfo.name}
+                    </Typography>
 
-                <h1>Vote for your favourite submission here!</h1>
+                    <Typography 
+                        variant="h5"
+                        sx={{
+                        position: "relative",
+                        left: 0,
+                        color: colours.primary[900],
+                        textTransform: 'none',
+                        textAlign: "left",
+                        marginLeft: 3,
+                        marginRight:3,
+                        }}
+                    >
+                        {challengeInfo.description}
+                    </Typography>
+
+                    </Box>
+
+                    <Typography 
+                        variant="h2"
+                        sx={{
+                        position: "relative",
+                        left: 0,
+                        color: colours.primary[900],
+                        textTransform: 'none',
+                        textAlign: "left",
+                        fontWeight: 800,
+                        marginLeft: 3,
+                        marginRight:3,
+                        marginTop: 5,
+                        }}
+                    >
+                        Choose the winner:
+                    </Typography>
                 <div>
                     {challengeInfo.entryNamesUrls.map((entry, index) => (
                         <div key={index}>
-                        <img src={entry.url} className="insImage" alt="" /> <br />
+                        <Box 
+                            component="img"
+                            alt="Submission"
+                            src={entry.url}
+                            sx={{
+                            height: "auto",
+                            width: 400,
+                            maxWidth: 400,
+                            borderRadius: 3,
+                            marginTop: 3
+                            }}
+                        />
                         <body>
                             <div style={{ display: 'flex', justifyContent: "center" }}>
                                 <div style={{ marginRight: '10px'}}>
@@ -127,7 +246,18 @@ const ChooseWinner = () => {
                                 </div>
                             </div>
                         </body>
-                        <button style={{margin: 5}} onClick={() => selectAsWinner(entry.entryName)}>Vote</button>
+                        <Button 
+                        variant="contained"
+                        color='secondary'
+                        style={{ 
+                            marginBottom: 10,
+                            marginTop: 10,
+                            width: 150,
+                            maxWidth: 150
+                        }}
+                        onClick={() => selectAsWinner(entry.entryName)}>  
+                        Select
+                        </Button>
                         </div>
                         
                     ))}

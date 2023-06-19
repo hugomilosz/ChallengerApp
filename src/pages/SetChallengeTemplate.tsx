@@ -4,6 +4,8 @@ import React, { FormEvent, useState } from 'react';
 import SetChallengeStep2 from './SetChallengeStep2';
 import SetChallengeStep3 from './SetChallengeStep3';
 import SetChallengeStep4 from './setChallengeStep4';
+import { Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 type ChData = {
     category: string
@@ -26,6 +28,8 @@ const INITIAL_DATA: ChData = {
 }
 
 const SetChallengeTemplate = () => {
+
+    const navigate = useNavigate();
 
     const handleSubmit = async (event: React.SyntheticEvent) => {
         event.preventDefault();
@@ -53,6 +57,7 @@ const SetChallengeTemplate = () => {
         })
         if (response.status === 200) {
             alert("Challenge created!");
+            navigate("/");
         } else {
             alert("Error creating challenge!");
         }
@@ -81,7 +86,7 @@ const SetChallengeTemplate = () => {
 
 
     return (
-        <div className="setChallengeTemplate">
+        <div className="setChallengeTemplate" style={{ paddingBottom: 20}}>
             <form onSubmit={onSubmit}>
                 <div style={{ position: "relative"}}>
                     {currStepIdx + 1} / {steps.length}
@@ -96,13 +101,31 @@ const SetChallengeTemplate = () => {
                     }}>
                     
                     {!isFirstStep && (
-                        <button type='button' onClick={prevStep}> 
+                        <Button 
+                        variant="contained"
+                        color='secondary'
+                        style={{ 
+                          marginBottom: 10,
+                          width: 150,
+                          maxWidth: 150
+                        }} 
+                        onClick={prevStep} 
+                        type='button'
+                        > 
                             Go Back 
-                        </button>
+                        </Button>
                     )}
-                    <button type='submit'>  
+                    <Button 
+                        variant="contained"
+                        color='secondary'
+                        style={{ 
+                          marginBottom: 10,
+                          width: 150,
+                          maxWidth: 150
+                        }}
+                        type='submit'>  
                         {isLastStep ? "Set Challenge" : "Next"}
-                    </button>
+                    </Button>
                     
                 </div>
             </form>
