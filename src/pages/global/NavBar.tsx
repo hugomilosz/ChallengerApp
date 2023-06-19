@@ -1,8 +1,6 @@
 import { BottomNavigation, useTheme } from "@mui/material"
-import { useState } from "react"
 import { tokens } from "../../theme"
 import MuiBottomNavigationAction from "@mui/material/BottomNavigationAction";
-import { styled } from "@mui/material/styles";
 
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
@@ -17,26 +15,18 @@ const NavBar = () => {
     const theme = useTheme();
     const colours = tokens(theme.palette.mode);
 
-    const [state, setState] = useState("/");
-
-    const BottomNavigationAction = styled(MuiBottomNavigationAction)(`
-        &.Mui-selected {
-            color: ${colours.yellow[500]};
-        }
-    `);
+    const BottomNavigationAction = MuiBottomNavigationAction;
 
     const handleChange = (event: React.SyntheticEvent, newState: string) => {
         navigate(newState);
-        setState(newState);
     };
 
     return (
         <BottomNavigation
-            value={state}
             onChange={handleChange}
-            sx={{ 
-                width: "100%", 
-                position: "fixed !important", 
+            sx={{
+                width: "100%",
+                position: "fixed !important",
                 bottom: 0,
                 boxShadow: "0px 10px 20px black",
                 backgroundColor: colours.primary[500],
@@ -45,20 +35,20 @@ const NavBar = () => {
             }}
             showLabels
         >
-            <BottomNavigationAction 
+            <BottomNavigationAction
                 label="Home"
                 value="/"
-                icon={<HomeRoundedIcon />} 
+                icon={<HomeRoundedIcon />}
             />
-            <BottomNavigationAction 
+            <BottomNavigationAction
                 label="Set Challenge"
                 value="/setChallengeChoice"
-                icon={<AddCircleOutlineRoundedIcon />} 
+                icon={<AddCircleOutlineRoundedIcon />}
             />
-            <BottomNavigationAction 
+            <BottomNavigationAction
                 label="LogIn"
                 value="/login"
-                icon={<PersonRoundedIcon />} 
+                icon={<PersonRoundedIcon />}
             />
         </BottomNavigation>
     );
