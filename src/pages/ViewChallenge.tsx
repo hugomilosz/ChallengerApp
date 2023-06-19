@@ -20,6 +20,7 @@ const ViewChallenge = () => {
     ({ name: "none", description: "none", imgURL: "", category: "", setter: "" });
 
   const [hasFetchedUrls, setHasFetchedUrls] = useState<boolean>(false);
+  const [hasSetChallenge, setHasSetChallenge] = useState<boolean>(false);
 
   const [entryNamesUrls, setEntryNamesUrls] = useState<Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>>([]);
 
@@ -115,6 +116,7 @@ const ViewChallenge = () => {
       category: (await (await fetch(`/category/${state.id}`)).json()).subject,
       setter: chs.username,
     });
+    setHasSetChallenge(true);
   }
 
   // Fetches vote and URL data for each challenge
@@ -143,7 +145,7 @@ const ViewChallenge = () => {
 
   // Socket setup
   useEffect(() => {
-    if (state.id) {
+    if (state.id && hasSetChallenge) {
       const socketProtocol = (window.location.protocol === 'https:' ? 'wss:' : 'ws:');
       const socketUrl = socketProtocol + '//' + window.location.hostname + (window.location.hostname === "localhost" ? ":5000" : "") + '/watchChallenge';
       const socket = new WebSocket(socketUrl);
@@ -170,7 +172,7 @@ const ViewChallenge = () => {
       }
     }
 
-  }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [state, hasSetChallenge]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChangeLike = (entry: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
     // Disable the fieldset
