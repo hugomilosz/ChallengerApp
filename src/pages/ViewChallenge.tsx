@@ -8,7 +8,20 @@ const ViewChallenge = () => {
 
   const navigate = useNavigate();
 
-  const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
+  const [currentUsername, setCurrentUsername] = useState<string>();
+  const [isLoggedIn, setLoggedIn] = useState<boolean>();
+
+  const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
+  const [deadline, setDeadlineDate] = useState<Date | null>(null);
+
+  const [isCheckedLike, setIsCheckedLike] = useState<{ [entry: string]: boolean }>({});
+
+  const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, category: string, setter: string }>
+    ({ name: "none", description: "none", imgURL: "", category: "", setter: "" });
+
+  const [entryNamesUrls, setEntryNamesUrls] = useState<Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>>([]);
+
+  const [requestingReload, setRequestingReload] = useState<boolean>(false);
 
   const { state } = useLocation();
 
@@ -18,12 +31,19 @@ const ViewChallenge = () => {
         setLoggedIn(false);
       }
       if (response.status === 200) {
-        setLoggedIn(true);
+        response.text().then((body) => {
+          const obj = JSON.parse(body);
+          console.log(`Logged in as ${obj.username}`);
+          setCurrentUsername(obj.username);
+          setLoggedIn(true);
+        })
       }
     }
     );
 
     // Get the challenges this user has liked, and then set the checkboxes
+    if (!state) { return; }
+
     fetch(`/server/getLikes/${state.id}`).then(async (liked) => {
       if (liked.status === 200) {
         const likedPosts = JSON.parse(await liked.text()) as Array<string>;
@@ -43,10 +63,7 @@ const ViewChallenge = () => {
       }
     });
 
-  }, [state.id]);
-
-  const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, deadline: Date | null, category: string }>
-    ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], deadline: null, category: "" });
+  }, [state]);
 
   const [submissionsArray, setSubmissionsArray] = useState<string[]>([]);
 
@@ -66,16 +83,43 @@ const ViewChallenge = () => {
     return reactionCount;
   }
 
-  const fetchInfo = async () => {
+  // Runs once if you are not the challenge owner, many times if you are
+  const fetchSubmissions = async () => {
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAA");
+
     const responseDBInfo = await fetch(`/server/challenge/${state.id}`);
     const body = await responseDBInfo.text();
     const chs = JSON.parse(body);
     const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",")
-    setSubmissionsArray(splitArray);
+    const sortedArray = (chs.username === currentUsername) ? splitArray : splitArray.sort((a, b) => 0.5 - Math.random());
+
+    console.log(currentUsername);
+
+    console.log("Sorting as if " + (chs.username === currentUsername));
+
+    console.log(sortedArray);
+
+    setSubmissionsArray(sortedArray);
+
     const deadlineDate = new Date(chs.date);
     console.log("deadlineDate ", deadlineDate);
     setDeadlineDate(deadlineDate);
-    const urls = splitArray.map(async (entryName: string) => {
+
+    setChallenge({
+      name: chs.name as string,
+      description: chs.description as string,
+      imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
+      category: (await (await fetch(`/category/${state.id}`)).json()).subject,
+      setter: chs.username,
+    });
+  }
+
+  // Fetches vote and URL data for each challenge
+  const fetchInfo = async () => {
+    console.log(submissionsArray);
+
+    const newInfo = submissionsArray.map(async (entryName: string) => {
+      console.log("Fetching " + entryName);
 
       const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
 
@@ -89,13 +133,8 @@ const ViewChallenge = () => {
       return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
     });
 
-    setChallenge({
-      name: chs.name as string,
-      description: chs.description as string,
-      imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
-      entryNamesUrls: await Promise.all(urls),
-      deadline: deadlineDate,
-      category: (await (await fetch(`/category/${state.id}`)).json()).subject,
+    Promise.all(newInfo).then((urls) => {
+      setEntryNamesUrls(urls);
     });
   };
 
@@ -103,7 +142,7 @@ const ViewChallenge = () => {
   useEffect(() => {
     if (state.id) {
       const socketProtocol = (window.location.protocol === 'https:' ? 'wss:' : 'ws:');
-      const socketUrl = socketProtocol + '//' + window.location.hostname + (window.location.hostname === "localhost" ? 5000 : "") + '/watchChallenge';
+      const socketUrl = socketProtocol + '//' + window.location.hostname + (window.location.hostname === "localhost" ? ":5000" : "") + '/watchChallenge';
       const socket = new WebSocket(socketUrl);
 
       socket.onopen = () => {
@@ -114,7 +153,11 @@ const ViewChallenge = () => {
       socket.onmessage = (msg) => {
         console.log(msg.data);
         if (msg.data === 'update') {
-          fetchInfo();
+          if (currentUsername === challengeInfo.setter) {
+            fetchSubmissions();
+          } else {
+            setRequestingReload(true);
+          }
         }
         if (msg.data === 'deadline') {
           window.location.reload();
@@ -123,11 +166,6 @@ const ViewChallenge = () => {
     }
 
   }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const [selectedReaction, setSelectedReaction] = useState<{ [entry: string]: string }>({});
-  const [, setDeadlineDate] = useState<Date | null>(null);
-
-  const [isCheckedLike, setIsCheckedLike] = useState<{ [entry: string]: boolean }>({});
 
   const handleChangeLike = (entry: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
     // Disable the fieldset
@@ -227,16 +265,23 @@ const ViewChallenge = () => {
     e.target.closest("fieldset")!.disabled = false;
   };
 
-  // checks the deadline time/date. Change this so it only does it once per page load
   useEffect(() => {
     const fetchChallengeInfo = async () => {
-      await fetchInfo();
-      console.log("deadline ", challengeInfo.deadline);
+      if (submissionsArray.length === 0 && isLoggedIn !== undefined) {
+        console.log("Bigfetch");
+
+        await fetchSubmissions();
+      } else {
+        console.log("Smallfetch");
+
+        await fetchInfo();
+      }
+      console.log("deadline ", deadline);
     };
 
     const checkDeadlinePass = async () => {
       const currentDate = new Date();
-      if (challengeInfo.deadline && currentDate > challengeInfo.deadline) {
+      if (deadline && currentDate > deadline) {
         const response = await (await fetch(`/checkArchived/${state.id}`)).json();
 
         try {
@@ -248,20 +293,20 @@ const ViewChallenge = () => {
 
             if (response.archived === 1) {
               let path = '../noWinner';
-              navigate(path, { state: { id: state.id } });
+              navigate(path, { state: { id: state.id }, replace: true });
             } else {
               //let path = '../noSubmissions';
               const path = await (await fetch(`/server/isOwner/${state.id}/empty`)).text();
-              navigate(path, { state: { id: state.id } });
+              navigate(path, { state: { id: state.id }, replace: true });
             }
           }
           else if (!winningEntry || winningEntry.length === 0) {
             // if the challenge-setter, go to chooseWinner. Otherwise, go to winnerPending 
             let path = await (await fetch(`/server/isOwner/${state.id}`)).text();
-            navigate(path, { state: { id: state.id } });
+            navigate(path, { state: { id: state.id }, replace: true });
           } else {
             let path = '../announceWinner';
-            navigate(path, { state: { id: state.id } });
+            navigate(path, { state: { id: state.id }, replace: true });
           }
         }
         catch (error) {
@@ -284,13 +329,11 @@ const ViewChallenge = () => {
       }
     }
 
-    if (challengeInfo.deadline === null) {
-      fetchChallengeInfo();
-    } else {
-      console.log("Checking if deadline has passed...");
+    fetchChallengeInfo();
+    if (deadline) {
       checkDeadlinePass();
     }
-  }, [challengeInfo.deadline]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [deadline, submissionsArray, isLoggedIn]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmitSubmission = async (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -308,7 +351,7 @@ const ViewChallenge = () => {
       body: formData,
     })
     if (response.status === 200) {
-      fetchInfo();
+      fetchSubmissions();
     } else {
       alert("Error creating submission!");
     }
@@ -325,7 +368,7 @@ const ViewChallenge = () => {
     <div className="viewChallenge" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingBottom: 20 }}>
       {state?.id ? (
         <>
-          <Box 
+          <Box
             component="img"
             alt="Example"
             src={challengeInfo.imgURL}
@@ -347,82 +390,82 @@ const ViewChallenge = () => {
           >
             <Box
               sx={{
-                  display: "flex",
-                  justifyContent:"space-between",
-                  margin: 3,
-                  top: 0,
+                display: "flex",
+                justifyContent: "space-between",
+                margin: 3,
+                top: 0,
               }}
             >
               <Typography
-                  variant="h5"
-                  sx={{
-                      left: 0,
-                      bottom: 0,
-                      position: "relative",
-                      color: colours.yellow[500],
-                      textTransform: 'none',
-                      fontWeight: 500
-                  }}
+                variant="h5"
+                sx={{
+                  left: 0,
+                  bottom: 0,
+                  position: "relative",
+                  color: colours.yellow[500],
+                  textTransform: 'none',
+                  fontWeight: 500
+                }}
               >
-                  {challengeInfo.category}
+                {challengeInfo.category}
               </Typography>
-              <Typography 
-                  variant="h6"
-                  sx={{
-                      right: 0,
-                      bottom: 0,
-                      position: "relative",
-                      color: colours.greenAcc[500],
-                      textTransform: 'none',
-                      fontWeight: 500
-                  }}
+              <Typography
+                variant="h6"
+                sx={{
+                  right: 0,
+                  bottom: 0,
+                  position: "relative",
+                  color: colours.greenAcc[500],
+                  textTransform: 'none',
+                  fontWeight: 500
+                }}
               >
-                  {challengeInfo.deadline?.toLocaleString()}
+                {deadline?.toLocaleString()}
               </Typography>
+            </Box>
+
+            <Typography
+              variant="h3"
+              sx={{
+                position: "relative",
+                left: 0,
+                color: colours.primary[900],
+                textTransform: 'none',
+                textAlign: "left",
+                fontWeight: 800,
+                marginLeft: 3,
+                marginRight: 3,
+                marginBottom: 1,
+              }}
+            >
+              {challengeInfo.name}
+            </Typography>
+
+            <Typography
+              variant="h5"
+              sx={{
+                position: "relative",
+                left: 0,
+                color: colours.primary[900],
+                textTransform: 'none',
+                textAlign: "left",
+                marginLeft: 3,
+                marginRight: 3,
+              }}
+            >
+              {challengeInfo.description}
+            </Typography>
+
           </Box>
 
-          <Typography 
-            variant="h3"
-            sx={{
-              position: "relative",
-              left: 0,
-              color: colours.primary[900],
-              textTransform: 'none',
-              textAlign: "left",
-              fontWeight: 800,
-              marginLeft: 3,
-              marginRight:3,
-              marginBottom: 1,
-            }}
-          >
-            {challengeInfo.name}
-          </Typography>
-
-          <Typography 
-            variant="h5"
-            sx={{
-              position: "relative",
-              left: 0,
-              color: colours.primary[900],
-              textTransform: 'none',
-              textAlign: "left",
-              marginLeft: 3,
-              marginRight:3,
-            }}
-          >
-            {challengeInfo.description}
-          </Typography>
-
-          </Box>
-
-          <Typography 
+          <Typography
             variant="h4"
             sx={{
               position: "relative",
               color: colours.primary[900],
               textTransform: 'none',
               marginLeft: 3,
-              marginRight:3,
+              marginRight: 3,
               marginTop: 4,
               marginBottom: 2,
               fontWeight: 600,
@@ -432,33 +475,33 @@ const ViewChallenge = () => {
           </Typography>
           {isLoggedIn ? <form onSubmit={handleSubmitSubmission} id="form" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <input type="file" id="myFiles" accept="image/*" style={{ marginBottom: 10 }} name="file" />
-            <Button 
+            <Button
               variant="contained"
               color='secondary'
-              style={{ 
+              style={{
                 marginBottom: 10,
                 marginTop: 10,
                 width: 150,
                 maxWidth: 150
               }}
-              type='submit'>  
+              type='submit'>
               Submit
             </Button>
-          </form> : 
-          <Typography
-            variant="h5"
-            style={{ 
-              position: "relative",
-              color: colours.redAcc[500],
-              textTransform: 'none',
-              fontWeight: 500,
-              marginBottom: 3,
-            }}
-          >
-            You must be logged in to submit to this Challenge
-          </Typography>}
+          </form> :
+            <Typography
+              variant="h5"
+              style={{
+                position: "relative",
+                color: colours.redAcc[500],
+                textTransform: 'none',
+                fontWeight: 500,
+                marginBottom: 3,
+              }}
+            >
+              You must be logged in to submit to this Challenge
+            </Typography>}
 
-          <Typography 
+          <Typography
             variant="h2"
             sx={{
               position: "relative",
@@ -468,13 +511,13 @@ const ViewChallenge = () => {
               textAlign: "left",
               fontWeight: 800,
               marginLeft: 3,
-              marginRight:3,
+              marginRight: 3,
               marginTop: 5,
             }}
           >
             Submissions:
           </Typography>
-          <Typography 
+          <Typography
             variant="h5"
             sx={{
               position: "relative",
@@ -487,9 +530,9 @@ const ViewChallenge = () => {
               marginRight: 3,
             }}
           >*use ❤️ to vote for your favourite</Typography>
-          {challengeInfo.entryNamesUrls.map((entry) => (
+          {entryNamesUrls.map((entry) => (
             <body>
-              <Box 
+              <Box
                 component="img"
                 alt="Submission"
                 src={entry.url}
@@ -501,7 +544,7 @@ const ViewChallenge = () => {
                   marginTop: 3
                 }}
               />
-              
+
               {isLoggedIn && <div style={{ display: 'flex', justifyContent: "center" }}>
                 <fieldset id={`fs${entry.entryName}`} style={{ border: "0" }}>
                   <div style={{ width: 40, maxWidth: 40, marginRight: '20px', display: "inline-block" }}>
@@ -550,6 +593,7 @@ const ViewChallenge = () => {
               </div>}
             </body>
           ))}
+          {requestingReload && <h3 style={{ color: "#42a642" }}>Reload to Reshuffle and Refresh Submissions!</h3>}
         </>
       ) : (
         <>

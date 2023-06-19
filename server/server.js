@@ -27,7 +27,7 @@ const dbPool = mysql.createPool({
 });
 
 passport.use(new LocalStrategy(function verify(username, password, cb) {
-  dbPool.query(`SELECT * FROM users WHERE username = '${username}'`, function (error, results, field) {
+  dbPool.query(`SELECT * FROM users WHERE username = ?`, [username], function (error, results, field) {
     if (error) {
       console.log(error);
       return cb(error);
@@ -96,7 +96,7 @@ app.post('/server/logOut', (req, res) => {
 // Return queries about challenges
 app.get('/server/challenge/:chId', (req, res) => {
   const id = req.params.chId;
-  dbPool.query(`SELECT * FROM challenges WHERE id=${id}`, function (error, results, fields) {
+  dbPool.query(`SELECT * FROM challenges WHERE id= ?`, [id], function (error, results, fields) {
     if (error) {
       res.send(error);
       console.log(error);
@@ -109,14 +109,15 @@ app.get('/server/challenge/:chId', (req, res) => {
 // Return search queries for challenges
 app.get('/server/search/:terms', (req, res) => {
   const terms = decodeURI(req.params.terms);
+  const safeTerms = dbPool.escape(terms).slice(1, -1);
   dbPool.query(`
     SELECT * 
     FROM challenges 
     WHERE (MATCH(name, description, tags)
-    AGAINST ('${terms}' IN NATURAL LANGUAGE MODE))
-    OR (name LIKE '%${terms}%') 
-    OR (description LIKE '%${terms}%') 
-    OR (tags LIKE '${terms}');
+    AGAINST ('${safeTerms}' IN NATURAL LANGUAGE MODE))
+    OR (name LIKE '%${safeTerms}%') 
+    OR (description LIKE '%${safeTerms}%') 
+    OR (tags LIKE '${safeTerms}');
   `, function (error, results, fields) {
     if (error) {
       res.send(error);
@@ -144,7 +145,7 @@ app.post('/server/createChallenge', multer().single('file'), (req, res) => {
       const fileName = `${newId}_0.` + req.file.originalname.split(".").pop();
       uploadFile(fileName, req.file.buffer);
 
-      dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`subject\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`, \`tags\`, \`date\`, \`username\`, \`archived\`) VALUES ('${newId}', '${req.body.name}', '${req.body.ctgr}', '${req.body.desc}', '${fileName}', '', 'Image', '${req.body.tags}', '${req.body.date}', '${req.user.username}', FALSE);`, function (error, results, fields) {
+      dbPool.query(`INSERT INTO challenges (\`id\`, \`name\`, \`subject\`, \`description\`, \`topic\`, \`entryNames\`, \`entryType\`, \`tags\`, \`date\`, \`username\`, \`archived\`) VALUES (?, ?, ?, ?, ?, '', 'Image', ?, ?, ?, FALSE);`, [newId, req.body.name, req.body.ctgr, req.body.desc, fileName, req.body.tags, req.body.date, req.body.username], function (error, results, fields) {
         if (error) {
           console.log(error);
 
@@ -255,7 +256,7 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
   // File buffer is req.file.buffer
 
   // Now to update the database
-  dbPool.query(`SELECT entryNames FROM challenges WHERE id=${req.body.chId}`, function (error, results, fields) {
+  dbPool.query(`SELECT entryNames FROM challenges WHERE id= ?`, [req.body.chId], function (error, results, fields) {
     if (error) {
       res.status(500);
       res.end("Error find challenge");
@@ -267,7 +268,7 @@ app.post("/server/uploadImg", multer().single('file'), (req, res) => {
       uploadFile(fileName, req.file.buffer);
 
       // insert fileName into submissions table
-      dbPool.query(`INSERT INTO submissions (\`likeCount\`, \`hahaCount\`, \`smileCount\`, \`wowCount\`, \`sadCount\`, \`angryCount\`, \`username\`, \`filename\`, \`winner\`) VALUES (0, 0, 0, 0, 0, 0, '${req.user.username}', '${fileName}', FALSE);`, function (error, results, fields) {
+      dbPool.query(`INSERT INTO submissions (\`likeCount\`, \`hahaCount\`, \`smileCount\`, \`wowCount\`, \`sadCount\`, \`angryCount\`, \`username\`, \`filename\`, \`winner\`) VALUES (0, 0, 0, 0, 0, 0, ?, ?, FALSE);`, [req.user.username, fileName], function (error, results, fields) {
         if (error) {
           console.log(error);
           res.status(500);

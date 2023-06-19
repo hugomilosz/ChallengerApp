@@ -40,7 +40,7 @@ function App() {
                     <main className='content'>
                         <TopBar />
                         <NavBar />
-                        <div style={{  paddingTop: "60px", paddingBottom: "60px" }}>
+                        <div style={{ paddingTop: "60px", paddingBottom: "60px" }}>
                             <Routes>
                                 <Route path="/" element={<Home />} />
                                 <Route path="/setChallengeChoice" element={<SetChallengeChoice />} />
