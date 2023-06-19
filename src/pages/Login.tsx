@@ -3,7 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { tokens } from "../theme";
 
-const CustomTextField = styled(TextField)(({ theme }: any) => {   
+const CustomTextField = styled(TextField)(({ theme }: any) => {
     return {
         'label.Mui-focused': {
             color: tokens(theme.palette.mode).yellow[500]
@@ -21,19 +21,19 @@ const Login = () => {
 
     const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-    
+
         try {
             const response = await fetch("/login/password", {
                 method: "POST",
                 body: JSON.stringify({
-                username: event.currentTarget.username.value,
-                password: event.currentTarget.password.value,
+                    username: event.currentTarget.username.value,
+                    password: event.currentTarget.password.value,
                 }),
                 headers: {
-                "Content-Type": "application/json",
+                    "Content-Type": "application/json",
                 },
             });
-    
+
             if (response.ok) {
                 const data = await response.json();
                 if (data.success) {
@@ -45,7 +45,7 @@ const Login = () => {
                     alert("Login unsuccessful");
                     window.location.reload();
                 }
-             }
+            }
             else {
                 alert("Invalid username or password");
                 window.location.reload();
@@ -54,27 +54,27 @@ const Login = () => {
             console.log("Error occurred during login:", error);
             window.location.reload();
         }
-      };
-    
-      const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
+    };
+
+    const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-    
+
         const form = event.target as HTMLFormElement;
         const username = form.username.value;
         const password = form.password.value;
-    
+
         try {
             const response = await fetch("/signup", {
                 method: "POST",
                 headers: {
-                "Content-Type": "application/json",
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                username: username,
-                password: password,
+                    username: username,
+                    password: password,
                 }),
             });
-    
+
             if (response.ok) {
                 // Signup successful
                 navigate(-1);
@@ -83,12 +83,12 @@ const Login = () => {
                 console.log("Error occurred during signup:", await response.text());
                 window.location.reload();
             }
-        } 
+        }
         catch (error) {
             console.log("Error occurred during signup:", error);
             window.location.reload();
         }
-      };
+    };
 
 
 
@@ -105,10 +105,12 @@ const Login = () => {
                     label="Username"
                     placeholder='Username'
                     autoComplete="username"
-                    style={{ marginTop: 20, 
-                            marginBottom: 10,
-                            width: 300,
-                            maxWidth: 300 }} 
+                    style={{
+                        marginTop: 20,
+                        marginBottom: 10,
+                        width: 300,
+                        maxWidth: 300
+                    }}
                     name="username"
                     autoFocus
                 />
@@ -121,22 +123,24 @@ const Login = () => {
                     label="Password"
                     placeholder='Password'
                     autoComplete="password"
-                    style={{ marginTop: 20, 
-                            marginBottom: 10,
-                            width: 300,
-                            maxWidth: 300 }} 
+                    style={{
+                        marginTop: 20,
+                        marginBottom: 10,
+                        width: 300,
+                        maxWidth: 300
+                    }}
                     name="password"
                     autoFocus
                 />
                 <br />
-                <Button 
+                <Button
                     variant="contained"
                     color='secondary'
-                    style={{ 
+                    style={{
                         marginBottom: 10,
                         width: 300,
                         maxWidth: 300
-                    }} 
+                    }}
                     type="submit"
                 >
                     Login
@@ -153,10 +157,12 @@ const Login = () => {
                     label="Username"
                     placeholder='Username'
                     autoComplete="username"
-                    style={{ marginTop: 20, 
-                            marginBottom: 10,
-                            width: 300,
-                            maxWidth: 300 }} 
+                    style={{
+                        marginTop: 20,
+                        marginBottom: 10,
+                        width: 300,
+                        maxWidth: 300
+                    }}
                     name="username"
                     autoFocus
                 />
@@ -169,22 +175,24 @@ const Login = () => {
                     label="Password"
                     placeholder='Password'
                     autoComplete="current-password"
-                    style={{ marginTop: 20, 
-                            marginBottom: 10,
-                            width: 300,
-                            maxWidth: 300 }} 
+                    style={{
+                        marginTop: 20,
+                        marginBottom: 10,
+                        width: 300,
+                        maxWidth: 300
+                    }}
                     name="password"
                     autoFocus
                 />
                 <br />
-                <Button 
+                <Button
                     variant="contained"
                     color='secondary'
-                    style={{ 
+                    style={{
                         marginBottom: 10,
                         width: 300,
                         maxWidth: 300
-                    }} 
+                    }}
                     type="submit"
                 >
                     Signup

@@ -17,10 +17,10 @@ function getDescription(type: string, style: string, twist: string): string {
     return "For this challenge you have to submit a " + type + " with " + style + ". The twist is that " + twist + "."
 }
 
-enum tooltipValueType { 
+enum tooltipValueType {
     type = "TYPES_EXAMPLES",
     style = "STYLES_EXAMPLES",
-    twist = "TWISTS_EXAMPLES" 
+    twist = "TWISTS_EXAMPLES"
 }
 
 const TYPES_QUESTION = "What kind of submission do you expect for the challenge? ";
@@ -54,7 +54,7 @@ TWISTS_EXAMPLES.set("Photography", "No photo editing is allowed, etc.");
 TWISTS_EXAMPLES.set("Writing", "You can use at most 300 words, etc.");
 
 function renderTooltip(category: string, valueType: tooltipValueType): string {
-    
+
     if (valueType === tooltipValueType.type) {
         return TYPES_QUESTION + (TYPES_EXAMPLES.get(category) ?? '');
     } else if (valueType === tooltipValueType.style) {
@@ -65,7 +65,7 @@ function renderTooltip(category: string, valueType: tooltipValueType): string {
 }
 
 
-const CustomTextField = styled(TextField)(({ theme }: any) => {   
+const CustomTextField = styled(TextField)(({ theme }: any) => {
     return {
         'label.Mui-focused': {
             color: tokens(theme.palette.mode).yellow[500]
@@ -92,71 +92,71 @@ const SetChallengeStep2 = ({ type, style, twist, updateFields, category }: ChDat
             <p>Please describe the expected outcome of your challenge</p>
 
             <div style={{ display: "flex" }}>
-                <CustomTextField theme={theme} label="Type" variant="standard" required type="text" placeholder='Type' style={{ width: 300, maxWidth:300, marginBottom: 10 }} name="chType" value={type} onChange={e => updateFields({ type: e.target.value })} />
+                <CustomTextField theme={theme} label="Type" variant="standard" required type="text" placeholder='Type' style={{ width: 300, maxWidth: 300, marginBottom: 10 }} name="chType" value={type} onChange={e => updateFields({ type: e.target.value })} />
                 <ClickAwayListener onClickAway={() => setOpen1(false)}>
                     <div>
                         <Tooltip
                             PopperProps={{
-                            disablePortal: true,
+                                disablePortal: true,
                             }}
                             onClose={() => setOpen1(false)}
                             open={open1}
                             disableFocusListener
                             disableHoverListener
-                            disableTouchListener 
+                            disableTouchListener
                             title={renderTooltip(category, tooltipValueType.type)}
                         >
-                            <Button sx={{color: colours.yellow[500]}} onClick={() => setOpen1(true)}>?</Button>
+                            <Button sx={{ color: colours.yellow[500] }} onClick={() => setOpen1(true)}>?</Button>
                         </Tooltip>
                     </div>
                 </ClickAwayListener>
             </div>
             <div style={{ display: "flex" }}>
-                <CustomTextField theme={theme} label="Style" variant="standard" required type="text" placeholder='Style' style={{ width: 300, maxWidth:300, marginBottom: 10 }} name="chStyle" value={style} onChange={e => updateFields({ style: e.target.value }) } />
+                <CustomTextField theme={theme} label="Style" variant="standard" required type="text" placeholder='Style' style={{ width: 300, maxWidth: 300, marginBottom: 10 }} name="chStyle" value={style} onChange={e => updateFields({ style: e.target.value })} />
                 <ClickAwayListener onClickAway={() => setOpen2(false)}>
                     <div>
                         <Tooltip
                             PopperProps={{
-                            disablePortal: true,
+                                disablePortal: true,
                             }}
                             onClose={() => setOpen2(false)}
                             open={open2}
                             disableFocusListener
                             disableHoverListener
-                            disableTouchListener 
+                            disableTouchListener
                             title={renderTooltip(category, tooltipValueType.style)}
                         >
-                            <Button sx={{color: colours.yellow[500]}} onClick={() => setOpen2(true)}>?</Button>
+                            <Button sx={{ color: colours.yellow[500] }} onClick={() => setOpen2(true)}>?</Button>
                         </Tooltip>
                     </div>
                 </ClickAwayListener>
             </div>
             <div style={{ display: "flex" }}>
-                <CustomTextField theme={theme} variant="standard" label="Twist" multiline rows={2} maxRows={5} required placeholder='Twist' style={{ width: 300, maxWidth:300, marginBottom: 10 }} name="chTwist" value={twist} onChange={e => updateFields({ twist: e.target.value })} />
+                <CustomTextField theme={theme} variant="standard" label="Twist" multiline rows={2} maxRows={5} required placeholder='Twist' style={{ width: 300, maxWidth: 300, marginBottom: 10 }} name="chTwist" value={twist} onChange={e => updateFields({ twist: e.target.value })} />
                 <ClickAwayListener onClickAway={() => setOpen3(false)}>
                     <div>
                         <Tooltip
                             PopperProps={{
-                            disablePortal: true,
+                                disablePortal: true,
                             }}
                             onClose={() => setOpen3(false)}
                             open={open3}
                             disableFocusListener
                             disableHoverListener
-                            disableTouchListener 
+                            disableTouchListener
                             title={renderTooltip(category, tooltipValueType.twist)}
                         >
-                            <Button sx={{color: colours.yellow[500]}} onClick={() => setOpen3(true)}>?</Button>
+                            <Button sx={{ color: colours.yellow[500] }} onClick={() => setOpen3(true)}>?</Button>
                         </Tooltip>
                     </div>
                 </ClickAwayListener>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr", justifyItems: "center", alignItems: "center" }}>
-                <h4>Description will be as follows (can be edited later): </h4> 
-                <CustomTextField disabled theme={theme} label="Desctiption" variant="outlined" multiline rows={2} maxRows={5} required placeholder='Description' style={{ width: 400, maxWidth:400, marginBottom: 10 }} name="chDesc" value={getDescription(type, style, twist)} />
+                <h4>Description will be as follows (can be edited later): </h4>
+                <CustomTextField disabled theme={theme} label="Description" variant="outlined" multiline rows={2} maxRows={5} required placeholder='Description' style={{ width: 400, maxWidth: 400, marginBottom: 10 }} name="chDesc" value={getDescription(type, style, twist)} />
             </div>
-        
+
         </div >
     )
 }

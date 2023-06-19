@@ -594,10 +594,10 @@ app.get('*', (req, res) => {
   res.send(404);
 });
 
-app.post("/login/password", passport.authenticate("local", {
-  successRedirect: "/",
-  failureRedirect: "/login"
-}));
+app.post("/login/password", passport.authenticate("local"), (req, res) => {
+  res.json({ success: true });
+});
+
 
 app.post("/signup", (req, res, next) => {
   dbPool.query(`SELECT * FROM users WHERE username='${req.body.username}'`, (error, results) => {
