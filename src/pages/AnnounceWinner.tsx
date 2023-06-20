@@ -47,7 +47,7 @@ const AnnounceWinner = () => {
     const { state } = useLocation();
     const navigate = useNavigate();
 
-    async function getReactionCounts(entryWithoutPrefix: string, reactionName: string) {
+    async function getReactionCounts(entryWithoutPrefix: string) {
         const reactionCountResponse = await fetch(`/viewReactions/${entryWithoutPrefix}`);
         const reactionCountData = await reactionCountResponse.json();
         return {
@@ -71,7 +71,7 @@ const AnnounceWinner = () => {
 
             const entries = splitArray.map(async (entryName: string) => {
                 const url = await (await fetch(`/uploadsURL/${entryName}`)).text();
-                const reactionCounts = await getReactionCounts(entryName, "likeCount");
+                const reactionCounts = await getReactionCounts(entryName);
                 return { entryName, url, ...reactionCounts };
             });
 

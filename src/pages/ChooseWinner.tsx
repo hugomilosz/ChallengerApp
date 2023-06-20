@@ -11,20 +11,17 @@ const ChooseWinner = () => {
     const { state } = useLocation();
     const navigate = useNavigate();
 
-    async function getReactionCount(entryWithoutPrefix: string, reactionName: string) {
-        const reactionCountResponse = await fetch(`/viewReactions/${entryWithoutPrefix}/${reactionName}`);
+    async function getReactionCounts(entryWithoutPrefix: string) {
+        const reactionCountResponse = await fetch(`/viewReactions/${entryWithoutPrefix}`);
         const reactionCountData = await reactionCountResponse.json();
-        switch (reactionName) {
-            case "likeCount": return reactionCountData.length > 0 ? reactionCountData[0].likeCount : 0;
-            case "hahaCount": return reactionCountData.length > 0 ? reactionCountData[0].hahaCount : 0;
-            case "smileCount": return reactionCountData.length > 0 ? reactionCountData[0].smileCount : 0;
-            case "wowCount": return reactionCountData.length > 0 ? reactionCountData[0].wowCount : 0;
-            case "sadCount": return reactionCountData.length > 0 ? reactionCountData[0].sadCount : 0;
-            case "angryCount": return reactionCountData.length > 0 ? reactionCountData[0].angryCount : 0;
-            default: console.error("not a valid reaction"); break;
+        return {
+            likeCount: reactionCountData.length > 0 ? reactionCountData[0].likeCount : 0,
+            hahaCount: reactionCountData.length > 0 ? reactionCountData[0].hahaCount : 0,
+            smileCount: reactionCountData.length > 0 ? reactionCountData[0].smileCount : 0,
+            wowCount: reactionCountData.length > 0 ? reactionCountData[0].wowCount : 0,
+            sadCount: reactionCountData.length > 0 ? reactionCountData[0].sadCount : 0,
+            angryCount: reactionCountData.length > 0 ? reactionCountData[0].angryCount : 0,
         }
-        const reactionCount = reactionCountData.length > 0 ? reactionCountData[0].likeCount : 0;
-        return reactionCount;
     }
 
     const [, setDeadlineDate] = useState<Date | null>(null);
@@ -40,33 +37,18 @@ const ChooseWinner = () => {
 
             const entries = splitArray.map(async (entryName: string) => {
                 const url = await (await fetch(`/uploadsURL/${entryName}`)).text();
-                const likeCount = await getReactionCount(entryName, "likeCount");
-                return { entryName, url, likeCount };
+                const reactionCounts = await getReactionCounts(entryName);
+                return { entryName, url, ...reactionCounts };
             });
 
             // Sort the entries based on the like count in descending order
             const sortedEntries = await Promise.all(entries);
             sortedEntries.sort((a, b) => b.likeCount - a.likeCount);
-
-
-            const urls = sortedEntries.map((entry) => entry.entryName).map(async (entryName: string) => {
-
-                const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
-
-                const likeCount = await getReactionCount(entryName, "likeCount");
-                const hahaCount = await getReactionCount(entryName, "hahaCount");
-                const smileCount = await getReactionCount(entryName, "smileCount");
-                const wowCount = await getReactionCount(entryName, "wowCount");
-                const sadCount = await getReactionCount(entryName, "sadCount");
-                const angryCount = await getReactionCount(entryName, "angryCount");
-
-                return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
-            });
             setChallenge({
                 name: chs.name as string,
                 description: chs.description as string,
                 imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
-                entryNamesUrls: await Promise.all(urls),
+                entryNamesUrls: sortedEntries,
                 deadline: deadlineDate,
                 category: chs.subject,
             });
