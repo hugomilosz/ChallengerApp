@@ -126,14 +126,7 @@ const ViewChallenge = () => {
       const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
       const reactionCounts = await getReactionCount(entryName);
 
-      const likeCount = reactionCounts.likeCount;
-      const hahaCount = reactionCounts.hahaCount;
-      const smileCount = reactionCounts.smileCount;
-      const wowCount = reactionCounts.wowCount;
-      const sadCount = reactionCounts.sadCount;
-      const angryCount = reactionCounts.angryCount;
-
-      return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
+      return { entryName, url, ...reactionCounts };
     });
 
     Promise.all(newInfo).then((urls) => {

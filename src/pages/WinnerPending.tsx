@@ -12,20 +12,17 @@ const WinnerPending = () => {
 
     const { state } = useLocation();
 
-    async function getReactionCount(entryWithoutPrefix: string, reactionName: string) {
-        const reactionCountResponse = await fetch(`/viewReactions/${entryWithoutPrefix}/${reactionName}`);
+    async function getReactionCounts(entryWithoutPrefix: string) {
+        const reactionCountResponse = await fetch(`/viewReactions/${entryWithoutPrefix}`);
         const reactionCountData = await reactionCountResponse.json();
-        switch (reactionName) {
-            case "likeCount": return reactionCountData.length > 0 ? reactionCountData[0].likeCount : 0;
-            case "hahaCount": return reactionCountData.length > 0 ? reactionCountData[0].hahaCount : 0;
-            case "smileCount": return reactionCountData.length > 0 ? reactionCountData[0].smileCount : 0;
-            case "wowCount": return reactionCountData.length > 0 ? reactionCountData[0].wowCount : 0;
-            case "sadCount": return reactionCountData.length > 0 ? reactionCountData[0].sadCount : 0;
-            case "angryCount": return reactionCountData.length > 0 ? reactionCountData[0].angryCount : 0;
-            default: console.error("not a valid reaction"); break;
+        return {
+            likeCount: reactionCountData.length > 0 ? reactionCountData[0].likeCount : 0,
+            hahaCount: reactionCountData.length > 0 ? reactionCountData[0].hahaCount : 0,
+            smileCount: reactionCountData.length > 0 ? reactionCountData[0].smileCount : 0,
+            wowCount: reactionCountData.length > 0 ? reactionCountData[0].wowCount : 0,
+            sadCount: reactionCountData.length > 0 ? reactionCountData[0].sadCount : 0,
+            angryCount: reactionCountData.length > 0 ? reactionCountData[0].angryCount : 0,
         }
-        const reactionCount = reactionCountData.length > 0 ? reactionCountData[0].likeCount : 0;
-        return reactionCount;
     }
 
     useEffect(() => {
@@ -39,15 +36,9 @@ const WinnerPending = () => {
             const urls = splitArray.map(async (entryName: string) => {
 
                 const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
+                const reactionCounts = await getReactionCounts(entryName);
 
-                const likeCount = await getReactionCount(entryName, "likeCount");
-                const hahaCount = await getReactionCount(entryName, "hahaCount");
-                const smileCount = await getReactionCount(entryName, "smileCount");
-                const wowCount = await getReactionCount(entryName, "wowCount");
-                const sadCount = await getReactionCount(entryName, "sadCount");
-                const angryCount = await getReactionCount(entryName, "angryCount");
-
-                return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
+                return { entryName, url, ...reactionCounts };
             });
             setChallenge({
                 name: chs.name as string,
