@@ -5,14 +5,14 @@ import { tokens } from "../theme";
 
 const NoWinner = () => {
 
-    const [challengeInfo, setChallenge] = useState<{ 
-                name: string, 
-                description: string, 
-                imgURL: string, 
-                deadline: Date | null,
-                category: string
-            }>
-        ({ name: "none", description: "none", imgURL: "", deadline: null, category: ""});
+    const [challengeInfo, setChallenge] = useState<{
+        name: string,
+        description: string,
+        imgURL: string,
+        deadline: Date | null,
+        category: string
+    }>
+        ({ name: "none", description: "none", imgURL: "", deadline: null, category: "" });
 
     const { state } = useLocation();
     const navigate = useNavigate();
@@ -24,59 +24,59 @@ const NoWinner = () => {
             const chs = JSON.parse(body);
             const deadlineDate = new Date(chs.date);
             setDeadlineDate(deadlineDate);
-    
+
             setChallenge({
                 name: chs.name as string,
                 description: chs.description as string,
                 imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
                 deadline: deadlineDate,
-                category: (await (await fetch(`/category/${state.id}`)).json()).subject,
+                category: chs.json()).subject,
             });
-        };
-        fetchInfo();
+};
+fetchInfo();
     }, [state.id]);
 
-    const [, setDeadlineDate] = useState<Date | null>(null);
+const [, setDeadlineDate] = useState<Date | null>(null);
 
-    const navigateToHomeScreen = () => {
-        navigate('/')
-    }
+const navigateToHomeScreen = () => {
+    navigate('/')
+}
 
-    const theme = useTheme();
-    const colours = tokens(theme.palette.mode);
+const theme = useTheme();
+const colours = tokens(theme.palette.mode);
 
-    return (
-        <div className="noWinner" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingBottom: 20 }}>
+return (
+    <div className="noWinner" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingBottom: 20 }}>
         {state?.id ? (
             <>
-                   <Box 
-                        component="img"
-                        alt="Example"
-                        src={challengeInfo.imgURL}
-                        sx={{
+                <Box
+                    component="img"
+                    alt="Example"
+                    src={challengeInfo.imgURL}
+                    sx={{
                         height: "auto",
                         width: 500,
                         maxWidth: 500,
                         borderRadius: 3,
                         marginTop: 5
-                        }}
-                    />
+                    }}
+                />
 
-                    <Box
-                        sx={{
+                <Box
+                    sx={{
                         width: 500,
                         maxWidth: 500,
                         alignItems: "center",
-                        }}
-                    >
-                        <Box
+                    }}
+                >
+                    <Box
                         sx={{
                             display: "flex",
-                            justifyContent:"space-between",
+                            justifyContent: "space-between",
                             margin: 3,
                             top: 0,
                         }}
-                        >
+                    >
                         <Typography
                             variant="h5"
                             sx={{
@@ -90,7 +90,7 @@ const NoWinner = () => {
                         >
                             {challengeInfo.category}
                         </Typography>
-                        <Typography 
+                        <Typography
                             variant="h6"
                             sx={{
                                 right: 0,
@@ -105,41 +105,41 @@ const NoWinner = () => {
                         </Typography>
                     </Box>
 
-                    <Typography 
+                    <Typography
                         variant="h3"
                         sx={{
-                        position: "relative",
-                        left: 0,
-                        color: colours.primary[900],
-                        textTransform: 'none',
-                        textAlign: "left",
-                        fontWeight: 800,
-                        marginLeft: 3,
-                        marginRight:3,
-                        marginBottom: 1,
+                            position: "relative",
+                            left: 0,
+                            color: colours.primary[900],
+                            textTransform: 'none',
+                            textAlign: "left",
+                            fontWeight: 800,
+                            marginLeft: 3,
+                            marginRight: 3,
+                            marginBottom: 1,
                         }}
                     >
                         {challengeInfo.name}
                     </Typography>
 
-                    <Typography 
+                    <Typography
                         variant="h5"
                         sx={{
-                        position: "relative",
-                        left: 0,
-                        color: colours.primary[900],
-                        textTransform: 'none',
-                        textAlign: "left",
-                        marginLeft: 3,
-                        marginRight:3,
+                            position: "relative",
+                            left: 0,
+                            color: colours.primary[900],
+                            textTransform: 'none',
+                            textAlign: "left",
+                            marginLeft: 3,
+                            marginRight: 3,
                         }}
                     >
                         {challengeInfo.description}
                     </Typography>
 
-                    </Box>
+                </Box>
 
-                    <h2 style={{color: colours.redAcc[500]}}>This challenge had no submissions</h2>
+                <h2 style={{ color: colours.redAcc[500] }}>This challenge had no submissions</h2>
             </>
         ) : (
             <>
@@ -149,7 +149,7 @@ const NoWinner = () => {
         )}
 
     </div>
-    )
+)
 };
 
 export default NoWinner;

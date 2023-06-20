@@ -41,10 +41,10 @@ const Home = () => {
                     description: chInfo.description as string,
                     imgURL: await (await fetch(`/uploadsURL/${chInfo.topic}`)).text(),
                     deadline: deadlineDate,
-                    category: (await (await fetch(`/category/${ch.id}`)).json()).subject,
+                    category: chInfo.subject,
                 })
             })
-            
+
             const finishedList = await Promise.all(chInfoList)
             console.log(finishedList);
             if (Array.isArray(finishedList)) {
@@ -61,14 +61,14 @@ const Home = () => {
     useEffect(() => {
         fetchChallenges();
     }, []);
-    
+
     // Filter out challenges with a name of null
-    const filteredChallenges = challenges.filter(challenge => challenge.name !== null         
-                                                           || challenge.description !== null  
-                                                           || challenge.category !== null     
-                                                           || challenge.deadline !== null     
-                                                           || challenge.imgURL !== null
-                                                );
+    const filteredChallenges = challenges.filter(challenge => challenge.name !== null
+        || challenge.description !== null
+        || challenge.category !== null
+        || challenge.deadline !== null
+        || challenge.imgURL !== null
+    );
 
     return (
         <div className="home">
@@ -79,7 +79,7 @@ const Home = () => {
                     <div key={challenge.id}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
                             <Button onClick={() => viewChallengeButton(challenge.id)}>
-                                <Card 
+                                <Card
                                     sx={{
                                         width: 400,
                                         maxWidth: 400,
@@ -93,11 +93,11 @@ const Home = () => {
                                         backgroundPosition: "center center",
                                         boxShadow: `inset 0px 150px 60px -80px ${colours.primary[100]}, inset 0px -150px 60px -80px ${colours.primary[100]}`
                                     }}
-                                > 
+                                >
                                     <Box
                                         sx={{
                                             display: "flex",
-                                            justifyContent:"space-between",
+                                            justifyContent: "space-between",
                                             margin: 3,
                                             top: 0,
                                         }}
@@ -116,7 +116,7 @@ const Home = () => {
                                             {challenge.category}
                                         </Typography>
 
-                                        <Typography 
+                                        <Typography
                                             variant="body2"
                                             sx={{
                                                 right: 0,
@@ -141,10 +141,10 @@ const Home = () => {
                                             maxWidth: '300px',
                                             bottom: 0,
                                         }}
-                                    >   
-                                        <Box 
+                                    >
+                                        <Box
                                             sx={{
-                                                overflow: "hidden", 
+                                                overflow: "hidden",
                                                 textOverflow: "ellipsis",
                                             }}
                                         >
@@ -162,14 +162,14 @@ const Home = () => {
                                                 {challenge.name}
                                             </Typography>
                                         </Box>
-                                        
-                                        <Box 
+
+                                        <Box
                                             sx={{
-                                                overflow: "hidden", 
+                                                overflow: "hidden",
                                                 textOverflow: "ellipsis",
                                             }}
                                         >
-                                            <Typography 
+                                            <Typography
                                                 noWrap
                                                 sx={{
                                                     left: 0,

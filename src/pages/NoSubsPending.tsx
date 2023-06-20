@@ -7,12 +7,12 @@ const NoSubsPending = () => {
 
     const navigate = useNavigate();
 
-    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string,  deadline: Date | null, category: string }>
-        ({ name: "none", description: "none", imgURL: "", deadline: null, category: ""});
+    const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, deadline: Date | null, category: string }>
+        ({ name: "none", description: "none", imgURL: "", deadline: null, category: "" });
 
     const { state } = useLocation();
 
-  useEffect(() => {
+    useEffect(() => {
         const fetchInfo = async () => {
             const responseDBInfo = await fetch(`/server/challenge/${state.id}`);
             const body = await responseDBInfo.text();
@@ -26,7 +26,7 @@ const NoSubsPending = () => {
                 description: chs.description as string,
                 imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
                 deadline: deadlineDate,
-                category: (await (await fetch(`/category/${state.id}`)).json()).subject,
+                category: chs.subject,
             });
         };
         fetchInfo();
@@ -45,7 +45,7 @@ const NoSubsPending = () => {
         <div className="noSubsPending" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingBottom: 20 }}>
             {state?.id ? (
                 <>
-                    <Typography 
+                    <Typography
                         variant="h2"
                         sx={{
                             color: colours.redAcc[500],
@@ -56,7 +56,7 @@ const NoSubsPending = () => {
                     >
                         No Submissions
                     </Typography>
-                    <Typography 
+                    <Typography
                         variant="h5"
                         sx={{
                             color: colours.primary[900],
@@ -67,93 +67,93 @@ const NoSubsPending = () => {
                         Owner deciding whether to extend the deadline
                     </Typography>
 
-                    <Box 
+                    <Box
                         component="img"
                         alt="Example"
                         src={challengeInfo.imgURL}
                         sx={{
-                        height: "auto",
-                        width: 500,
-                        maxWidth: 500,
-                        borderRadius: 3,
-                        marginTop: 5
+                            height: "auto",
+                            width: 500,
+                            maxWidth: 500,
+                            borderRadius: 3,
+                            marginTop: 5
                         }}
                     />
 
                     <Box
                         sx={{
-                        width: 500,
-                        maxWidth: 500,
-                        alignItems: "center",
+                            width: 500,
+                            maxWidth: 500,
+                            alignItems: "center",
                         }}
                     >
                         <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent:"space-between",
-                            margin: 3,
-                            top: 0,
-                        }}
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                margin: 3,
+                                top: 0,
+                            }}
                         >
+                            <Typography
+                                variant="h5"
+                                sx={{
+                                    left: 0,
+                                    bottom: 0,
+                                    position: "relative",
+                                    color: colours.yellow[500],
+                                    textTransform: 'none',
+                                    fontWeight: 500
+                                }}
+                            >
+                                {challengeInfo.category}
+                            </Typography>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    right: 0,
+                                    bottom: 0,
+                                    position: "relative",
+                                    color: colours.redAcc[500],
+                                    textTransform: 'none',
+                                    fontWeight: 500
+                                }}
+                            >
+                                {challengeInfo.deadline?.toLocaleString()}
+                            </Typography>
+                        </Box>
+
+                        <Typography
+                            variant="h3"
+                            sx={{
+                                position: "relative",
+                                left: 0,
+                                color: colours.primary[900],
+                                textTransform: 'none',
+                                textAlign: "left",
+                                fontWeight: 800,
+                                marginLeft: 3,
+                                marginRight: 3,
+                                marginBottom: 1,
+                            }}
+                        >
+                            {challengeInfo.name}
+                        </Typography>
+
                         <Typography
                             variant="h5"
                             sx={{
+                                position: "relative",
                                 left: 0,
-                                bottom: 0,
-                                position: "relative",
-                                color: colours.yellow[500],
+                                color: colours.primary[900],
                                 textTransform: 'none',
-                                fontWeight: 500
+                                textAlign: "left",
+                                marginLeft: 3,
+                                marginRight: 3,
                             }}
                         >
-                            {challengeInfo.category}
+                            {challengeInfo.description}
                         </Typography>
-                        <Typography 
-                            variant="h6"
-                            sx={{
-                                right: 0,
-                                bottom: 0,
-                                position: "relative",
-                                color: colours.redAcc[500],
-                                textTransform: 'none',
-                                fontWeight: 500
-                            }}
-                        >
-                            {challengeInfo.deadline?.toLocaleString()}
-                        </Typography>
-                    </Box>
-
-                    <Typography 
-                        variant="h3"
-                        sx={{
-                        position: "relative",
-                        left: 0,
-                        color: colours.primary[900],
-                        textTransform: 'none',
-                        textAlign: "left",
-                        fontWeight: 800,
-                        marginLeft: 3,
-                        marginRight:3,
-                        marginBottom: 1,
-                        }}
-                    >
-                        {challengeInfo.name}
-                    </Typography>
-
-                    <Typography 
-                        variant="h5"
-                        sx={{
-                        position: "relative",
-                        left: 0,
-                        color: colours.primary[900],
-                        textTransform: 'none',
-                        textAlign: "left",
-                        marginLeft: 3,
-                        marginRight:3,
-                        }}
-                    >
-                        {challengeInfo.description}
-                    </Typography>
 
                     </Box>
 

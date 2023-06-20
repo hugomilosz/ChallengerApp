@@ -110,7 +110,7 @@ const ViewChallenge = () => {
       name: chs.name as string,
       description: chs.description as string,
       imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
-      category: (await (await fetch(`/category/${state.id}`)).json()).subject,
+      category: chs.subject,
       setter: chs.username,
     });
     setHasSetChallenge(true);

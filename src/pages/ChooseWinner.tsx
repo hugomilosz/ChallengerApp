@@ -68,7 +68,7 @@ const ChooseWinner = () => {
                 imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
                 entryNamesUrls: await Promise.all(urls),
                 deadline: deadlineDate,
-                category: (await (await fetch(`/category/${state.id}`)).json()).subject,
+                category: chs.subject,
             });
         };
         fetchInfo();

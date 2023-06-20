@@ -11,7 +11,7 @@ const NoSubmissions = () => {
     const navigate = useNavigate();
 
     const [challengeInfo, setChallenge] = useState<{ name: string, description: string, imgURL: string, entryNamesUrls: Array<{ entryName: string, url: string, likeCount: number, hahaCount: number, smileCount: number, wowCount: number, sadCount: number, angryCount: number }>, deadline: Date | null, category: string }>
-        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], deadline: null, category: ""});
+        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], deadline: null, category: "" });
 
     const { state } = useLocation();
 
@@ -31,7 +31,7 @@ const NoSubmissions = () => {
         return reactionCount;
     }
 
-  useEffect(() => {
+    useEffect(() => {
         const fetchInfo = async () => {
             const responseDBInfo = await fetch(`/server/challenge/${state.id}`);
             const body = await responseDBInfo.text();
@@ -58,7 +58,7 @@ const NoSubmissions = () => {
                 imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
                 entryNamesUrls: await Promise.all(urls),
                 deadline: deadlineDate,
-                category: (await (await fetch(`/category/${state.id}`)).json()).subject,
+                category: chs.subject,
             });
         };
         fetchInfo();
@@ -116,7 +116,7 @@ const NoSubmissions = () => {
         <div className="noSubmissions" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingBottom: 20 }}>
             {state?.id ? (
                 <>
-                    <Typography 
+                    <Typography
                         variant="h2"
                         sx={{
                             color: colours.redAcc[500],
@@ -128,114 +128,115 @@ const NoSubmissions = () => {
                         No Submissions
                     </Typography>
 
-                    <Box 
+                    <Box
                         component="img"
                         alt="Example"
                         src={challengeInfo.imgURL}
                         sx={{
-                        height: "auto",
-                        width: 500,
-                        maxWidth: 500,
-                        borderRadius: 3,
-                        marginTop: 5
+                            height: "auto",
+                            width: 500,
+                            maxWidth: 500,
+                            borderRadius: 3,
+                            marginTop: 5
                         }}
                     />
 
                     <Box
                         sx={{
-                        width: 500,
-                        maxWidth: 500,
-                        alignItems: "center",
+                            width: 500,
+                            maxWidth: 500,
+                            alignItems: "center",
                         }}
                     >
                         <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent:"space-between",
-                            margin: 3,
-                            top: 0,
-                        }}
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                margin: 3,
+                                top: 0,
+                            }}
                         >
+                            <Typography
+                                variant="h5"
+                                sx={{
+                                    left: 0,
+                                    bottom: 0,
+                                    position: "relative",
+                                    color: colours.yellow[500],
+                                    textTransform: 'none',
+                                    fontWeight: 500
+                                }}
+                            >
+                                {challengeInfo.category}
+                            </Typography>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    right: 0,
+                                    bottom: 0,
+                                    position: "relative",
+                                    color: colours.redAcc[500],
+                                    textTransform: 'none',
+                                    fontWeight: 500
+                                }}
+                            >
+                                {challengeInfo.deadline?.toLocaleString()}
+                            </Typography>
+                        </Box>
+
+                        <Typography
+                            variant="h3"
+                            sx={{
+                                position: "relative",
+                                left: 0,
+                                color: colours.primary[900],
+                                textTransform: 'none',
+                                textAlign: "left",
+                                fontWeight: 800,
+                                marginLeft: 3,
+                                marginRight: 3,
+                                marginBottom: 1,
+                            }}
+                        >
+                            {challengeInfo.name}
+                        </Typography>
+
                         <Typography
                             variant="h5"
                             sx={{
+                                position: "relative",
                                 left: 0,
-                                bottom: 0,
-                                position: "relative",
-                                color: colours.yellow[500],
+                                color: colours.primary[900],
                                 textTransform: 'none',
-                                fontWeight: 500
+                                textAlign: "left",
+                                marginLeft: 3,
+                                marginRight: 3,
                             }}
                         >
-                            {challengeInfo.category}
+                            {challengeInfo.description}
                         </Typography>
-                        <Typography 
-                            variant="h6"
-                            sx={{
-                                right: 0,
-                                bottom: 0,
-                                position: "relative",
-                                color: colours.redAcc[500],
-                                textTransform: 'none',
-                                fontWeight: 500
-                            }}
-                        >
-                            {challengeInfo.deadline?.toLocaleString()}
-                        </Typography>
-                    </Box>
-
-                    <Typography 
-                        variant="h3"
-                        sx={{
-                        position: "relative",
-                        left: 0,
-                        color: colours.primary[900],
-                        textTransform: 'none',
-                        textAlign: "left",
-                        fontWeight: 800,
-                        marginLeft: 3,
-                        marginRight:3,
-                        marginBottom: 1,
-                        }}
-                    >
-                        {challengeInfo.name}
-                    </Typography>
-
-                    <Typography 
-                        variant="h5"
-                        sx={{
-                        position: "relative",
-                        left: 0,
-                        color: colours.primary[900],
-                        textTransform: 'none',
-                        textAlign: "left",
-                        marginLeft: 3,
-                        marginRight:3,
-                        }}
-                    >
-                        {challengeInfo.description}
-                    </Typography>
 
                     </Box>
 
-                    <h2 style={{color: colours.redAcc[500]}}>No submissions have been made to this challenge.</h2>
-                    <h3 style={{color: colours.primary[900]}}>Choose an option below:</h3>
-                    <div 
-                        style={{ 
+                    <h2 style={{ color: colours.redAcc[500] }}>No submissions have been made to this challenge.</h2>
+                    <h3 style={{ color: colours.primary[900] }}>Choose an option below:</h3>
+                    <div
+                        style={{
                             marginBottom: 20,
                             display: "flex"
                         }}
                     >
-                        <LocalizationProvider dateAdapter={AdapterDayjs} > 
+                        <LocalizationProvider dateAdapter={AdapterDayjs} >
                             <DateTimePicker
-                                sx={{ paddingBottom:20, marginBottom: 30, marginRight: 5, width: 200, maxWidth: 200 }} 
-                                label="Deadline" 
+                                sx={{ paddingBottom: 20, marginBottom: 30, marginRight: 5, width: 200, maxWidth: 200 }}
+                                label="Deadline"
                                 slotProps={{
                                     textField: {
                                         name: "chDate",
                                         required: true,
                                         id: "chDate",
-                                        sx: { '& .MuiOutlinedInput-root': {
+                                        sx: {
+                                            '& .MuiOutlinedInput-root': {
                                                 '&.Mui-focused fieldset': {
                                                     borderColor: colours.yellow[500],
                                                 },
@@ -252,39 +253,39 @@ const NoSubmissions = () => {
                                 disablePast
                             />
                         </LocalizationProvider>
-                        <Button 
+                        <Button
                             variant="contained"
-                            color="secondary" 
+                            color="secondary"
                             onClick={() => extendDeadline((document.getElementById("chDate") as HTMLInputElement).value)}
                         >
                             Extend the Deadline
                         </Button>
                     </div>
                     <div>
-                        <Button 
+                        <Button
                             variant="contained"
                             color="error"
-                            style={{ 
+                            style={{
                                 width: 300,
                                 maxWidth: 300
                             }}
                             onClick={deleteChallenge}
                         >
-                                Delete the Challenge
+                            Delete the Challenge
                         </Button>
-                    </div>< br/>
+                    </div>< br />
                     <div>
-                        <Button 
+                        <Button
                             variant="contained"
                             color="success"
-                            style={{ 
+                            style={{
                                 marginBottom: 5,
                                 width: 300,
                                 maxWidth: 300
                             }}
                             onClick={archiveChallenge}
                         >
-                                Archive the Challenge
+                            Archive the Challenge
                         </Button>
                         <Box
                             sx={{
@@ -292,23 +293,23 @@ const NoSubmissions = () => {
                                 maxWidth: 500,
                             }}
                         >
-                        <Typography
-                            variant="h6"
-                            sx={{
-                            position: "relative",
-                            left: 0,
-                            color: colours.primary[700],
-                            textTransform: 'none',
-                            textAlign: "center",
-                            marginLeft: 3,
-                            marginRight:3,
-                            marginTop: 3,
-                            fontWeight: 400,
-                            }}
-                        >
-                            Archiving a challenge means it will be accessible from the Home page and in Search results.
-                            Along with the challenge information it will mention that no submissions were provided.
-                        </Typography>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    position: "relative",
+                                    left: 0,
+                                    color: colours.primary[700],
+                                    textTransform: 'none',
+                                    textAlign: "center",
+                                    marginLeft: 3,
+                                    marginRight: 3,
+                                    marginTop: 3,
+                                    fontWeight: 400,
+                                }}
+                            >
+                                Archiving a challenge means it will be accessible from the Home page and in Search results.
+                                Along with the challenge information it will mention that no submissions were provided.
+                            </Typography>
                         </Box>
                     </div>
                 </>
