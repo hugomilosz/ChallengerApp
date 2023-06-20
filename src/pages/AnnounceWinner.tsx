@@ -5,62 +5,59 @@ import { tokens } from "../theme";
 
 const AnnounceWinner = () => {
 
-    const [challengeInfo, setChallenge] = useState<{ 
-                name: string, 
-                description: string, 
-                imgURL: string, 
-                entryNamesUrls: Array<{ 
-                    entryName: string, 
-                    url: string, 
-                    likeCount: number, 
-                    hahaCount: number, 
-                    smileCount: number, 
-                    wowCount: number, 
-                    sadCount: number, 
-                    angryCount: number 
-                }>, 
-                winner: Array<{ 
-                    entryName: string, 
-                    url: string, 
-                    likeCount: number, 
-                    hahaCount: number, 
-                    smileCount: number, 
-                    wowCount: number, 
-                    sadCount: number, 
-                    angryCount: number 
-                }>,  
-                runnersUp: Array<{ 
-                    entryName: string, 
-                    url: string, 
-                    likeCount: number, 
-                    hahaCount: number, 
-                    smileCount: number, 
-                    wowCount: number, 
-                    sadCount: number, 
-                    angryCount: number 
-                }>,
-                deadline: Date | null,
-                category: string
-            }>
-        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], winner: [], runnersUp: [], deadline: null, category: ""});
+    const [challengeInfo, setChallenge] = useState<{
+        name: string,
+        description: string,
+        imgURL: string,
+        entryNamesUrls: Array<{
+            entryName: string,
+            url: string,
+            likeCount: number,
+            hahaCount: number,
+            smileCount: number,
+            wowCount: number,
+            sadCount: number,
+            angryCount: number
+        }>,
+        winner: Array<{
+            entryName: string,
+            url: string,
+            likeCount: number,
+            hahaCount: number,
+            smileCount: number,
+            wowCount: number,
+            sadCount: number,
+            angryCount: number
+        }>,
+        runnersUp: Array<{
+            entryName: string,
+            url: string,
+            likeCount: number,
+            hahaCount: number,
+            smileCount: number,
+            wowCount: number,
+            sadCount: number,
+            angryCount: number
+        }>,
+        deadline: Date | null,
+        category: string
+    }>
+        ({ name: "none", description: "none", imgURL: "", entryNamesUrls: [], winner: [], runnersUp: [], deadline: null, category: "" });
 
     const { state } = useLocation();
     const navigate = useNavigate();
 
-    async function getReactionCount(entryWithoutPrefix: string, reactionName: string) {
-        const reactionCountResponse = await fetch(`/viewReactions/${entryWithoutPrefix}/${reactionName}`);
+    async function getReactionCounts(entryWithoutPrefix: string, reactionName: string) {
+        const reactionCountResponse = await fetch(`/viewReactions/${entryWithoutPrefix}`);
         const reactionCountData = await reactionCountResponse.json();
-        switch (reactionName) {
-            case "likeCount": return reactionCountData.length > 0 ? reactionCountData[0].likeCount : 0;
-            case "hahaCount": return reactionCountData.length > 0 ? reactionCountData[0].hahaCount : 0;
-            case "smileCount": return reactionCountData.length > 0 ? reactionCountData[0].smileCount : 0;
-            case "wowCount": return reactionCountData.length > 0 ? reactionCountData[0].wowCount : 0;
-            case "sadCount": return reactionCountData.length > 0 ? reactionCountData[0].sadCount : 0;
-            case "angryCount": return reactionCountData.length > 0 ? reactionCountData[0].angryCount : 0;
-            default: console.error("not a valid reaction"); break;
+        return {
+            likeCount: reactionCountData.length > 0 ? reactionCountData[0].likeCount : 0,
+            hahaCount: reactionCountData.length > 0 ? reactionCountData[0].hahaCount : 0,
+            smileCount: reactionCountData.length > 0 ? reactionCountData[0].smileCount : 0,
+            wowCount: reactionCountData.length > 0 ? reactionCountData[0].wowCount : 0,
+            sadCount: reactionCountData.length > 0 ? reactionCountData[0].sadCount : 0,
+            angryCount: reactionCountData.length > 0 ? reactionCountData[0].angryCount : 0,
         }
-        const reactionCount = reactionCountData.length > 0 ? reactionCountData[0].likeCount : 0;
-        return reactionCount;
     }
 
     useEffect(() => {
@@ -71,62 +68,33 @@ const AnnounceWinner = () => {
             const splitArray = chs.entryNames === "" ? [] : (chs.entryNames as String).split(",");
             const deadlineDate = new Date(chs.date);
             setDeadlineDate(deadlineDate);
-    
+
             const entries = splitArray.map(async (entryName: string) => {
                 const url = await (await fetch(`/uploadsURL/${entryName}`)).text();
-                const likeCount = await getReactionCount(entryName, "likeCount");
-                return { entryName, url, likeCount };
+                const reactionCounts = await getReactionCounts(entryName, "likeCount");
+                return { entryName, url, ...reactionCounts };
             });
-        
+
             // Sort the entries based on the like count in descending order
             const sortedEntries = await Promise.all(entries);
             sortedEntries.sort((a, b) => b.likeCount - a.likeCount);
-    
-            const urls = sortedEntries.map((entry) => entry.entryName).map(async (entryName: string) => {
-    
-                const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
-    
-                const likeCount = await getReactionCount(entryName, "likeCount");
-                const hahaCount = await getReactionCount(entryName, "hahaCount");
-                const smileCount = await getReactionCount(entryName, "smileCount");
-                const wowCount = await getReactionCount(entryName, "wowCount");
-                const sadCount = await getReactionCount(entryName, "sadCount");
-                const angryCount = await getReactionCount(entryName, "angryCount");
-    
-                return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
-            });
-    
+
             const winningEntryDB = await (await fetch(`/getWinner/${state.id}`)).json();
-            console.log("winner from DB req: " + winningEntryDB.angryCount);
-            const winningEntry = await (await fetch(`/uploadsURL/${winningEntryDB.filename}`)).text();
-    
-            const entryNameList = sortedEntries.map((entry) => entry.entryName).map( async (entryName: string) => {
-                const url = (await (await fetch(`/uploadsURL/${entryName}`)).text());
-                const likeCount = await getReactionCount(entryName, "likeCount");
-                const hahaCount = await getReactionCount(entryName, "hahaCount");
-                const smileCount = await getReactionCount(entryName, "smileCount");
-                const wowCount = await getReactionCount(entryName, "wowCount");
-                const sadCount = await getReactionCount(entryName, "sadCount");
-                const angryCount = await getReactionCount(entryName, "angryCount");
-    
-                return { entryName, url, likeCount, hahaCount, smileCount, wowCount, sadCount, angryCount };
-            });
-    
-            const fetchedEntryNames = await Promise.all(entryNameList);
+            const winningEntryUrl = await (await fetch(`/uploadsURL/${winningEntryDB.filename}`)).text();
 
             setChallenge({
                 name: chs.name as string,
                 description: chs.description as string,
                 imgURL: await (await fetch(`/uploadsURL/${chs.topic}`)).text(),
-                entryNamesUrls: await Promise.all(urls),
-                winner: fetchedEntryNames.filter(function (entry) {
-                    return entry.url === winningEntry;
+                entryNamesUrls: sortedEntries,
+                winner: sortedEntries.filter(function (entry) {
+                    return entry.url === winningEntryUrl;
                 }),
-                runnersUp: fetchedEntryNames.filter(function (entry) {
-                    return entry.url !== winningEntry;
-                }), 
+                runnersUp: sortedEntries.filter(function (entry) {
+                    return entry.url !== winningEntryUrl;
+                }),
                 deadline: deadlineDate,
-                category: (await (await fetch(`/category/${state.id}`)).json()).subject,
+                category: chs.subject,
             });
         };
         fetchInfo();
@@ -137,7 +105,7 @@ const AnnounceWinner = () => {
     const navigateToHomeScreen = () => {
         navigate('/')
     }
-    
+
     const theme = useTheme();
     const colours = tokens(theme.palette.mode);
 
@@ -145,226 +113,226 @@ const AnnounceWinner = () => {
 
     return (
         <div className="announceWinner" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingBottom: 20 }}>
-        {state?.id ? (
-            <>
-            {challengeInfo.winner.length > 0 ? (
+            {state?.id ? (
                 <>
+                    {challengeInfo.winner.length > 0 ? (
+                        <>
 
-<Box 
-                        component="img"
-                        alt="Example"
-                        src={challengeInfo.imgURL}
-                        sx={{
-                        height: "auto",
-                        width: 500,
-                        maxWidth: 500,
-                        borderRadius: 3,
-                        marginTop: 5
-                        }}
-                    />
+                            <Box
+                                component="img"
+                                alt="Example"
+                                src={challengeInfo.imgURL}
+                                sx={{
+                                    height: "auto",
+                                    width: 500,
+                                    maxWidth: 500,
+                                    borderRadius: 3,
+                                    marginTop: 5
+                                }}
+                            />
 
-                    <Box
-                        sx={{
-                        width: 500,
-                        maxWidth: 500,
-                        alignItems: "center",
-                        }}
-                    >
-                        <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent:"space-between",
-                            margin: 3,
-                            top: 0,
-                        }}
-                        >
-                        <Typography
-                            variant="h5"
-                            sx={{
-                                left: 0,
-                                bottom: 0,
-                                position: "relative",
-                                color: colours.yellow[500],
-                                textTransform: 'none',
-                                fontWeight: 500
-                            }}
-                        >
-                            {challengeInfo.category}
-                        </Typography>
-                        <Typography 
-                            variant="h6"
-                            sx={{
-                                right: 0,
-                                bottom: 0,
-                                position: "relative",
-                                color: colours.redAcc[500],
-                                textTransform: 'none',
-                                fontWeight: 500
-                            }}
-                        >
-                            {challengeInfo.deadline?.toLocaleString()}
-                        </Typography>
-                    </Box>
+                            <Box
+                                sx={{
+                                    width: 500,
+                                    maxWidth: 500,
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        margin: 3,
+                                        top: 0,
+                                    }}
+                                >
+                                    <Typography
+                                        variant="h5"
+                                        sx={{
+                                            left: 0,
+                                            bottom: 0,
+                                            position: "relative",
+                                            color: colours.yellow[500],
+                                            textTransform: 'none',
+                                            fontWeight: 500
+                                        }}
+                                    >
+                                        {challengeInfo.category}
+                                    </Typography>
+                                    <Typography
+                                        variant="h6"
+                                        sx={{
+                                            right: 0,
+                                            bottom: 0,
+                                            position: "relative",
+                                            color: colours.redAcc[500],
+                                            textTransform: 'none',
+                                            fontWeight: 500
+                                        }}
+                                    >
+                                        {challengeInfo.deadline?.toLocaleString()}
+                                    </Typography>
+                                </Box>
 
-                    <Typography 
-                        variant="h3"
-                        sx={{
-                        position: "relative",
-                        left: 0,
-                        color: colours.primary[900],
-                        textTransform: 'none',
-                        textAlign: "left",
-                        fontWeight: 800,
-                        marginLeft: 3,
-                        marginRight:3,
-                        marginBottom: 1,
-                        }}
-                    >
-                        {challengeInfo.name}
-                    </Typography>
+                                <Typography
+                                    variant="h3"
+                                    sx={{
+                                        position: "relative",
+                                        left: 0,
+                                        color: colours.primary[900],
+                                        textTransform: 'none',
+                                        textAlign: "left",
+                                        fontWeight: 800,
+                                        marginLeft: 3,
+                                        marginRight: 3,
+                                        marginBottom: 1,
+                                    }}
+                                >
+                                    {challengeInfo.name}
+                                </Typography>
 
-                    <Typography 
-                        variant="h5"
-                        sx={{
-                        position: "relative",
-                        left: 0,
-                        color: colours.primary[900],
-                        textTransform: 'none',
-                        textAlign: "left",
-                        marginLeft: 3,
-                        marginRight:3,
-                        }}
-                    >
-                        {challengeInfo.description}
-                    </Typography>
+                                <Typography
+                                    variant="h5"
+                                    sx={{
+                                        position: "relative",
+                                        left: 0,
+                                        color: colours.primary[900],
+                                        textTransform: 'none',
+                                        textAlign: "left",
+                                        marginLeft: 3,
+                                        marginRight: 3,
+                                    }}
+                                >
+                                    {challengeInfo.description}
+                                </Typography>
 
-                    </Box>
+                            </Box>
 
-                <Typography 
-                        variant="h2"
-                        sx={{
-                        position: "relative",
-                        left: 0,
-                        color: colours.greenAcc[500],
-                        textTransform: 'none',
-                        textAlign: "left",
-                        fontWeight: 800,
-                        marginLeft: 3,
-                        marginRight:3,
-                        marginTop: 5,
-                        }}
-                    >
-                        Winner of challenge:
-                    </Typography>
+                            <Typography
+                                variant="h2"
+                                sx={{
+                                    position: "relative",
+                                    left: 0,
+                                    color: colours.greenAcc[500],
+                                    textTransform: 'none',
+                                    textAlign: "left",
+                                    fontWeight: 800,
+                                    marginLeft: 3,
+                                    marginRight: 3,
+                                    marginTop: 5,
+                                }}
+                            >
+                                Winner of challenge:
+                            </Typography>
 
-                <body>
-                    <Box 
-                        component="img"
-                        alt="Winner"
-                        src={challengeInfo.winner[0].url}
-                        sx={{
-                        height: "auto",
-                        width: 400,
-                        maxWidth: 400,
-                        borderRadius: 3,
-                        marginTop: 3
-                        }}
-                    />
-                    <body>
-                        <div style={{ display: 'flex', justifyContent: "center" }}>
-                            <div style={{ marginRight: '10px'}}>
-                            <h3>{challengeInfo.winner[0].likeCount}❤️</h3>
+                            <body>
+                                <Box
+                                    component="img"
+                                    alt="Winner"
+                                    src={challengeInfo.winner[0].url}
+                                    sx={{
+                                        height: "auto",
+                                        width: 400,
+                                        maxWidth: 400,
+                                        borderRadius: 3,
+                                        marginTop: 3
+                                    }}
+                                />
+                                <body>
+                                    <div style={{ display: 'flex', justifyContent: "center" }}>
+                                        <div style={{ marginRight: '10px' }}>
+                                            <h3>{challengeInfo.winner[0].likeCount}❤️</h3>
+                                        </div>
+                                        <div style={{ marginRight: '10px' }}>
+                                            <h3>{challengeInfo.winner[0].hahaCount}😂</h3>
+                                        </div>
+                                        <div style={{ marginRight: '10px' }}>
+                                            <h3>{challengeInfo.winner[0].smileCount}😃</h3>
+                                        </div>
+                                        <div style={{ marginRight: '10px' }}>
+                                            <h3>{challengeInfo.winner[0].wowCount}😯</h3>
+                                        </div>
+                                        <div style={{ marginRight: '10px' }}>
+                                            <h3>{challengeInfo.winner[0].sadCount}😢</h3>
+                                        </div>
+                                        <div style={{ marginRight: '10px' }}>
+                                            <h3>{challengeInfo.winner[0].angryCount}🤩</h3>
+                                        </div>
+                                    </div>
+                                </body>
+                            </body>
+                            <hr />
+
+                            <Typography
+                                variant="h2"
+                                sx={{
+                                    position: "relative",
+                                    left: 0,
+                                    color: colours.yellow[500],
+                                    textTransform: 'none',
+                                    textAlign: "left",
+                                    fontWeight: 800,
+                                    marginLeft: 3,
+                                    marginRight: 3,
+                                    marginTop: 5,
+                                }}
+                            >
+                                Runners-up:
+                            </Typography>
+                            <div>
+                                {challengeInfo.runnersUp.map((entry, index) => (
+                                    <div key={index}>
+                                        <Box
+                                            component="img"
+                                            alt="insImage"
+                                            src={entry.url}
+                                            sx={{
+                                                height: "auto",
+                                                width: 400,
+                                                maxWidth: 400,
+                                                borderRadius: 3,
+                                                marginTop: 3
+                                            }}
+                                        />
+                                        <body>
+                                            <div style={{ display: 'flex', justifyContent: "center" }}>
+                                                <div style={{ marginRight: '10px' }}>
+                                                    <h3>{entry.likeCount}❤️</h3>
+                                                </div>
+                                                <div style={{ marginRight: '10px' }}>
+                                                    <h3>{entry.hahaCount}😂</h3>
+                                                </div>
+                                                <div style={{ marginRight: '10px' }}>
+                                                    <h3>{entry.smileCount}😃</h3>
+                                                </div>
+                                                <div style={{ marginRight: '10px' }}>
+                                                    <h3>{entry.wowCount}😯</h3>
+                                                </div>
+                                                <div style={{ marginRight: '10px' }}>
+                                                    <h3>{entry.sadCount}😢</h3>
+                                                </div>
+                                                <div style={{ marginRight: '10px' }}>
+                                                    <h3>{entry.angryCount}🤩</h3>
+                                                </div>
+                                            </div>
+                                        </body>
+                                    </div>
+
+                                ))}
                             </div>
-                            <div style={{ marginRight: '10px'}}>
-                                <h3>{challengeInfo.winner[0].hahaCount}😂</h3>
-                            </div>
-                            <div style={{ marginRight: '10px'}}>
-                                <h3>{challengeInfo.winner[0].smileCount}😃</h3>
-                            </div>
-                            <div style={{ marginRight: '10px'}}>
-                                <h3>{challengeInfo.winner[0].wowCount}😯</h3>
-                            </div>
-                            <div style={{ marginRight: '10px'}}>
-                                <h3>{challengeInfo.winner[0].sadCount}😢</h3>
-                            </div>
-                            <div style={{ marginRight: '10px'}}>
-                                <h3>{challengeInfo.winner[0].angryCount}🤩</h3>
-                            </div>
-                        </div>
-                    </body>
-                </body>
-                <hr/>
-                    
-                <Typography 
-                        variant="h2"
-                        sx={{
-                        position: "relative",
-                        left: 0,
-                        color: colours.yellow[500],
-                        textTransform: 'none',
-                        textAlign: "left",
-                        fontWeight: 800,
-                        marginLeft: 3,
-                        marginRight:3,
-                        marginTop: 5,
-                        }}
-                    >
-                        Runners-up:
-                </Typography>
-                <div>
-                    {challengeInfo.runnersUp.map((entry, index) => (
-                        <div key={index}>
-                        <Box 
-                            component="img"
-                            alt="insImage"
-                            src={entry.url}
-                            sx={{
-                            height: "auto",
-                            width: 400,
-                            maxWidth: 400,
-                            borderRadius: 3,
-                            marginTop: 3
-                            }}
-                        />
-                        <body>
-                            <div style={{ display: 'flex', justifyContent: "center" }}>
-                                <div style={{ marginRight: '10px'}}>
-                                <h3>{entry.likeCount}❤️</h3>
-                                </div>
-                                <div style={{ marginRight: '10px'}}>
-                                    <h3>{entry.hahaCount}😂</h3>
-                                </div>
-                                <div style={{ marginRight: '10px'}}>
-                                    <h3>{entry.smileCount}😃</h3>
-                                </div>
-                                <div style={{ marginRight: '10px'}}>
-                                    <h3>{entry.wowCount}😯</h3>
-                                </div>
-                                <div style={{ marginRight: '10px'}}>
-                                    <h3>{entry.sadCount}😢</h3>
-                                </div>
-                                <div style={{ marginRight: '10px'}}>
-                                    <h3>{entry.angryCount}🤩</h3>
-                                </div>
-                            </div>
-                        </body>
-                </div>
-                        
-                    ))}
-                </div>
-            </>
-          ) : (
-            <h1>Loading...</h1>
-          )}
-            </>
-        ) : (
-            <>
-                <h1>Invalid Challenge ID</h1>
-                <button onClick={navigateToHomeScreen}>Click here to go back to the Home Screen</button>
-            </>
-        )}
+                        </>
+                    ) : (
+                        <h1>Loading...</h1>
+                    )}
+                </>
+            ) : (
+                <>
+                    <h1>Invalid Challenge ID</h1>
+                    <button onClick={navigateToHomeScreen}>Click here to go back to the Home Screen</button>
+                </>
+            )}
 
-    </div>
+        </div>
     )
 };
 
