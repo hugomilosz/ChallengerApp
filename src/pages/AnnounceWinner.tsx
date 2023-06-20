@@ -124,8 +124,8 @@ const AnnounceWinner = () => {
                                 src={challengeInfo.imgURL}
                                 sx={{
                                     height: "auto",
-                                    width: 500,
-                                    maxWidth: 500,
+                                    width: 400,
+                                    maxWidth: 400,
                                     borderRadius: 3,
                                     marginTop: 5
                                 }}
@@ -133,8 +133,8 @@ const AnnounceWinner = () => {
 
                             <Box
                                 sx={{
-                                    width: 500,
-                                    maxWidth: 500,
+                                    width: 400,
+                                    maxWidth: 400,
                                     alignItems: "center",
                                 }}
                             >
